@@ -19,21 +19,24 @@ src/
     (admin)/admin/   admin dashboard shell (SITEMAP §5)        — dynamic, noindex, 404 gate
     design-system-preview/ living style guide (dev; admin-only in prod)
     (onboarding)/onboarding/ post-signup wizard (minimal static layout, noindex)
-    sign-in/ sign-up/ auth-callback/
-    api/             me/, auth/sync/, onboarding/, health/, webhooks/ — every server endpoint
+    (auth)/          /sign-in, /sign-up: marketing header + footer around Clerk's embedded forms
+    auth-callback/
+    api/             me/, auth/sync/, onboarding/, admin/ (dashboard, providers/[id]/status, disputes/[id]/status),
+                     health/, webhooks/ — every server endpoint
     robots.ts sitemap.ts not-found.tsx
   components/
     ui/              shadcn (base-nova, Base UI)
     shared/          PageHeader, EmptyState, StatusBadge, StatCard, PriceTag, RatingStars, BookingTimeline,
                      Stepper, ConfirmDialog, PagePlaceholder… (+ index.ts)
     layout/          AppHeader, AppFooter, MobileMenu, DashboardShell (+ nav, breadcrumb, bottom tabs),
-                     AccountControls, ThemeToggle
+                     AccountControls (Sign in link / AccountMenu dropdown), ThemeToggle
     onboarding/      wizard, steps, RoleCard, FirstServiceForm, ServicePreviewCard, ImageUploader, SuccessScreen
     service/ provider/ request/ chat/   domain components (ServiceCard, ProviderCard, QuoteCard, ChatBubble…)
     design-system/   style-guide sections
     providers/       query-provider, theme-provider
     forms/           PhoneField, OtpField
-    auth/ seo/ marketing/ landing/ motion/ admin/
+    admin/dashboard/ AdminDashboard (KPIs, queues), ProviderDecisionActions
+    auth/ seo/ marketing/ landing/ motion/
   hooks/             use-<feature>.ts (TanStack Query over the api-client)
   services/          <feature>.service.ts (business rules, auth guards)
   repositories/      <feature>.repository.ts (only place Prisma is used)
@@ -47,4 +50,4 @@ src/
   data/              static data files
 ```
 
-Feature docs: `docs/api-conventions.md`, `docs/onboarding-feature.md`. Page map: `docs/page-map.md`.
+Feature docs: `docs/api-conventions.md`, `docs/onboarding-feature.md`, `docs/admin-dashboard-feature.md`. Page map: `docs/page-map.md`.

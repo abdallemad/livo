@@ -1,56 +1,37 @@
 "use client"
 
 import Link from "next/link"
-import { SignInButton, UserButton, useAuth } from "@clerk/nextjs"
-import { LayoutDashboard } from "lucide-react"
+import { useAuth } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
-import { useViewer } from "@/hooks/use-viewer"
-import type { Role } from "@prisma/client"
-
-/** Where each role's dashboard lives (docs/SITEMAP.md §1). */
-const DASHBOARD_BY_ROLE: Record<Role, { href: string; label: string }> = {
-  CUSTOMER: { href: "/account", label: "My account" },
-  PROVIDER: { href: "/provider", label: "Provider dashboard" },
-  ADMIN: { href: "/admin", label: "Admin dashboard" },
-}
+import { AccountMenu } from "./AccountMenu"
 
 /**
  * Per-visitor header controls as a client island, so the layouts above stay
  * static. Until Clerk resolves we render a same-size placeholder: cached HTML
  * never shows "Sign in" to a signed-in user and nothing shifts.
- * The dashboard link only decides what is *shown*; every zone is gated server-side.
+ *
+ * "Sign in" is a real link to the `/sign-in` page (header + footer shell),
+ * not Clerk's modal. Signed-in visitors get `AccountMenu` (dashboard by role,
+ * dark mode, sign out) instead of Clerk's `<UserButton>`.
  */
 export function AccountControls() {
   const { isLoaded, isSignedIn } = useAuth()
-  const { data: viewer } = useViewer()
 
   if (!isLoaded) return <div aria-hidden className="h-11 w-28" />
 
   if (!isSignedIn) {
     return (
       <div className="flex h-11 w-28 items-center justify-end">
-        <SignInButton mode="modal">
-          <Button variant="outline">Sign in</Button>
-        </SignInButton>
+        <Button variant="outline" render={<Link href="/sign-in" />}>
+          Sign in
+        </Button>
       </div>
     )
   }
 
-  // Unfinished onboarding: the only useful place to go is back into the wizard.
-  const dashboard = viewer
-    ? viewer.onboardingCompleted
-      ? DASHBOARD_BY_ROLE[viewer.role]
-      : { href: "/onboarding", label: "Finish signing up" }
-    : null
-
   return (
-    <div className="flex h-11 w-28 items-center justify-end gap-1">
-      {dashboard ? (
-        <Button size="icon" variant="ghost" render={<Link href={dashboard.href} aria-label={dashboard.label} />}>
-          <LayoutDashboard />
-        </Button>
-      ) : null}
-      <UserButton />
+    <div className="flex h-11 w-28 items-center justify-end">
+      <AccountMenu />
     </div>
   )
 }

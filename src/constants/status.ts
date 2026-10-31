@@ -4,6 +4,9 @@ import {
   CheckCircle2,
   CircleDot,
   Clock,
+  CreditCard,
+  Eye,
+  Hourglass,
   FileEdit,
   Handshake,
   MessageSquareQuote,
@@ -13,6 +16,7 @@ import {
   XCircle,
   type LucideIcon,
 } from "lucide-react"
+import type { BookingStatus, DisputeStatus } from "@prisma/client"
 
 /**
  * Request / booking state machine → label, badge variant and icon
@@ -70,3 +74,24 @@ export const VERIFICATION_STATUS: Record<VerificationStatus, StatusMeta> = {
 
 /** The happy path shown by `BookingTimeline` (exceptions are rendered as a final step). */
 export const WORK_TIMELINE: WorkStatus[] = ["OPEN", "ACCEPTED", "PAID", "IN_PROGRESS", "COMPLETED", "REVIEWED"]
+
+/** Raw `Booking.status` (DB enum) → badge, for admin tables that show the exact state. */
+export const BOOKING_STATUS: Record<BookingStatus, StatusMeta> = {
+  PENDING_PAYMENT: { label: "Awaiting payment", variant: "neutral", icon: CreditCard },
+  PENDING_PROVIDER: { label: "Awaiting provider", variant: "info", icon: Hourglass },
+  CONFIRMED: { label: "Confirmed", variant: "primary", icon: Handshake },
+  IN_PROGRESS: { label: "In progress", variant: "warning", icon: Wrench },
+  AWAITING_CONFIRMATION: { label: "Awaiting customer", variant: "info", icon: Clock },
+  COMPLETED: { label: "Completed", variant: "success", icon: CheckCircle2 },
+  CLOSED: { label: "Closed", variant: "neutral", icon: Archive },
+  CANCELLED: { label: "Cancelled", variant: "destructive", icon: XCircle },
+  REJECTED: { label: "Declined", variant: "destructive", icon: XCircle },
+  DISPUTED: { label: "Dispute", variant: "destructive", icon: AlertTriangle },
+}
+
+/** `Dispute.status` (AD-05). */
+export const DISPUTE_STATUS: Record<DisputeStatus, StatusMeta> = {
+  OPEN: { label: "Open", variant: "destructive", icon: AlertTriangle },
+  UNDER_REVIEW: { label: "Under review", variant: "warning", icon: Eye },
+  RESOLVED: { label: "Resolved", variant: "success", icon: CheckCircle2 },
+}

@@ -64,8 +64,9 @@ export async function syncUserWithDatabase(role?: SignUpRole): Promise<ViewerDto
       role: role ?? "CUSTOMER",
       email: clerkUser.primaryEmailAddress?.emailAddress ?? null,
       phone: clerkUser.primaryPhoneNumber?.phoneNumber ?? null,
-      name: clerkUser.fullName ?? null,
-      imageUrl: clerkUser.imageUrl ?? null,
+      // `name` is required since the 2026-10-31 schema; onboarding asks for it if Clerk has none.
+      name: clerkUser.fullName ?? "",
+      avatarUrl: clerkUser.imageUrl ?? null,
     })
     return toViewer(created)
   } catch (error) {

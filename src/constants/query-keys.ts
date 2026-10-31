@@ -22,4 +22,7 @@ export const adminKeys = {
   users: () => [...adminKeys.all, "users"] as const,
   userList: (query: object) => [...adminKeys.users(), "list", query] as const,
   user: (id: string) => [...adminKeys.users(), "detail", id] as const,
+  categories: () => [...adminKeys.all, "categories"] as const,
+  services: () => [...adminKeys.all, "services"] as const,
+  serviceList: (query: object) => [...adminKeys.services(), "list", query] as const,
 }

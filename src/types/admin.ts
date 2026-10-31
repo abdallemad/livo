@@ -1,4 +1,13 @@
-import type { BookingStatus, DisputeStatus, DocumentType, Role, UserStatus, VerificationStatus } from "@prisma/client"
+import type {
+  BookingStatus,
+  CategoryType,
+  DisputeStatus,
+  DocumentType,
+  Role,
+  UserStatus,
+  VerificationStatus,
+} from "@prisma/client"
+import type { ServiceVisibilityState } from "@/utils/service-visibility"
 import type { Paginated } from "./api"
 
 /**
@@ -184,4 +193,69 @@ export interface AdminUserDetail extends AdminUserListItem {
 export interface UserStatusDto {
   id: string
   status: UserStatus
+}
+
+// ---------------------------------------------------------------------------
+// Catalog: categories and services (`/admin/categories`, `/admin/services`, AD-02)
+// ---------------------------------------------------------------------------
+
+export interface AdminCategoryListItem {
+  id: string
+  slug: string
+  nameEn: string | null
+  nameAr: string
+  type: CategoryType
+  iconKey: string | null
+  isActive: boolean
+  sortOrder: number
+  parentId: string | null
+  parentName: string | null
+  counts: { children: number; services: number; liveServices: number; providers: number; requests: number }
+}
+
+/** The edit form's values (plus what the form shows read-only). */
+export interface AdminCategoryDetail {
+  id: string
+  slug: string
+  nameEn: string
+  nameAr: string
+  description: string | null
+  type: CategoryType
+  iconKey: string | null
+  parentId: string | null
+  isActive: boolean
+  sortOrder: number
+  hasChildren: boolean
+}
+
+export interface CategoryOptionDto {
+  id: string
+  name: string
+}
+
+
+export interface AdminServiceListItem {
+  id: string
+  slug: string
+  title: string
+  description: string
+  price: number
+  durationMinutes: number | null
+  category: string
+  categoryActive: boolean
+  providerId: string
+  providerName: string
+  providerStatus: VerificationStatus
+  isActive: boolean
+  hiddenByAdminAt: string | null
+  hiddenByAdminReason: string | null
+  imageCount: number
+  bookingCount: number
+  visibility: ServiceVisibilityState
+  createdAt: string
+}
+
+export interface ServiceModerationDto {
+  id: string
+  hiddenByAdminAt: string | null
 }

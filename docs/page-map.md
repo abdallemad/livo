@@ -100,10 +100,10 @@ Dashboard shell, dynamic, `noindex`; non-admins get a 404 (proxy + layout + ever
 | `/admin/providers/[id]` | Review provider | Profile, private documents (signed links), services, track record, history, decisions | built | AD-01 |
 | `/admin/users` | Users | Search + role/status filters, suspend / activate | built | AD-03 |
 | `/admin/users/[id]` | User details | Account, activity counts, recent bookings, history, suspend / activate | built | AD-03 |
-| `/admin/categories` | Categories | Fixed price, quote, or both | placeholder | AD-02 |
-| `/admin/categories/new` | New category | Type, parent, status | placeholder | AD-02 |
-| `/admin/categories/[id]/edit` | Edit category | Type, parent, status | placeholder | AD-02 |
-| `/admin/services` | Services | All fixed-price services; review or suspend | placeholder | AD-02 |
+| `/admin/categories` | Categories | Tree with usage counts, on-site switch, edit, delete when unused ([admin-catalog-feature.md](admin-catalog-feature.md)) | built | AD-02 |
+| `/admin/categories/new` | New category | Names (EN + AR), URL, type, parent, order, icon, description, status | built | AD-02 |
+| `/admin/categories/[id]/edit` | Edit category | Same form; URL read-only | built | AD-02 |
+| `/admin/services` | Services | Search, category + visibility filters, why each is (not) public, hide / restore | built | AD-02 |
 | `/admin/requests` | Requests and quotes | All quote requests and quotes | placeholder | AD-04 |
 | `/admin/bookings` | Bookings | Every booking | placeholder | AD-04 |
 | `/admin/bookings/[id]` | Booking details | Payment status, held amount, chats | placeholder | AD-04 |

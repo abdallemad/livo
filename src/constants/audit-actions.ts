@@ -11,6 +11,13 @@ export const AUDIT_ACTION_LABEL: Record<string, string> = {
   "user.suspend": "Suspended the account",
   "user.activate": "Re-activated the account",
   "dispute.start_review": "Started reviewing the dispute",
+  "category.create": "Created the category",
+  "category.update": "Edited the category",
+  "category.activate": "Activated the category",
+  "category.deactivate": "Deactivated the category",
+  "category.delete": "Deleted the category",
+  "service.hide": "Hid the service",
+  "service.restore": "Restored the service",
 }
 
 export const auditActionLabel = (action: string) => AUDIT_ACTION_LABEL[action] ?? action

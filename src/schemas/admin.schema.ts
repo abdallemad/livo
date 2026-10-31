@@ -76,3 +76,27 @@ export type ProviderListQuery = z.infer<typeof providerListQuerySchema>
 export type ProviderListStatus = (typeof ADMIN_PROVIDER_STATUSES)[number]
 export type UserListQuery = z.infer<typeof userListQuerySchema>
 export type UserStatusValues = z.infer<typeof userStatusSchema>
+
+/** `/admin/services` visibility filter: what a visitor would see right now. */
+export const SERVICE_VISIBILITIES = ["LIVE", "PROVIDER_OFF", "HIDDEN_BY_ADMIN", "PROVIDER_INACTIVE", "CATEGORY_OFF"] as const
+export type ServiceVisibility = (typeof SERVICE_VISIBILITIES)[number]
+
+export const serviceListQuerySchema = paginationQuerySchema.extend({
+  q: searchSchema,
+  categoryId: z
+    .string()
+    .trim()
+    .max(64)
+    .optional()
+    .transform((v) => v || undefined),
+  visibility: z.enum(SERVICE_VISIBILITIES).optional(),
+})
+
+/** AD-02 moderation: hide (with a reason the provider sees) or restore a listing. */
+export const serviceModerationSchema = z.discriminatedUnion("action", [
+  z.object({ action: z.literal("HIDE"), reason: reasonSchema }),
+  z.object({ action: z.literal("RESTORE") }),
+])
+
+export type ServiceListQuery = z.infer<typeof serviceListQuerySchema>
+export type ServiceModerationValues = z.infer<typeof serviceModerationSchema>

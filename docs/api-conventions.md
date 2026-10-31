@@ -20,8 +20,10 @@ Component → hook (TanStack Query) → api-client → /api/... route.ts → ser
 
 Admin endpoints today: `GET /api/admin/dashboard`, `GET /api/admin/providers`, `GET /api/admin/providers/[id]`,
 `PATCH /api/admin/providers/[id]/status`, `GET /api/admin/files/[id]`, `GET /api/admin/users`, `GET /api/admin/users/[id]`,
-`PATCH /api/admin/users/[id]/status`, `PATCH /api/admin/disputes/[id]/status` (see `docs/admin-dashboard-feature.md`,
-`docs/admin-providers-users-feature.md`).
+`PATCH /api/admin/users/[id]/status`, `PATCH /api/admin/disputes/[id]/status`, `GET|POST /api/admin/categories`,
+`GET|PATCH|DELETE /api/admin/categories/[id]`, `PATCH /api/admin/categories/[id]/status`, `GET /api/admin/services`,
+`PATCH /api/admin/services/[id]/status` (see `docs/admin-dashboard-feature.md`, `docs/admin-providers-users-feature.md`,
+`docs/admin-catalog-feature.md`).
 
 `requireUser()` (and so `requireRole`/`requireProvider`/`requireAdmin`) also rejects accounts whose
 `User.status` isn't `ACTIVE` with **403** (AD-03 suspension).

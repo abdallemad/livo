@@ -30,6 +30,11 @@ export const API_ROUTES = {
     users: "/api/admin/users",
     user: (id: string) => `/api/admin/users/${encodeURIComponent(id)}`,
     userStatus: (id: string) => `/api/admin/users/${encodeURIComponent(id)}/status`,
+    categories: "/api/admin/categories",
+    category: (id: string) => `/api/admin/categories/${encodeURIComponent(id)}`,
+    categoryStatus: (id: string) => `/api/admin/categories/${encodeURIComponent(id)}/status`,
+    services: "/api/admin/services",
+    serviceStatus: (id: string) => `/api/admin/services/${encodeURIComponent(id)}/status`,
     /** Admin-only preview of a provider verification document (307 to a signed link). */
     file: (id: string) => `/api/admin/files/${encodeURIComponent(id)}`,
   },

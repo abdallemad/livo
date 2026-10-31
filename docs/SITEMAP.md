@@ -199,7 +199,8 @@ Exceptions: Cancelled · Disputed · Expired
 5. **Public pages** need `generateMetadata`, canonical, breadcrumbs + JSON-LD (`Service`, `BreadcrumbList`, `Organization`) and must appear in `sitemap.ts`. Private routes must not.
 6. **Pagination** on crawlable lists uses real links `…/page/[page]`; `?page=1` → 301 to clean URL.
 7. After any write that changes public content (service, category, provider profile/rating), call `revalidateStorefront()`.
-8. Shared layouts: `(marketing)` header, `(app)` and `(provider)` sidebar, `(admin)` dashboard. The nav lists live in `src/constants/` (e.g. `customer-nav.ts`, `provider-nav.ts`, `admin-nav.ts`). Add a page there when you add the route.
+8. **Public service reads use `VISIBLE_SERVICE`** (`services/admin-catalog.service.ts`): switched on by the provider, not hidden by an admin, provider `APPROVED` with an `ACTIVE` account, category and its parent active ([admin-catalog-feature.md](admin-catalog-feature.md)).
+9. Shared layouts: `(marketing)` header, `(app)` and `(provider)` sidebar, `(admin)` dashboard. The nav lists live in `src/constants/` (e.g. `customer-nav.ts`, `provider-nav.ts`, `admin-nav.ts`). Add a page there when you add the route.
 
 ---
 

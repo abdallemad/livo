@@ -3,7 +3,8 @@
 The authoritative rules are in `CLAUDE.md` §2–§3; this is the map of what exists today.
 
 ```
-prisma/              schema.prisma, seed.ts, sql/ (dated idempotent migrations: 2026-11-01-schema-baseline, 2026-11-01-onboarding)
+prisma/              schema.prisma, seed.ts, sql/ (dated idempotent migrations: 2026-11-01-schema-baseline, 2026-11-01-onboarding,
+                     2026-11-02-service-moderation)
 scripts/             prebuild-db.cjs, build-with-deployment-id.mjs, prepare-standalone.mjs,
                      deployment-id.mjs, warm-cache.mjs, archive/ (one-offs)
 tests/               node:test suites — api/, utils/, ui/ (logical-class direction guard), onboarding/, prelaunch/ + alias loader
@@ -21,7 +22,7 @@ src/
     (onboarding)/onboarding/ post-signup wizard (minimal static layout, noindex)
     (auth)/          /sign-in, /sign-up, /account-suspended: marketing header + footer around Clerk's embedded forms
     auth-callback/
-    api/             me/, auth/sync/, onboarding/, admin/ (dashboard, providers, users, files, disputes),
+    api/             me/, auth/sync/, onboarding/, admin/ (dashboard, providers, users, files, disputes, categories, services),
                      health/, webhooks/ — every server endpoint
     robots.ts sitemap.ts not-found.tsx
   components/
@@ -36,7 +37,7 @@ src/
     providers/       query-provider, theme-provider
     forms/           PhoneField, OtpField
     admin/           dashboard/ (KPIs, queues), providers/ (list, review, decision actions), users/ (list, detail,
-                     status actions), shared/ (ReasonDialog, SearchBox, ListPagination, HistoryCard, DetailField)
+                     status actions), catalog/ (CategoriesTable, CategoryForm, ServicesTable), shared/ (ReasonDialog, SearchBox, ListPagination, HistoryCard, DetailField)
     auth/ seo/ marketing/ landing/ motion/
   hooks/             use-<feature>.ts (TanStack Query over the api-client)
   services/          <feature>.service.ts (business rules, auth guards)
@@ -52,4 +53,4 @@ src/
 ```
 
 Feature docs: `docs/api-conventions.md`, `docs/onboarding-feature.md`, `docs/admin-dashboard-feature.md`,
-`docs/admin-providers-users-feature.md`. Page map: `docs/page-map.md`.
+`docs/admin-providers-users-feature.md`, `docs/admin-catalog-feature.md`. Page map: `docs/page-map.md`.

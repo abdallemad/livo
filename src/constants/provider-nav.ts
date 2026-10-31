@@ -20,44 +20,44 @@ import type { NavGroup, NavItem } from "@/types/nav"
 export const PROVIDER_NAV: NavGroup[] = [
   {
     items: [
-      { href: "/provider", label: "الرئيسية", icon: Home, exact: true },
-      { href: "/provider/requests", label: "الطلبات المتاحة", icon: Inbox },
-      { href: "/provider/quotes", label: "عروض الأسعار", icon: FileText },
-      { href: "/provider/bookings", label: "حجوزاتي", icon: CalendarCheck },
-      { href: "/provider/messages", label: "المحادثات", icon: MessageSquare },
+      { href: "/provider", label: "Home", icon: Home, exact: true },
+      { href: "/provider/requests", label: "Available requests", icon: Inbox },
+      { href: "/provider/quotes", label: "Quotes", icon: FileText },
+      { href: "/provider/bookings", label: "My bookings", icon: CalendarCheck },
+      { href: "/provider/messages", label: "Messages", icon: MessageSquare },
     ],
   },
   {
-    label: "شغلي",
+    label: "My work",
     items: [
-      { href: "/provider/services", label: "خدماتي", icon: BriefcaseBusiness },
-      { href: "/provider/portfolio", label: "معرض الأعمال", icon: Images },
-      { href: "/provider/schedule", label: "المواعيد", icon: CalendarDays },
-      { href: "/provider/reviews", label: "التقييمات", icon: Star },
+      { href: "/provider/services", label: "My services", icon: BriefcaseBusiness },
+      { href: "/provider/portfolio", label: "Portfolio", icon: Images },
+      { href: "/provider/schedule", label: "Schedule", icon: CalendarDays },
+      { href: "/provider/reviews", label: "Reviews", icon: Star },
     ],
   },
   {
-    label: "الفلوس",
+    label: "Money",
     items: [
-      { href: "/provider/earnings", label: "الأرباح", icon: Wallet },
-      { href: "/provider/payouts", label: "سحب الأرباح", icon: Landmark },
+      { href: "/provider/earnings", label: "Earnings", icon: Wallet },
+      { href: "/provider/payouts", label: "Payouts", icon: Landmark },
     ],
   },
   {
-    label: "الحساب",
+    label: "Account",
     items: [
-      { href: "/provider/verification", label: "التوثيق", icon: ShieldCheck },
-      { href: "/provider/notifications", label: "الإشعارات", icon: Bell },
-      { href: "/provider/settings", label: "الإعدادات", icon: Settings },
+      { href: "/provider/verification", label: "Verification", icon: ShieldCheck },
+      { href: "/provider/notifications", label: "Notifications", icon: Bell },
+      { href: "/provider/settings", label: "Settings", icon: Settings },
     ],
   },
 ]
 
-/** Mobile bottom tab bar (§7): الرئيسية، الطلبات، حجوزاتي، المحادثات، الأرباح. */
+/** Mobile bottom tab bar (§7): Home, requests, my bookings, messages, earnings. */
 export const PROVIDER_TABS: NavItem[] = [
-  { href: "/provider", label: "الرئيسية", icon: Home, exact: true },
-  { href: "/provider/requests", label: "الطلبات", icon: Inbox },
-  { href: "/provider/bookings", label: "حجوزاتي", icon: CalendarCheck },
-  { href: "/provider/messages", label: "المحادثات", icon: MessageSquare },
-  { href: "/provider/earnings", label: "الأرباح", icon: Wallet },
+  { href: "/provider", label: "Home", icon: Home, exact: true },
+  { href: "/provider/requests", label: "Requests", icon: Inbox },
+  { href: "/provider/bookings", label: "My bookings", icon: CalendarCheck },
+  { href: "/provider/messages", label: "Messages", icon: MessageSquare },
+  { href: "/provider/earnings", label: "Earnings", icon: Wallet },
 ]

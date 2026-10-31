@@ -7,3 +7,8 @@ export const viewerKeys = {
   all: ["viewer"] as const,
   me: () => [...viewerKeys.all, "me"] as const,
 }
+
+export const onboardingKeys = {
+  all: ["onboarding"] as const,
+  state: () => [...onboardingKeys.all, "state"] as const,
+}

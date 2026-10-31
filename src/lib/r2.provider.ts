@@ -1,5 +1,5 @@
 import "server-only"
-import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3"
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 
 /**
@@ -39,6 +39,42 @@ export function presignDownload(key: string, expiresIn = 300) {
       Key: key,
       ResponseContentDisposition: "attachment",
       ResponseContentType: "application/octet-stream",
+    }),
+    { expiresIn },
+  )
+}
+
+/** True when R2 credentials are set; uploads answer a clear 503 instead of crashing when not. */
+export function isR2Configured(): boolean {
+  return ["R2_ACCOUNT_ID", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_BUCKET_NAME"].every((name) =>
+    Boolean(process.env[name]?.trim()),
+  )
+}
+
+/** Stores bytes in the PRIVATE bucket. Callers validate type/size first (magic bytes). */
+export async function putPrivateObject(key: string, body: Uint8Array, contentType: string) {
+  await getR2Client().send(
+    new PutObjectCommand({ Bucket: getR2Bucket(), Key: key, Body: body, ContentType: contentType }),
+  )
+}
+
+export async function deleteObject(key: string) {
+  await getR2Client().send(new DeleteObjectCommand({ Bucket: getR2Bucket(), Key: key }))
+}
+
+/**
+ * Short-lived INLINE link so the owner can see their own upload (image
+ * thumbnails in the wizard). Same 5-minute lifetime as downloads; never cached.
+ */
+export function presignInline(key: string, contentType: string, expiresIn = 300) {
+  return getSignedUrl(
+    getR2Client(),
+    new GetObjectCommand({
+      Bucket: getR2Bucket(),
+      Key: key,
+      ResponseContentDisposition: "inline",
+      ResponseContentType: contentType,
+      ResponseCacheControl: "private, no-store",
     }),
     { expiresIn },
   )

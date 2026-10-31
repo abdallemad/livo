@@ -4,4 +4,6 @@ import type { Role } from "@prisma/client"
 export interface ViewerDto {
   id: string
   role: Role
+  /** False until the onboarding wizard is finished (admins: always true). Decides where to send the user. */
+  onboardingCompleted: boolean
 }

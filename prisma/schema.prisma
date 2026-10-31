@@ -18,12 +18,14 @@
 // =============================================================================
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"] // Docker image is node:22-alpine
 }
 
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // ============================ ENUMS ==========================================
@@ -179,10 +181,11 @@ model City {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  areas             Area[]
-  addresses         Address[]
-  requests          ServiceRequest[]
-  providerProfiles  ProviderProfile[]
+  areas            Area[]
+  users            User[]
+  addresses        Address[]
+  requests         ServiceRequest[]
+  providerProfiles ProviderProfile[]
 }
 
 model Area {
@@ -195,7 +198,7 @@ model Area {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  city      City               @relation(fields: [cityId], references: [id], onDelete: Restrict)
+  city      City             @relation(fields: [cityId], references: [id], onDelete: Restrict)
   addresses Address[]
   requests  ServiceRequest[]
   providers ProviderArea[]
@@ -218,22 +221,33 @@ model User {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 
+  // Onboarding (docs/onboarding-feature.md)
+  // role defaults to CUSTOMER, so "picked customer" and "hasn't picked yet" need this timestamp
+  roleSelectedAt        DateTime?
+  // the single "finished onboarding" flag (proxy + /auth-callback); a customer has no required rows to derive it from
+  onboardingCompletedAt DateTime?
+  // every user picks a city in step 2; a customer who skips the address step has nowhere else to keep it
+  cityId                String?
+
+  city            City?              @relation(fields: [cityId], references: [id], onDelete: SetNull)
+  interests       CustomerInterest[]
   customerProfile CustomerProfile?
   providerProfile ProviderProfile?
 
-  requests         ServiceRequest[]
-  bookingsAsCustomer Booking[]       @relation("BookingCustomer")
-  messagesSent     Message[]
-  reviewsWritten   Review[]          @relation("ReviewReviewer")
-  reviewsReceived  Review[]          @relation("ReviewReviewee")
-  disputesOpened   Dispute[]         @relation("DisputeOpenedBy")
-  disputesResolved Dispute[]         @relation("DisputeResolvedBy")
-  notifications    Notification[]
-  addresses        Address[]
-  uploadedFiles    File[]
-  auditLogs        AuditLog[]
+  requests           ServiceRequest[]
+  bookingsAsCustomer Booking[]        @relation("BookingCustomer")
+  messagesSent       Message[]
+  reviewsWritten     Review[]         @relation("ReviewReviewer")
+  reviewsReceived    Review[]         @relation("ReviewReviewee")
+  disputesOpened     Dispute[]        @relation("DisputeOpenedBy")
+  disputesResolved   Dispute[]        @relation("DisputeResolvedBy")
+  notifications      Notification[]
+  addresses          Address[]
+  uploadedFiles      File[]
+  auditLogs          AuditLog[]
 
   @@index([role, status])
+  @@index([cityId])
 }
 
 model CustomerProfile {
@@ -242,6 +256,19 @@ model CustomerProfile {
   updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Optional onboarding step: categories a customer is interested in
+model CustomerInterest {
+  userId     String
+  categoryId String
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([userId, categoryId])
+  @@index([categoryId])
 }
 
 model Address {
@@ -287,18 +314,18 @@ model ProviderProfile {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  city       City                @relation(fields: [cityId], references: [id], onDelete: Restrict)
-  categories ProviderCategory[]
-  areas      ProviderArea[]
-  documents  ProviderDocument[]
-  portfolio  PortfolioItem[]
-  services   Service[]
-  quotes     Quote[]
-  bookings   Booking[]
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  city         City                @relation(fields: [cityId], references: [id], onDelete: Restrict)
+  categories   ProviderCategory[]
+  areas        ProviderArea[]
+  documents    ProviderDocument[]
+  portfolio    PortfolioItem[]
+  services     Service[]
+  quotes       Quote[]
+  bookings     Booking[]
   availability Availability[]
-  wallet     WalletTransaction[]
-  payouts    Payout[]
+  wallet       WalletTransaction[]
+  payouts      Payout[]
 
   @@index([verificationStatus, cityId])
 }
@@ -388,6 +415,7 @@ model Category {
   services   Service[]
   requests   ServiceRequest[]
   providers  ProviderCategory[]
+  interests  CustomerInterest[]
   commission CommissionSetting?
 
   @@index([parentId, isActive])
@@ -461,8 +489,8 @@ model Quote {
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
-  request  ServiceRequest   @relation(fields: [requestId], references: [id], onDelete: Cascade)
-  provider ProviderProfile  @relation(fields: [providerId], references: [userId], onDelete: Cascade)
+  request  ServiceRequest  @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  provider ProviderProfile @relation(fields: [providerId], references: [userId], onDelete: Cascade)
   booking  Booking?
 
   @@unique([requestId, providerId]) // one quote per provider per request
@@ -487,10 +515,10 @@ model Booking {
   commissionAmount Decimal @db.Decimal(12, 2)
   providerNet      Decimal @db.Decimal(12, 2)
 
-  status        BookingStatus @default(PENDING_PAYMENT)
-  scheduledAt   DateTime?
+  status          BookingStatus @default(PENDING_PAYMENT)
+  scheduledAt     DateTime?
   addressSnapshot Json // frozen copy of the address used
-  notes         String?
+  notes           String?
 
   contactUnlockedAt   DateTime? // BR-02 / SY-04: null = phone/email must stay hidden
   startedAt           DateTime?
@@ -617,7 +645,7 @@ model Payout {
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
 
-  provider ProviderProfile      @relation(fields: [providerId], references: [userId], onDelete: Restrict)
+  provider ProviderProfile     @relation(fields: [providerId], references: [userId], onDelete: Restrict)
   walletTx WalletTransaction[]
 
   @@index([providerId, status])
@@ -640,10 +668,10 @@ model Invoice {
 // ============================ CHAT ===========================================
 
 model Message {
-  id        String   @id @default(cuid())
-  bookingId String
-  senderId  String
-  body      String
+  id             String   @id @default(cuid())
+  bookingId      String
+  senderId       String
+  body           String
   // SY-04: set when the body contained a phone/email pattern before contactUnlockedAt.
   // The service blocks or masks the body; the flag feeds admin review.
   contactBlocked Boolean  @default(false)
@@ -724,13 +752,13 @@ model Notification {
 // depending on what the file is attached to (enforce in the service).
 
 model File {
-  id         String   @id @default(cuid())
-  key        String   @unique // R2 object key
-  mimeType   String
-  sizeBytes  Int
-  sha256     String?
+  id           String   @id @default(cuid())
+  key          String   @unique // R2 object key
+  mimeType     String
+  sizeBytes    Int
+  sha256       String?
   uploadedById String?
-  createdAt  DateTime @default(now())
+  createdAt    DateTime @default(now())
 
   // Owners (all nullable)
   serviceId       String?
@@ -739,12 +767,12 @@ model File {
   messageId       String?
   disputeId       String?
 
-  uploadedBy    User?            @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
-  service       Service?         @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-  request       ServiceRequest?  @relation(fields: [requestId], references: [id], onDelete: Cascade)
-  portfolioItem PortfolioItem?   @relation(fields: [portfolioItemId], references: [id], onDelete: Cascade)
-  message       Message?         @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  dispute       Dispute?         @relation(fields: [disputeId], references: [id], onDelete: Cascade)
+  uploadedBy    User?           @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  service       Service?        @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  request       ServiceRequest? @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  portfolioItem PortfolioItem?  @relation(fields: [portfolioItemId], references: [id], onDelete: Cascade)
+  message       Message?        @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  dispute       Dispute?        @relation(fields: [disputeId], references: [id], onDelete: Cascade)
 
   providerDocument ProviderDocument?
   invoice          Invoice?

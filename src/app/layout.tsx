@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { ClerkProvider } from "@clerk/nextjs"
 import { GoogleAnalytics } from "@next/third-parties/google"
-import { IBM_Plex_Sans_Arabic, Readex_Pro } from "next/font/google"
+import { IBM_Plex_Sans, Readex_Pro } from "next/font/google"
 import { QueryProvider } from "@/components/providers/query-provider"
 import { ThemeProvider } from "@/components/providers/theme-provider"
 import { DirectionProvider } from "@/components/ui/direction"
@@ -25,9 +25,9 @@ import "./globals.css"
  * `<ClerkProvider>` stays static: never pass it the `dynamic` prop.
  */
 /** Body / UI text (docs/DESIGN-SYSTEM.md §3). */
-const fontBody = IBM_Plex_Sans_Arabic({
+const fontBody = IBM_Plex_Sans({
   variable: "--font-body",
-  subsets: ["arabic", "latin"],
+  subsets: ["latin"],
   weight: ["400", "500", "600"],
   display: "swap",
 })
@@ -35,7 +35,7 @@ const fontBody = IBM_Plex_Sans_Arabic({
 /** Headings / display. */
 const fontDisplay = Readex_Pro({
   variable: "--font-display",
-  subsets: ["arabic", "latin"],
+  subsets: ["latin"],
   weight: ["500", "600", "700"],
   display: "swap",
 })
@@ -60,7 +60,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         suppressHydrationWarning
       >
         <body className="flex min-h-dvh flex-col bg-background text-foreground">
-          {/* Base UI reads direction from here: menus, tabs, sliders and arrow keys follow RTL. */}
+          {/* Base UI reads direction from here: menus, tabs, sliders and arrow keys follow the document direction. */}
           <DirectionProvider direction={SITE_DIR}>
             <ThemeProvider>
               <QueryProvider>

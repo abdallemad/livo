@@ -11,7 +11,7 @@ import { PROVIDER_NAV, PROVIDER_TABS } from "./provider-nav"
 export type DashboardZone = "account" | "provider" | "admin"
 
 export const DASHBOARD_NAV: Record<DashboardZone, { root: string; label: string; nav: NavGroup[]; tabs?: NavItem[] }> = {
-  account: { root: "/account", label: "حسابي", nav: CUSTOMER_NAV, tabs: CUSTOMER_TABS },
-  provider: { root: "/provider", label: "لوحة المزود", nav: PROVIDER_NAV, tabs: PROVIDER_TABS },
-  admin: { root: "/admin", label: "الإدارة", nav: ADMIN_NAV },
+  account: { root: "/account", label: "My account", nav: CUSTOMER_NAV, tabs: CUSTOMER_TABS },
+  provider: { root: "/provider", label: "Provider dashboard", nav: PROVIDER_NAV, tabs: PROVIDER_TABS },
+  admin: { root: "/admin", label: "Admin", nav: ADMIN_NAV },
 }

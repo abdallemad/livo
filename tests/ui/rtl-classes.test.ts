@@ -4,7 +4,8 @@ import { readdirSync, readFileSync, statSync } from "node:fs"
 import { join, relative } from "node:path"
 
 /**
- * RTL guard (docs/DESIGN-SYSTEM.md §6.3): components and pages must use
+ * Direction guard (docs/DESIGN-SYSTEM.md §6.3): the UI is LTR today, but
+ * components and pages must still use
  * logical utilities (`ms-` `pe-` `start-` `text-end` `border-s` …), never
  * physical ones. Run after every `npx shadcn add`.
  *

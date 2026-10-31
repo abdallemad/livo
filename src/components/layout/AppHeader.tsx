@@ -20,7 +20,7 @@ export function AppHeader() {
           <Image src={SITE_LOGO} alt="" width={32} height={32} />
           {SITE_NAME}
         </Link>
-        <nav aria-label="التنقل الرئيسي" className="hidden items-center gap-1 md:flex">
+        <nav aria-label="Main navigation" className="hidden items-center gap-1 md:flex">
           {MARKETING_NAV.map((item) => (
             <Link
               key={item.href}

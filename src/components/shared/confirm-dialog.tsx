@@ -16,7 +16,7 @@ import {
 interface ConfirmDialogProps {
   /** The element that opens the dialog (a Button). */
   trigger: React.ReactElement
-  /** Restate the consequence: "إلغاء الحجز؟ هيرجع لك المبلغ المحجوز خلال 3 أيام". */
+  /** Restate the consequence: "Cancel the booking? The held amount will be refunded within 3 days". */
   title: string
   description?: string
   confirmLabel: string
@@ -31,7 +31,7 @@ export function ConfirmDialog({
   title,
   description,
   confirmLabel,
-  cancelLabel = "تراجع",
+  cancelLabel = "Undo",
   destructive = true,
   onConfirm,
 }: ConfirmDialogProps) {

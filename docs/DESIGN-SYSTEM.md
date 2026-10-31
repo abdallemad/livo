@@ -5,8 +5,8 @@
 > Rule: **no page or feature is built until the foundation in §14 (Phase A) exists.** After that, every screen is assembled only from the tokens, components and patterns defined here. Never hard-code colors, radii, fonts or spacing inside feature components.
 
 - Stack: Tailwind CSS v4 (CSS-first, no `tailwind.config.js`), shadcn/ui **base-nova style on Base UI (`@base-ui/react`), not Radix**, `class-variance-authority`, `lucide-react`, `next-themes`.
-- Language/direction: **Arabic, RTL**. Route paths and code stay English; all UI copy is Arabic.
-- This file **overrides** `CLAUDE.md` §9 on two points only: fonts (Arabic fonts instead of Geist) and default theme (light instead of dark). Everything else in §9 still applies.
+- Language/direction: **English, LTR** (`<html lang="en" dir="ltr">`). All UI copy is English. Switched from Arabic/RTL on 2026-10-31; the logical-utility rules in §6 stay so the UI can go back to RTL without a rewrite.
+- This file **overrides** `CLAUDE.md` §9 on two points only: fonts (IBM Plex Sans + Readex Pro instead of Geist) and default theme (light instead of dark). Everything else in §9 still applies.
 
 ---
 
@@ -80,7 +80,7 @@ Charts (admin KPIs): `chart-1 #0F5C5A`, `chart-2 #F2B01E`, `chart-3 #1F5F99`, `c
 
 ### Colour rules
 1. **Never** use `commit` as text on a light background (fails contrast); only as a fill with `commit-foreground`, or as a filled star.
-2. Maximum **one `commit` button per screen/step.** Examples: *احجز الآن*, *اقبل العرض*, *أكّد إتمام الشغل*, *اطلب سحب الأرباح*.
+2. Maximum **one `commit` button per screen/step.** Examples: *Book now*, *Accept quote*, *Confirm the job is done*, *Request a payout*.
 3. Status is never conveyed by colour alone; always icon + text label.
 4. Verify AA contrast (4.5:1 body, 3:1 large/UI) for any new pairing.
 
@@ -138,14 +138,14 @@ Keep the exact variable shape that `npx shadcn@latest init` generated if it diff
 
 ---
 
-## 3. Typography (Arabic-first)
+## 3. Typography
 
 | Role | Font | Weights | CSS var |
 |---|---|---|---|
 | Headings / display | **Readex Pro** | 500, 600, 700 | `--font-display` |
-| Body / UI | **IBM Plex Sans Arabic** | 400, 500, 600 | `--font-body` |
+| Body / UI | **IBM Plex Sans** | 400, 500, 600 | `--font-body` |
 
-Load both with `next/font/google`, `subsets: ["arabic","latin"]`, `display: "swap"`, in `src/app/layout.tsx`, replacing Geist. Remove `Geist_Mono`; use the system mono stack for the rare code/ID display.
+Load both with `next/font/google`, `subsets: ["latin"]`, `display: "swap"`, in `src/app/layout.tsx`, replacing Geist. Remove `Geist_Mono`; use the system mono stack for the rare code/ID display.
 
 ### Scale (mobile → desktop)
 
@@ -159,13 +159,13 @@ Load both with `next/font/google`, `subsets: ["arabic","latin"]`, `display: "swa
 | Small / meta | `text-sm text-muted-foreground` | 14 | 1.65 |
 | Caption | `text-xs` | 12 (never below) | 1.6 |
 
-### Arabic typography rules
-1. **No letter-spacing / `tracking-*` on Arabic text** (it breaks letter joining). **No `uppercase`, no italics** for Arabic.
-2. Minimum body size **16px** (providers use cheap phones). Arabic needs the taller line-height above.
+### Typography rules
+1. No decorative `tracking-*` or all-caps on body copy; sentence case for buttons and headings.
+2. Minimum body size **16px** (providers use cheap phones).
 3. Line length ≤ ~65 characters in reading areas (`max-w-prose`).
-4. **Digits: Western (0-9)** everywhere (prices, phones, dates, OTP). Use `tabular-nums` in tables, prices and OTP. Format with `Intl.NumberFormat("ar-EG", { numberingSystem: "latn" })`. (Decision #2 in §16.)
-5. Currency display: `350 ج.م`, number then symbol, via one `formatPrice()` util in `src/utils/format.ts`. Never concatenate by hand.
-6. Mixed Arabic + Latin/number runs (phone, order id, English brand names) get `dir="ltr"` on an inline `<bdi>` or span so they do not scramble.
+4. **Digits: Western (0-9)** everywhere (prices, phones, dates, OTP). Use `tabular-nums` in tables, prices and OTP. Format with `Intl.NumberFormat("en-EG", { numberingSystem: "latn" })`. (Decision #2 in §16.)
+5. Currency display: `350 EGP`, number then symbol, via one `formatPrice()` util in `src/utils/format.ts`. Never concatenate by hand.
+6. Phone numbers, order ids and similar runs stay wrapped in `<Ltr>` (`<bdi dir="ltr">`), so they stay correct if the UI goes back to RTL.
 
 ---
 
@@ -182,7 +182,7 @@ Load both with `next/font/google`, `subsets: ["arabic","latin"]`, `display: "swa
 
 ## 5. Component rules
 
-Install shadcn components with `npx shadcn@latest add <name>` into `src/components/ui`. They are **ours to edit**, but changes are limited to: tokens, sizes, variants (via `cva`), and RTL fixes (§6). Never duplicate a component to restyle it. Add a variant instead.
+Install shadcn components with `npx shadcn@latest add <name>` into `src/components/ui`. They are **ours to edit**, but changes are limited to: tokens, sizes, variants (via `cva`), and direction fixes (§6). Never duplicate a component to restyle it. Add a variant instead.
 
 ### Components to install (Phase A)
 `button input textarea label select checkbox radio-group switch card badge avatar separator skeleton tooltip popover dialog alert-dialog sheet dropdown-menu tabs table pagination breadcrumb progress alert accordion scroll-area command sidebar input-otp calendar` plus the toast component and the form/field helper used with `react-hook-form`. If a name does not exist in the base-nova registry, build it on the matching `@base-ui/react` primitive in the same file style. Do not pull in Radix.
@@ -220,15 +220,15 @@ Add `commit` to the button `cva` (`bg-commit text-commit-foreground hover:bg-com
 
 ---
 
-## 6. RTL rules (mandatory)
+## 6. Direction rules (mandatory)
 
-1. `<html lang="ar" dir="rtl">` in the root layout. Wrap the app in Base UI's **`DirectionProvider`** (`direction="rtl"`) so popovers, menus, tabs, sliders and keyboard arrows follow RTL. Verify the exact import path in the installed `@base-ui/react` docs.
+1. `<html lang="en" dir="ltr">` in the root layout, both from `SITE_LANG` / `SITE_DIR` in `src/constants/site.ts`. The app is wrapped in Base UI's **`DirectionProvider`** (`direction={SITE_DIR}`) so popovers, menus, tabs, sliders and keyboard arrows follow the document direction.
 2. **Use logical utilities only:** `ms-*` `me-*` `ps-*` `pe-*` `start-*` `end-*` `text-start` `text-end` `border-s` `border-e` `rounded-s-*` `rounded-e-*`. **Never** `ml-* mr-* pl-* pr-* left-* right-* text-left text-right`.
 3. After adding any shadcn component, **grep it for physical utilities** (`left-`, `right-`, `ml-`, `mr-`, `pl-`, `pr-`, `text-left`, `text-right`, `slide-in-from-left/right`, `translate-x`) and convert them. Add this as a lint/grep check in `tests/` (a node:test that scans `src/components/ui` and `src/components` for banned classes).
-4. **Directional icons flip**: chevrons, arrows, "back", progress arrows get `rtl:-scale-x-100` (or pick the mirrored icon). Non-directional icons (check, search, phone, star, play) do not flip.
-5. Numbers, phone numbers, emails, URLs, ids render LTR inside RTL text (`<bdi>`/`dir="ltr"`).
-6. Stepper/timeline progress runs right→left. Carousels and sliders start from the right.
-7. Test every new screen once with long Arabic strings and once with a Latin word inside an Arabic sentence.
+4. **Directional icons point the reading direction**: "back" is `ArrowLeft` at the start, "next" is `ArrowRight` at the end. shadcn primitives keep their `rtl:` flip variants; they are inert in LTR.
+5. Numbers, phone numbers, emails, URLs and ids stay in `<Ltr>` / `dir="ltr"` wrappers.
+6. Stepper/timeline progress runs left→right. Carousels and sliders start from the left.
+7. Test every new screen once with long strings (wrapping) and once at phone width.
 
 ---
 
@@ -236,9 +236,9 @@ Add `commit` to the button `cva` (`bg-commit text-commit-foreground hover:bg-com
 
 | Shell | Route group | Structure |
 |---|---|---|
-| **Marketing** | `(marketing)` | Header (logo at start; nav: الخدمات، كيف تعمل المنصة، انضم كمزود؛ `AccountControls` island at end) + footer. Static; no request reads. |
-| **Customer app** | `(app)/account` | Desktop: sidebar at start + `<main>` scrolls. Mobile: top bar + **bottom tab bar** (الرئيسية، طلباتي، حجوزاتي، المحادثات، حسابي). |
-| **Provider app** | `(provider)/provider` | Same as customer but tabs: الرئيسية، الطلبات، حجوزاتي، المحادثات، الأرباح. Bigger type and targets. Verification-status banner pinned at top until `ACTIVE`. |
+| **Marketing** | `(marketing)` | Header (logo at start; nav: Services, How it works, Become a provider; `AccountControls` island at end) + footer. Static; no request reads. |
+| **Customer app** | `(app)/account` | Desktop: sidebar at start + `<main>` scrolls. Mobile: top bar + **bottom tab bar** (Home, My requests, My bookings, Messages, My account). |
+| **Provider app** | `(provider)/provider` | Same as customer but tabs: Home, Requests, My bookings, Messages, Earnings. Bigger type and targets. Verification-status banner pinned at top until `ACTIVE`. |
 | **Admin** | `(admin)/admin` | Collapsible sidebar + breadcrumb bar + dense content. Desktop-first. |
 
 - Shell = `h-dvh overflow-hidden`, only `<main>` scrolls (CLAUDE.md §9).
@@ -259,10 +259,10 @@ Place generic ones in `src/components/shared/` (export from `index.ts`) and doma
 | `BookingTimeline` | Vertical timeline of states with timestamps | customer/provider/admin booking detail |
 | `PriceTag` | `formatPrice()` + optional "starting from / fixed" label | service cards, quotes |
 | `RatingStars` | Display + input; filled stars use `commit` | profiles, reviews |
-| `VerifiedBadge` | "مزود موثّق" with check icon | provider card/profile |
+| `VerifiedBadge` | "Verified provider" with check icon | provider card/profile |
 | `ServiceCard` | Image, title, provider, price, rating, duration | `/services/*` |
 | `ProviderCard` | Photo, name, specialties, rating, jobs count, areas | lists, profile |
-| `QuoteCard` + `QuoteCompareTable` | Price, duration, rating, message, "اقبل العرض" (`commit`) | `/account/requests/[id]` |
+| `QuoteCard` + `QuoteCompareTable` | Price, duration, rating, message, "Accept quote" (`commit`) | `/account/requests/[id]` |
 | `RequestForm` | Description + photo dropzone (compression, limit, progress) + category + address + budget | new request |
 | `PhotoUploader` | `react-dropzone`, compress client-side, per-file progress, retry on weak network | requests, portfolio, disputes, verification |
 | `ChatThread` + `ChatBubble` + `ChatComposer` | Messages with delivery state; inline notice when contact details are blocked (SY-04) | both messages pages |
@@ -278,43 +278,43 @@ Place generic ones in `src/components/shared/` (export from `index.ts`) and doma
 
 ### `StatusBadge` mapping
 
-| State | Arabic label | Variant | Icon |
+| State | Label | Variant | Icon |
 |---|---|---|---|
-| Draft | مسودة | neutral | `FileEdit` |
-| Open | مفتوح | info | `CircleDot` |
-| Quotes received | وصلت عروض | info | `MessageSquareQuote` |
-| Accepted | تم القبول | primary | `Handshake` |
-| Paid / Escrowed | الدفع محجوز | primary | `ShieldCheck` |
-| In progress | قيد التنفيذ | warning | `Wrench` |
-| Completed | مكتمل | success | `CheckCircle2` |
-| Reviewed | تم التقييم | success | `Star` |
-| Closed | مغلق | neutral | `Archive` |
-| Cancelled | ملغي | destructive | `XCircle` |
-| Disputed | نزاع | destructive | `AlertTriangle` |
-| Expired | منتهي | neutral | `Clock` |
+| Draft | Draft | neutral | `FileEdit` |
+| Open | Open | info | `CircleDot` |
+| Quotes received | Quotes received | info | `MessageSquareQuote` |
+| Accepted | Accepted | primary | `Handshake` |
+| Paid / Escrowed | Payment held | primary | `ShieldCheck` |
+| In progress | In progress | warning | `Wrench` |
+| Completed | Completed | success | `CheckCircle2` |
+| Reviewed | Reviewed | success | `Star` |
+| Closed | Closed | neutral | `Archive` |
+| Cancelled | Cancelled | destructive | `XCircle` |
+| Disputed | Dispute | destructive | `AlertTriangle` |
+| Expired | Expired | neutral | `Clock` |
 
-Provider verification: `PENDING` قيد المراجعة (warning) · `ACTIVE` مفعّل (success) · `SUSPENDED` موقوف (destructive) · `REJECTED` مرفوض (destructive).
+Provider verification: `PENDING` Under review (warning) · `ACTIVE` Active (success) · `SUSPENDED` Suspended (destructive) · `REJECTED` Rejected (destructive).
 
 ---
 
-## 9. Content & copy rules (Arabic UI)
+## 9. Content & copy rules
 
-- Simple, everyday Arabic that Egyptians read easily. No stiff formal phrasing, no slang. Short sentences, active voice.
-- **A button says exactly what happens:** "احجز الآن"، "قدّم عرض سعر"، "أكّد إتمام الشغل". Never "إرسال" or "تأكيد" alone. The toast after repeats the same verb ("تم الحجز").
-- **Errors explain the fix, never apologise:** "رقم الموبايل غير صحيح. اكتب 11 رقم يبدأ بـ 01."
-- **Empty states invite one action:** "لسه ما فيش طلبات. اطلب عرض سعر لأول مشروع."
+- Plain, friendly English that non-native readers follow easily. No jargon, no slang. Short sentences, active voice, sentence case.
+- **A button says exactly what happens:** "Book now", "Send a quote", "Confirm the job is done". Never "Submit" or "Confirm" alone. The toast after repeats the same verb ("Booked").
+- **Errors explain the fix, never apologise:** "Invalid mobile number. Enter 11 digits starting with 01."
+- **Empty states invite one action:** "No requests yet. Request a quote for your first project."
 - Use one glossary everywhere:
 
 | Concept | Use | Do not use |
 |---|---|---|
-| Customer | عميل | زبون |
-| Provider | مزود الخدمة | صنايعي (UI), بائع |
-| Request | طلب | |
-| Quote | عرض سعر | |
-| Booking | حجز | |
-| Escrow | مبلغ محجوز | ضمان, أمانة |
-| Payout | سحب الأرباح | |
-| Dispute | نزاع | |
+| Customer | customer | client, buyer |
+| Provider | provider | worker, vendor, seller |
+| Request | request | job post |
+| Quote | quote | bid, offer |
+| Booking | booking | order |
+| Escrow | held payment | escrow, deposit |
+| Payout | payout | withdrawal |
+| Dispute | dispute | complaint |
 
 - Brand name only from `src/constants/site.ts`.
 - No marketing filler in dashboards. Labels name what the user manages, not how the system works.
@@ -334,9 +334,9 @@ Provider verification: `PENDING` قيد المراجعة (warning) · `ACTIVE` �
 
 - Visible focus ring on every interactive element (`ring` token, 2px, offset 2px). Never remove outlines.
 - Full keyboard operation; Base UI handles focus management in overlays. Do not break it with custom wrappers.
-- Every icon-only button has an Arabic `aria-label`. Images have Arabic `alt`. Form errors are announced (`aria-live="polite"`).
+- Every icon-only button has an `aria-label`. Images have `alt` text. Form errors are announced (`aria-live="polite"`).
 - Contrast per §2. Touch targets per §4. Text resizes to 200% without loss.
-- Perf: icons imported by name from `lucide-react`; images via the `next/image` wrapper pattern (CLAUDE.md §9); fonts subset to Arabic + Latin; no component libraries beyond the stack.
+- Perf: icons imported by name from `lucide-react`; images via the `next/image` wrapper pattern (CLAUDE.md §9); fonts subset to Latin; no component libraries beyond the stack.
 
 ---
 
@@ -345,7 +345,7 @@ Provider verification: `PENDING` قيد المراجعة (warning) · `ACTIVE` �
 ```
 src/
 ├── app/globals.css                    # tokens (§2), base layer
-├── app/layout.tsx                     # fonts, dir="rtl", DirectionProvider, providers
+├── app/layout.tsx                     # fonts, lang/dir from constants/site.ts, DirectionProvider, providers
 ├── components/
 │   ├── ui/                            # shadcn primitives (edit only per §5)
 │   ├── shared/                        # PageHeader, EmptyState, StatusBadge, StatCard, ConfirmDialog, DataTable…
@@ -355,7 +355,7 @@ src/
 ├── constants/
 │   ├── status.ts                      # state machine → label/variant/icon (§8)
 │   └── *-nav.ts
-├── utils/format.ts                    # formatPrice, formatDate, formatPhone (Arabic locale, Latin digits)
+├── utils/format.ts                    # formatPrice, formatDate, formatPhone (en-EG locale, Western digits)
 └── app/design-system-preview/page.tsx   # living style guide (below)
 ```
 
@@ -367,14 +367,14 @@ src/
 
 - [ ] No raw hex, `rgb()`, or Tailwind palette colours (`bg-blue-500`) in feature code. Tokens only.
 - [ ] No physical-direction utilities (`ml-`, `pr-`, `left-`, `text-left`…). Logical only.
-- [ ] Directional icons flip under RTL.
+- [ ] Directional icons point the reading direction; layout uses logical utilities only.
 - [ ] Max one `commit` button per screen; `commit` not used for anything else.
-- [ ] No `tracking-*`, `uppercase`, or italics on Arabic text.
+- [ ] No all-caps or decorative `tracking-*` on body copy.
 - [ ] Interactive elements ≥ 44px; body text ≥ 16px.
 - [ ] Every list has empty, loading (skeleton) and error states.
 - [ ] Status shown with icon + label via `StatusBadge`, not colour alone.
-- [ ] Prices via `formatPrice()`; numbers LTR inside RTL text.
-- [ ] No hard-coded Arabic copy that contradicts the glossary (§9).
+- [ ] Prices via `formatPrice()`; ids and phones wrapped in `<Ltr>`.
+- [ ] No copy that contradicts the glossary (§9).
 - [ ] New/changed component appears in `/design-system-preview`.
 - [ ] `npm run lint` and `npm run build` pass.
 
@@ -385,9 +385,9 @@ src/
 **Phase A: Foundation (before any page)**
 1. Confirm shadcn is initialised as base-nova (CLAUDE.md §15); install the components in §5.
 2. Write tokens into `globals.css` (§2); add `commit/success/warning/info` to `@theme inline`.
-3. Load fonts, set `dir="rtl"`, add `DirectionProvider`, set `next-themes` default to `light`.
+3. Load fonts, set `lang`/`dir` from `constants/site.ts`, add `DirectionProvider`, set `next-themes` default to `light`.
 4. Add `commit` Button variant, Button sizes, Badge variants.
-5. Convert all installed `ui/` components to logical utilities; add the RTL grep test (`tests/ui/rtl-classes.test.ts`).
+5. Convert all installed `ui/` components to logical utilities; add the direction grep test (`tests/ui/rtl-classes.test.ts`).
 6. Add `utils/format.ts` and `constants/status.ts`.
 
 **Phase B: Shared & domain components** (§8), shells (§7), then the `/design-system-preview` page showing them all.
@@ -402,7 +402,7 @@ src/
 - Do not create a second token file, a `tailwind.config.js`, or CSS modules for colours.
 - Do not use gradients as decoration, glassmorphism, or glow effects.
 - Do not use emojis as icons. `lucide-react` only.
-- Do not use dark patterns or fake urgency ("باقي ساعة!") in copy.
+- Do not use dark patterns or fake urgency ("Only 1 hour left!") in copy.
 - Do not build screens just for a visual preview that are not in `SITEMAP.md`.
 
 ---
@@ -413,7 +413,7 @@ src/
 |---|---|---|
 | 1 | Default theme | **Light** (overrides CLAUDE.md's dark default); dark supported |
 | 2 | Digits | Western (0-9). Switch to Arabic-Indic only by changing `formatPrice`/`format.ts` |
-| 3 | Fonts | Readex Pro (headings) + IBM Plex Sans Arabic (body); confirm after seeing them in the style guide |
+| 3 | Fonts | Readex Pro (headings) + IBM Plex Sans (body); confirm after seeing them in the style guide |
 | 4 | Brand colours | Petrol `#0F5C5A` + marker-amber `#F2B01E`; replace if a logo/brand identity already exists |
 | 5 | Logo & brand name | Placeholder from `constants/site.ts` |
 | 6 | Mobile navigation | Bottom tab bar for customer/provider; revise if usability testing says otherwise |

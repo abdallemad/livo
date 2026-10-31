@@ -44,12 +44,12 @@ export function ProviderCard({ provider }: { provider: ProviderCardData }) {
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
         <RatingStars value={provider.rating} count={provider.reviewsCount} />
         <span>
-          <span className="tabular-nums">{formatNumber(provider.jobsCount)}</span> شغلانة مكتملة
+          <span className="tabular-nums">{formatNumber(provider.jobsCount)}</span> completed job
         </span>
       </div>
       <p className="flex items-center gap-1 text-sm text-muted-foreground">
         <MapPin className="size-4 shrink-0" aria-hidden />
-        {provider.areas.join("، ")}
+        {provider.areas.join(", ")}
       </p>
     </Card>
   )

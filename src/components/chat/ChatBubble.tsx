@@ -12,9 +12,9 @@ interface ChatBubbleProps {
 }
 
 const STATE_ICON = { sending: Clock, sent: Check, read: CheckCheck } as const
-const STATE_LABEL = { sending: "جارٍ الإرسال", sent: "اتبعتت", read: "اتقرت" } as const
+const STATE_LABEL = { sending: "Sending", sent: "Sent", read: "Read" } as const
 
-/** One chat message. "Mine" sits at the start side (right in RTL). */
+/** One chat message. "Mine" sits at the start side (left in LTR). */
 export function ChatBubble({ body, at, mine = false, state = "sent" }: ChatBubbleProps) {
   const Icon = STATE_ICON[state]
   return (
@@ -40,7 +40,7 @@ export function ChatBlockedNotice() {
   return (
     <p role="status" className="mx-auto flex max-w-prose items-center gap-2 rounded-md bg-warning/10 px-3 py-2 text-sm text-warning">
       <ShieldAlert className="size-4 shrink-0" aria-hidden />
-      ممنوع تبادل أرقام التليفون أو الإيميل قبل تأكيد الحجز. الرسالة ما اتبعتتش.
+      Sharing phone numbers or emails is not allowed before the booking is confirmed. The message wasn’t sent.
     </p>
   )
 }

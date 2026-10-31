@@ -20,7 +20,7 @@ export function RatingStars({ value, count, size = "sm", className }: RatingStar
   const rounded = Math.round(value)
   return (
     <span className={cn("inline-flex items-center gap-1.5", className)}>
-      <span className="inline-flex gap-0.5" role="img" aria-label={`التقييم ${formatNumber(value)} من 5`}>
+      <span className="inline-flex gap-0.5" role="img" aria-label={`Rating ${formatNumber(value)} out of 5`}>
         {[1, 2, 3, 4, 5].map((n) => (
           <Star
             key={n}
@@ -44,7 +44,7 @@ interface RatingInputProps {
   className?: string
 }
 
-const LABELS = ["سيئ", "مقبول", "كويس", "كويس جدًا", "ممتاز"]
+const LABELS = ["Poor", "Fair", "Good", "Very good", "Excellent"]
 
 /** Star input for review forms: radio semantics, 44px targets, keyboard friendly. */
 export function RatingInput({ value, onChange, name = "rating", className }: RatingInputProps) {
@@ -52,7 +52,7 @@ export function RatingInput({ value, onChange, name = "rating", className }: Rat
   const shown = hover || value
   return (
     <fieldset className={cn("flex flex-col gap-1", className)}>
-      <legend className="sr-only">التقييم</legend>
+      <legend className="sr-only">Rating</legend>
       <div className="flex" onMouseLeave={() => setHover(0)}>
         {[1, 2, 3, 4, 5].map((n) => (
           <label
@@ -74,7 +74,7 @@ export function RatingInput({ value, onChange, name = "rating", className }: Rat
         ))}
       </div>
       <span className="min-h-6 text-sm text-muted-foreground" aria-live="polite">
-        {shown ? LABELS[shown - 1] : "اختار عدد النجوم"}
+        {shown ? LABELS[shown - 1] : "Choose a star rating"}
       </span>
     </fieldset>
   )

@@ -35,11 +35,11 @@ export function ThemePair({ children }: { children: React.ReactNode }) {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <div className="light rounded-lg border bg-background p-4 text-foreground">
-        <p className="mb-3 text-sm text-muted-foreground">فاتح</p>
+        <p className="mb-3 text-sm text-muted-foreground">Light</p>
         {children}
       </div>
       <div className="dark rounded-lg border bg-background p-4 text-foreground">
-        <p className="mb-3 text-sm text-muted-foreground">داكن</p>
+        <p className="mb-3 text-sm text-muted-foreground">Dark</p>
         {children}
       </div>
     </div>

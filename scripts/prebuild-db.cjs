@@ -12,11 +12,13 @@ const path = require("node:path")
 const fs = require("node:fs")
 
 // Order matters. Append new files; never edit or remove applied ones.
-const migrationFiles = ["2026-10-31-init.sql"]
+// (2026-10-31-init.sql was replaced by the baseline pre-launch; it never reached a real database.)
+const migrationFiles = ["2026-11-01-schema-baseline.sql", "2026-11-01-onboarding.sql"]
 
+// Neon names the pooled endpoint `ep-xxx-pooler.<region>…` and the direct one `ep-xxx.<region>…`.
 function dbIdentity(raw) {
   const url = new URL(raw)
-  return `${url.hostname.replace(/^[^.]*pooler\./, "")}/${url.pathname.replace(/^\//, "")}`
+  return `${url.hostname.replace(/^([^.]*)-pooler\./, "$1.")}/${url.pathname.replace(/^\//, "")}`
 }
 
 function schemaUrl() {
@@ -47,15 +49,19 @@ function main() {
     return
   }
 
-  const prismaBin = path.join(__dirname, "..", "node_modules", ".bin", process.platform === "win32" ? "prisma.cmd" : "prisma")
+  // Run the CLI's JS entry with node, never through a shell: on Windows `prisma.cmd` needs
+  // `shell: true`, and cmd.exe splits the URL at `&` (e.g. `?sslmode=require&channel_binding=…`).
+  const prismaCli = path.join(__dirname, "..", "node_modules", "prisma", "build", "index.js")
   for (const file of migrationFiles) {
     const fullPath = path.join(__dirname, "..", "prisma", "sql", file)
     if (!fs.existsSync(fullPath)) throw new Error(`[prebuild-db] missing migration ${file}`)
     console.log(`[prebuild-db] applying ${file}`)
-    execFileSync(prismaBin, ["db", "execute", "--file", fullPath, "--url", url], {
-      stdio: "inherit",
-      shell: process.platform === "win32",
-    })
+    try {
+      execFileSync(process.execPath, [prismaCli, "db", "execute", "--file", fullPath, "--url", url], { stdio: "inherit" })
+    } catch {
+      // The default error repeats the argv, which contains the DB password.
+      throw new Error(`[prebuild-db] ${file} failed (see the Prisma output above).`)
+    }
   }
 }
 

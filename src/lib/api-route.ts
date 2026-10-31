@@ -70,3 +70,33 @@ export async function parseParams<S extends ZodType>(
   if (!parsed.success) throw validationError(parsed.error)
   return parsed.data
 }
+
+const MULTIPART_OVERHEAD_BYTES = 64 * 1024
+
+/**
+ * Reads one uploaded file (+ its text fields) from a `multipart/form-data`
+ * request. Rejects oversized bodies before buffering them; type/size of the
+ * file itself is validated by magic bytes in the service (CLAUDE.md §7).
+ */
+export async function parseUpload(request: Request, maxBytes: number) {
+  // The body also carries the multipart boundaries and text fields, so allow a little over the file limit.
+  const length = Number(request.headers.get("content-length") ?? 0)
+  if (length > maxBytes + MULTIPART_OVERHEAD_BYTES) {
+    throw new ValidationError("The file is too large.", { file: [`The maximum size is ${Math.round(maxBytes / 1024 / 1024)} MB.`] })
+  }
+  let form: FormData
+  try {
+    form = await request.formData()
+  } catch {
+    throw new ValidationError("Request body must be multipart/form-data.")
+  }
+  const file = form.get("file")
+  if (!(file instanceof Blob) || file.size === 0) {
+    throw new ValidationError("Choose a file.", { file: ["Choose a file to upload."] })
+  }
+  if (file.size > maxBytes) {
+    throw new ValidationError("The file is too large.", { file: [`The maximum size is ${Math.round(maxBytes / 1024 / 1024)} MB.`] })
+  }
+  const fields = Object.fromEntries([...form.entries()].filter(([, v]) => typeof v === "string")) as Record<string, string>
+  return { file, fields }
+}

@@ -12,12 +12,12 @@ export function MobileMenu() {
   const [open, setOpen] = useState(false)
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger render={<Button size="icon" variant="ghost" className="md:hidden" aria-label="القائمة" />}>
+      <SheetTrigger render={<Button size="icon" variant="ghost" className="md:hidden" aria-label="Menu" />}>
         <Menu />
       </SheetTrigger>
       <SheetContent side="left" className="w-72">
         <SheetHeader>
-          <SheetTitle>القائمة</SheetTitle>
+          <SheetTitle>Menu</SheetTitle>
         </SheetHeader>
         <nav className="flex flex-col px-2">
           {MARKETING_NAV.map((item) => (

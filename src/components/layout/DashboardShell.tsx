@@ -31,7 +31,7 @@ interface DashboardShellProps {
 /**
  * Sidebar shell for `/account`, `/provider` and `/admin` (docs/DESIGN-SYSTEM.md §7).
  * `h-dvh overflow-hidden`; only the content column scrolls. Sidebar sits at the
- * inline START (right in RTL); on mobile it becomes a sheet and the bottom tab
+ * inline START (left in LTR); on mobile it becomes a sheet and the bottom tab
  * bar carries the main destinations. Static: reads nothing from the request —
  * active state, breadcrumb and account controls are client islands.
  */
@@ -54,7 +54,7 @@ export function DashboardShell({ zone, density = "touch", banner, children }: Da
         </SidebarContent>
         <SidebarFooter className="border-t border-sidebar-border group-data-[collapsible=icon]:hidden">
           <Link href="/" className="px-2 py-1 text-sm text-muted-foreground hover:text-foreground">
-            الموقع الرئيسي
+            Main site
           </Link>
         </SidebarFooter>
         {density === "dense" ? <SidebarRail /> : null}

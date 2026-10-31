@@ -108,7 +108,7 @@ function BreadcrumbEllipsis({
       {...props}
     >
       <MoreHorizontalIcon />
-      <span className="sr-only">المزيد</span>
+      <span className="sr-only">More</span>
     </span>
   )
 }

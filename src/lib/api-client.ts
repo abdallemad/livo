@@ -69,3 +69,33 @@ export const api = {
   patch: <T,>(path: string, body?: unknown) => apiFetch<T>(path, { method: "PATCH", body }),
   delete: <T,>(path: string) => apiFetch<T>(path, { method: "DELETE" }),
 }
+
+/**
+ * Multipart upload with progress (NF-08: weak connections need a visible bar).
+ * `fetch` can't report upload progress, so this uses XHR, then unwraps the
+ * same `ApiResponse` envelope and throws the same `ApiError`.
+ */
+export function apiUpload<T>(path: string, form: FormData, onProgress?: (fraction: number) => void): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    xhr.open("POST", path)
+    xhr.withCredentials = true
+    xhr.setRequestHeader("accept", "application/json")
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) onProgress?.(event.loaded / event.total)
+    }
+    xhr.onerror = () => reject(new ApiError("Weak connection. Try again.", 0, "NETWORK"))
+    xhr.onload = () => {
+      let payload: ApiResponse<T> | undefined
+      try {
+        payload = JSON.parse(xhr.responseText) as ApiResponse<T>
+      } catch {
+        payload = undefined
+      }
+      if (!payload) return reject(new ApiError("Unexpected response from the server.", xhr.status, "INVALID_RESPONSE"))
+      if (!payload.success) return reject(new ApiError(payload.error, xhr.status, payload.code, payload.fieldErrors))
+      resolve(payload.data)
+    }
+    xhr.send(form)
+  })
+}

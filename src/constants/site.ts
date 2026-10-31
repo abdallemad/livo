@@ -3,12 +3,12 @@
  * everything else imports from here (CLAUDE.md §9).
  */
 export const SITE_NAME = "Livo"
-export const SITE_TITLE = "Livo — خدمات منزلية وبناء موثوقة"
+export const SITE_TITLE = "Livo — Trusted home services and construction"
 export const SITE_DESCRIPTION =
-  "اطلب خدمات الصيانة والتشطيب والبناء من مزودين موثّقين، قارن العروض، وادفع بأمان."
-export const SITE_LOCALE = "ar_EG"
-export const SITE_LANG = "ar"
-export const SITE_DIR = "rtl"
+  "Book maintenance, finishing, and construction services from verified providers, compare quotes, and pay safely."
+export const SITE_LOCALE = "en_US"
+export const SITE_LANG = "en"
+export const SITE_DIR = "ltr"
 export const SITE_LOGO = "/logo.svg"
 
 /** Spread into any page-level `openGraph` — a page's object REPLACES the root's. */

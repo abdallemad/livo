@@ -11,7 +11,7 @@ export interface ServiceCardData {
   priceKind?: "fixed" | "from"
   rating?: number
   reviewsCount?: number
-  /** Pre-formatted duration, e.g. "ساعتين". */
+  /** Pre-formatted duration, e.g. "2 hours". */
   duration?: string
   imageUrl?: string
 }

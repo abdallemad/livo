@@ -10,7 +10,7 @@ import { getCurrentUser } from "@/services/auth.service"
  * bar + dense content, desktop-first (DESIGN-SYSTEM.md §7).
  */
 export const metadata: Metadata = {
-  title: { default: "لوحة الإدارة", template: "%s | لوحة الإدارة" },
+  title: { default: "Admin dashboard", template: "%s | Admin dashboard" },
   robots: { index: false, follow: false },
 }
 

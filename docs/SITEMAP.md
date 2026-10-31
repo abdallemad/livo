@@ -5,7 +5,7 @@
 > **Before creating any route, check it is listed here.** If a page is not listed, do not invent it. Ask, or add it here first.
 > When you add/remove a page, update this file in the same change.
 
-- Language: **Arabic, RTL** (`<html lang="ar" dir="rtl">`). All UI copy in Arabic. Route paths stay English.
+- Language: **English, LTR** (`<html lang="en" dir="ltr">`). All UI copy in English. The full page map with titles is in §2–§5 and `docs/page-map.md`.
 - Currency: EGP. Launch scope: one city, 3–5 service categories.
 - Requirement IDs (e.g. `CU-02`) refer to `srs.md`.
 
@@ -63,7 +63,7 @@ Static/ISR, indexed, in `sitemap.ts`. Layouts read nothing from the request.
 | `/sign-in/[[...sign-in]]` | Phone + OTP sign-in | AU-01, AU-02 |
 | `/sign-up/[[...sign-up]]` | Phone + OTP sign-up | AU-01 |
 | `/auth-callback` | Sync Clerk user → DB, then route by role | CLAUDE.md §5 |
-| `/onboarding` | First sign-in: choose Customer or Provider, then redirect | AU-03 |
+| `/onboarding` | Post-signup wizard in `src/app/(onboarding)/onboarding/`: role, basic info, then the customer or provider path ([onboarding-feature.md](onboarding-feature.md)). Unfinished users are sent here from `/account*` and `/provider*`; finished users are sent away | AU-03, PR-01, PR-02, PR-05 |
 
 > Open point: SRS says phone + OTP. CLAUDE.md assumes Clerk. Verify Clerk phone-OTP availability/cost for Egypt before locking this in.
 
@@ -102,7 +102,7 @@ All `noindex`. Gate by verification status (see §1).
 
 | Route | Page | Purpose | Req |
 |---|---|---|---|
-| `/provider/onboarding` | Complete profile | specialty, experience, categories, coverage areas | PR-01 |
+| `/provider/onboarding` | Complete profile — **superseded by `/onboarding`**, retire this placeholder | specialty, experience, categories, coverage areas | PR-01 |
 | `/provider/verification` | Verification | Upload ID/photo/certificates + status: `PENDING` / `ACTIVE` / `SUSPENDED` / `REJECTED` (with reason) | PR-02, PR-03 |
 | `/provider` | Dashboard | New matching requests, today's bookings, month earnings, simple stats | PR-14 |
 | `/provider/services` | My fixed-price services | List | PR-05 |
@@ -193,7 +193,7 @@ Exceptions: Cancelled · Disputed · Expired
 ## 8. Cross-cutting page rules
 
 1. **Contact masking (SY-04 / BR-02):** no phone/email shown to the other party in any page or chat message before booking confirmation.
-2. **Empty, loading, and error states** are required for every list/detail page (RTL, Arabic copy, weak-connection friendly: NF-08).
+2. **Empty, loading, and error states** are required for every list/detail page (English copy, weak-connection friendly: NF-08).
 3. **Providers are mostly non-technical:** keep provider screens minimal, large tap targets, few steps (NF-06).
 4. **Every private page** exports `robots: { index: false, follow: false }`; `/admin` returns 404 to non-admins.
 5. **Public pages** need `generateMetadata`, canonical, breadcrumbs + JSON-LD (`Service`, `BreadcrumbList`, `Organization`) and must appear in `sitemap.ts`. Private routes must not.
@@ -205,7 +205,7 @@ Exceptions: Cancelled · Disputed · Expired
 
 ## 9. Suggested build order
 
-1. **Foundation:** infra files, layers, providers, RTL root layout, auth + `/onboarding`, `proxy.ts` zone gates.
+1. **Foundation:** infra files, layers, providers, root layout, auth + `/onboarding`, `proxy.ts` zone gates.
 2. **Admin core:** categories CRUD → provider review queue. (Without categories and active providers there is nothing to browse.)
 3. **Provider:** onboarding → verification → services (fixed-price) → portfolio.
 4. **Public site:** home, categories, service detail, provider profile, static pages, sitemap/robots/SEO.

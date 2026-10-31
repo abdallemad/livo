@@ -1,6 +1,6 @@
 # Livo
 
-Home-services & construction marketplace (customers ↔ verified providers). Arabic, RTL-first.
+Home-services & construction marketplace (customers ↔ verified providers). English UI, left-to-right.
 Requirements: [`docs/srs.md`](docs/srs.md). Architecture rules: [`CLAUDE.md`](CLAUDE.md).
 
 ## Getting started

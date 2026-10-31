@@ -10,8 +10,9 @@
 > deprecation notices. Do not rely on memory of Next 13–15.
 >
 > **This project: Livo.** A two-sided home-services & construction marketplace (Egypt, one city
-> at launch). Roles `CUSTOMER`, `PROVIDER`, `ADMIN`. UI is **Arabic, RTL-first** (`<html lang="ar" dir="rtl">`,
-> shadcn `rtl: true`, IBM Plex Sans Arabic), currency **EGP**. Product requirements live in
+> at launch). Roles `CUSTOMER`, `PROVIDER`, `ADMIN`. UI is **English, LTR** (`<html lang="en" dir="ltr">`,
+> shadcn `rtl: false`, IBM Plex Sans + Readex Pro), currency **EGP**. Layout code still uses logical utilities only
+> (`ms-`/`pe-`/`start-`), so switching back to RTL is a `src/constants/site.ts` change plus copy. Product requirements live in
 > `docs/srs.md` and `docs/business-analysis (1).md`.
 >
 > **API routes, NOT Server Actions.** Unlike the source template, Livo does **not** use Server

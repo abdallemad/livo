@@ -246,6 +246,7 @@ async function deleteMockData(tx: Tx) {
   await tx.address.deleteMany({ where: mine })
   await tx.providerProfile.deleteMany({ where: { userId: { startsWith: PREFIX } } })
   await tx.customerProfile.deleteMany({ where: { userId: { startsWith: PREFIX } } })
+  await tx.customerInterest.deleteMany({ where: { userId: { startsWith: PREFIX } } })
   await tx.user.deleteMany({ where: mine })
 }
 
@@ -468,9 +469,17 @@ async function seedMockData(tx: Tx) {
   const providerId = (k: string) => id("user", `provider_${k}`)
 
   // --- Users ------------------------------------------------------------------
+  // Everyone finished onboarding on sign-up day, except provider 9 (DRAFT), who
+  // picked a role but left the wizard: the resume case (docs/onboarding-feature.md).
+  const onboarded = (createdAt: Date, completed = true) => ({
+    createdAt,
+    cityId: cairo.id,
+    roleSelectedAt: createdAt,
+    onboardingCompletedAt: completed ? createdAt : null,
+  })
   let phoneN = 2
   await tx.user.create({
-    data: { id: adminId, name: ADMIN.name, phone: ADMIN.phone, email: ADMIN.email, role: "ADMIN", createdAt: at(-120) },
+    data: { id: adminId, name: ADMIN.name, phone: ADMIN.phone, email: ADMIN.email, role: "ADMIN", ...onboarded(at(-120)) },
   })
   for (const c of CUSTOMERS) {
     await tx.user.create({
@@ -480,7 +489,7 @@ async function seedMockData(tx: Tx) {
         phone: phone(phoneN++),
         role: "CUSTOMER",
         status: c.suspended ? "SUSPENDED" : "ACTIVE",
-        createdAt: at(-90 + Number(c.key) * 5),
+        ...onboarded(at(-90 + Number(c.key) * 5)),
         customerProfile: { create: {} },
       },
     })
@@ -510,13 +519,30 @@ async function seedMockData(tx: Tx) {
       details: "عمارة 18، الدور الخامس، مكتب 502",
     },
   })
+  // The optional onboarding "interests" step; the other customers skipped it.
+  const interests: Record<string, string[]> = {
+    "1": ["finishing", "ac"],
+    "2": ["electrical", "cleaning", "finishing-painting"],
+    "3": ["plumbing"],
+  }
+  for (const [k, slugs] of Object.entries(interests)) {
+    await tx.customerInterest.createMany({
+      data: slugs.map((slug) => ({ userId: customerId(k), categoryId: category(slug).id })),
+    })
+  }
 
   // --- Providers --------------------------------------------------------------
   for (const p of PROVIDERS) {
     const uid = providerId(p.key)
     const reviewed = p.status === "APPROVED" || p.status === "REJECTED" || p.status === "SUSPENDED"
     await tx.user.create({
-      data: { id: uid, name: p.name, phone: phone(phoneN++), role: "PROVIDER", createdAt: at(-100 + Number(p.key) * 4) },
+      data: {
+        id: uid,
+        name: p.name,
+        phone: phone(phoneN++),
+        role: "PROVIDER",
+        ...onboarded(at(-100 + Number(p.key) * 4), p.status !== "DRAFT"),
+      },
     })
     await tx.providerProfile.create({
       data: {
@@ -731,8 +757,8 @@ async function seedMockData(tx: Tx) {
         scheduledAt: scheduled,
         addressSnapshot: {
           label: "البيت",
-          city: cairo.nameAr,
-          area: a.nameAr,
+          city: cairo.nameEn,
+          area: a.nameEn,
           street: customer.street,
           details: customer.details,
         },

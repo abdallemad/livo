@@ -63,7 +63,7 @@ Static/ISR, indexed, in `sitemap.ts`. Layouts read nothing from the request.
 | `/sign-in/[[...sign-in]]` | Phone + OTP sign-in | AU-01, AU-02 |
 | `/sign-up/[[...sign-up]]` | Phone + OTP sign-up | AU-01 |
 | `/auth-callback` | Sync Clerk user → DB, then route by role | CLAUDE.md §5 |
-| `/onboarding` | First sign-in: choose Customer or Provider, then redirect | AU-03 |
+| `/onboarding` | Post-signup wizard in `src/app/(onboarding)/onboarding/`: role, basic info, then the customer or provider path ([onboarding-feature.md](onboarding-feature.md)). Unfinished users are sent here from `/account*` and `/provider*`; finished users are sent away | AU-03, PR-01, PR-02, PR-05 |
 
 > Open point: SRS says phone + OTP. CLAUDE.md assumes Clerk. Verify Clerk phone-OTP availability/cost for Egypt before locking this in.
 
@@ -102,7 +102,7 @@ All `noindex`. Gate by verification status (see §1).
 
 | Route | Page | Purpose | Req |
 |---|---|---|---|
-| `/provider/onboarding` | Complete profile | specialty, experience, categories, coverage areas | PR-01 |
+| `/provider/onboarding` | Complete profile — **superseded by `/onboarding`**, retire this placeholder | specialty, experience, categories, coverage areas | PR-01 |
 | `/provider/verification` | Verification | Upload ID/photo/certificates + status: `PENDING` / `ACTIVE` / `SUSPENDED` / `REJECTED` (with reason) | PR-02, PR-03 |
 | `/provider` | Dashboard | New matching requests, today's bookings, month earnings, simple stats | PR-14 |
 | `/provider/services` | My fixed-price services | List | PR-05 |

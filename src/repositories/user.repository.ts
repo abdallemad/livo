@@ -8,8 +8,9 @@ class UserRepository {
     return db.user.findUnique({ where: { id } })
   }
 
-  findRoleById(id: string) {
-    return db.user.findUnique({ where: { id }, select: { role: true } })
+  /** The two fields the proxy needs on every gated request; kept to one indexed lookup. */
+  findGateById(id: string) {
+    return db.user.findUnique({ where: { id }, select: { role: true, onboardingCompletedAt: true } })
   }
 
   create(data: Prisma.UserCreateInput) {

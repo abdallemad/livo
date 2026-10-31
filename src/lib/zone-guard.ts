@@ -1,7 +1,7 @@
 import "server-only"
 import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation"
-import { getRoleById } from "@/services/auth.service"
+import { getGateById } from "@/services/auth.service"
 import { getZoneRedirect, type PrivateZone } from "@/utils/zone-access"
 
 /**
@@ -12,7 +12,11 @@ import { getZoneRedirect, type PrivateZone } from "@/utils/zone-access"
  */
 export async function requireZone(zone: PrivateZone): Promise<void> {
   const { userId } = await auth()
-  const role = userId ? await getRoleById(userId) : null
-  const target = getZoneRedirect(zone, { signedIn: !!userId, role })
+  const gate = userId ? await getGateById(userId) : null
+  const target = getZoneRedirect(zone, {
+    signedIn: !!userId,
+    role: gate?.role ?? null,
+    onboardingCompleted: gate?.onboardingCompleted ?? false,
+  })
   if (target) redirect(target)
 }

@@ -36,7 +36,12 @@ export function AccountControls() {
     )
   }
 
-  const dashboard = viewer ? DASHBOARD_BY_ROLE[viewer.role] : null
+  // Unfinished onboarding: the only useful place to go is back into the wizard.
+  const dashboard = viewer
+    ? viewer.onboardingCompleted
+      ? DASHBOARD_BY_ROLE[viewer.role]
+      : { href: "/onboarding", label: "كمّل تسجيلك" }
+    : null
 
   return (
     <div className="flex h-11 w-28 items-center justify-end gap-1">

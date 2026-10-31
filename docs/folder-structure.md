@@ -6,7 +6,7 @@ The authoritative rules are in `CLAUDE.md` §2–§3; this is the map of what ex
 prisma/              schema.prisma, seed.ts, sql/ (dated idempotent migrations: 2026-11-01-schema-baseline, 2026-11-01-onboarding)
 scripts/             prebuild-db.cjs, build-with-deployment-id.mjs, prepare-standalone.mjs,
                      deployment-id.mjs, warm-cache.mjs, archive/ (one-offs)
-tests/               node:test suites — api/, utils/, ui/ (RTL class guard), prelaunch/ + alias loader
+tests/               node:test suites — api/, utils/, ui/ (RTL class guard), onboarding/, prelaunch/ + alias loader
 docs/                SITEMAP.md, DESIGN-SYSTEM.md, srs.md, business-analysis, api-conventions.md, tech-stack.md, onboarding-feature.md, releases/
 src/
   proxy.ts           Clerk + CSRF guard + /admin 404 gate + /account & /provider role redirects
@@ -18,8 +18,9 @@ src/
     (provider)/provider/ provider sidebar shell (SITEMAP §4)   — dynamic, noindex
     (admin)/admin/   admin dashboard shell (SITEMAP §5)        — dynamic, noindex, 404 gate
     design-system-preview/ living style guide (dev; admin-only in prod)
-    sign-in/ sign-up/ auth-callback/ onboarding/
-    api/             me/, auth/sync/, health/, webhooks/ — every server endpoint
+    (onboarding)/onboarding/ post-signup wizard (minimal static layout, noindex)
+    sign-in/ sign-up/ auth-callback/
+    api/             me/, auth/sync/, onboarding/, health/, webhooks/ — every server endpoint
     robots.ts sitemap.ts not-found.tsx
   components/
     ui/              shadcn (base-nova, Base UI)
@@ -27,6 +28,7 @@ src/
                      Stepper, ConfirmDialog, PagePlaceholder… (+ index.ts)
     layout/          AppHeader, AppFooter, MobileMenu, DashboardShell (+ nav, breadcrumb, bottom tabs),
                      AccountControls, ThemeToggle
+    onboarding/      wizard, steps, RoleCard, FirstServiceForm, ServicePreviewCard, ImageUploader, SuccessScreen
     service/ provider/ request/ chat/   domain components (ServiceCard, ProviderCard, QuoteCard, ChatBubble…)
     design-system/   style-guide sections
     providers/       query-provider, theme-provider

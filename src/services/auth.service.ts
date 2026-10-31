@@ -12,7 +12,14 @@ import type { ViewerDto } from "@/types/user"
  * comes from the Clerk session, never from the request body (CLAUDE.md §5).
  */
 
-const toViewer = (user: Pick<User, "id" | "role">): ViewerDto => ({ id: user.id, role: user.role })
+const isOnboarded = (user: Pick<User, "role" | "onboardingCompletedAt">) =>
+  user.role === "ADMIN" || user.onboardingCompletedAt !== null
+
+const toViewer = (user: Pick<User, "id" | "role" | "onboardingCompletedAt">): ViewerDto => ({
+  id: user.id,
+  role: user.role,
+  onboardingCompleted: isOnboarded(user),
+})
 
 export async function getCurrentUser(): Promise<User | null> {
   const { userId } = await auth()
@@ -35,10 +42,15 @@ export async function requireRole(...roles: Role[]): Promise<User> {
 export const requireAdmin = () => requireRole("ADMIN")
 export const requireProvider = () => requireRole("PROVIDER", "ADMIN")
 
-/** Used by `src/proxy.ts` to gate `/admin` before anything renders. */
-export async function getRoleById(userId: string): Promise<Role | null> {
-  const row = await userRepository.findRoleById(userId)
-  return row?.role ?? null
+export interface GateInfo {
+  role: Role
+  onboardingCompleted: boolean
+}
+
+/** Used by `src/proxy.ts` and the zone layouts to gate pages before anything renders. */
+export async function getGateById(userId: string): Promise<GateInfo | null> {
+  const row = await userRepository.findGateById(userId)
+  return row ? { role: row.role, onboardingCompleted: isOnboarded(row) } : null
 }
 
 export async function getViewer(): Promise<ViewerDto | null> {

@@ -1,7 +1,7 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server"
 import { NextResponse } from "next/server"
 import { isCrossSiteApiWrite } from "@/lib/api-guard"
-import { getRoleById } from "@/services/auth.service"
+import { getGateById } from "@/services/auth.service"
 import { apiFailure } from "@/types/api"
 import { getZoneRedirect, zoneFromPath } from "@/utils/zone-access"
 
@@ -12,8 +12,9 @@ import { getZoneRedirect, zoneFromPath } from "@/utils/zone-access"
  * 2. `/admin*` and `/api/admin/*`: non-admins get a 404 — never confirm the
  *    dashboard exists. Route handlers still call `requireAdmin()`; this is
  *    one of three independent layers (CLAUDE.md §5).
- * 3. `/account*` and `/provider*`: redirect by role (docs/SITEMAP.md §1,
- *    rule shared with the zone layouts in `utils/zone-access.ts`).
+ * 3. `/account*`, `/provider*`, `/onboarding`: redirect by role and
+ *    onboarding status (docs/SITEMAP.md §1, docs/onboarding-feature.md; rule
+ *    shared with the zone layouts in `utils/zone-access.ts`).
  * 4. `?page=1` on public listings → 301 to the clean URL.
  * 5. `/search?…` → `X-Robots-Tag: noindex, follow` (CLAUDE.md §4.1 rule 7).
  *
@@ -42,8 +43,8 @@ export default clerkMiddleware(async (auth, request) => {
 
   if (isAdminPage(request) || isAdminApi(request)) {
     const { userId } = await auth()
-    const role = userId ? await getRoleById(userId) : null
-    if (role !== "ADMIN") {
+    const gate = userId ? await getGateById(userId) : null
+    if (gate?.role !== "ADMIN") {
       if (isAdminApi(request)) {
         return NextResponse.json(apiFailure("Not found.", "NOT_FOUND"), { status: 404 })
       }
@@ -54,8 +55,12 @@ export default clerkMiddleware(async (auth, request) => {
   const zone = zoneFromPath(pathname)
   if (zone) {
     const { userId } = await auth()
-    const role = userId ? await getRoleById(userId) : null
-    const target = getZoneRedirect(zone, { signedIn: !!userId, role }, pathname)
+    const gate = userId ? await getGateById(userId) : null
+    const target = getZoneRedirect(
+      zone,
+      { signedIn: !!userId, role: gate?.role ?? null, onboardingCompleted: gate?.onboardingCompleted ?? false },
+      pathname
+    )
     if (target) return NextResponse.redirect(new URL(target, request.url))
   }
 

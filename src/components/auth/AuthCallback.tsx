@@ -6,11 +6,12 @@ import { useAuth } from "@clerk/nextjs"
 import { Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useSyncUser } from "@/hooks/use-viewer"
-import type { Role } from "@prisma/client"
+import { homeFor } from "@/utils/onboarding-state"
 
-/** After sign-in, each role lands on its own dashboard (docs/SITEMAP.md §1). */
-const HOME_BY_ROLE: Record<Role, string> = { CUSTOMER: "/account", PROVIDER: "/provider", ADMIN: "/admin" }
-
+/**
+ * After sign-in/up: create the DB user once, then send unfinished users into
+ * the onboarding wizard and finished ones to their dashboard (homeFor).
+ */
 export function AuthCallback() {
   const router = useRouter()
   const { isLoaded, isSignedIn } = useAuth()
@@ -25,7 +26,7 @@ export function AuthCallback() {
     }
     if (started.current) return
     started.current = true
-    mutate({}, { onSuccess: (viewer) => router.replace(HOME_BY_ROLE[viewer.role]) })
+    mutate({}, { onSuccess: (viewer) => router.replace(homeFor(viewer)) })
   }, [isLoaded, isSignedIn, mutate, router])
 
   if (isError) {
@@ -34,7 +35,7 @@ export function AuthCallback() {
         <p className="text-sm text-destructive">{error.message}</p>
         <Button
           variant="outline"
-          onClick={() => mutate({}, { onSuccess: (viewer) => router.replace(HOME_BY_ROLE[viewer.role]) })}
+          onClick={() => mutate({}, { onSuccess: (viewer) => router.replace(homeFor(viewer)) })}
         >
           حاول مرة أخرى
         </Button>

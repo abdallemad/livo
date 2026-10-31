@@ -17,6 +17,9 @@ Component → hook (TanStack Query) → api-client → /api/... route.ts → ser
 | `/api/<feature>` | public reads / customer writes | per route |
 | `/api/provider/<feature>` | providers (and admins) | `requireProvider()` |
 | `/api/admin/<feature>` | admins only | proxy 404 + `requireAdmin()` |
+
+Admin endpoints today: `GET /api/admin/dashboard`, `PATCH /api/admin/providers/[id]/status`,
+`PATCH /api/admin/disputes/[id]/status` (see `docs/admin-dashboard-feature.md`).
 | `/api/webhooks/<provider>` | payment gateway etc. | signature over raw body |
 
 Collections: `GET` (list, paginated via `?page&perPage`) and `POST` (create) in `route.ts`.

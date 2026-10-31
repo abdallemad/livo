@@ -21,4 +21,9 @@ export const API_ROUTES = {
     submit: "/api/onboarding/submit",
     file: (id: string) => `/api/onboarding/files/${encodeURIComponent(id)}`,
   },
+  admin: {
+    dashboard: "/api/admin/dashboard",
+    providerStatus: (id: string) => `/api/admin/providers/${encodeURIComponent(id)}/status`,
+    disputeStatus: (id: string) => `/api/admin/disputes/${encodeURIComponent(id)}/status`,
+  },
 } as const

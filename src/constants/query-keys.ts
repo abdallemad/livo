@@ -12,3 +12,8 @@ export const onboardingKeys = {
   all: ["onboarding"] as const,
   state: () => [...onboardingKeys.all, "state"] as const,
 }
+
+export const adminKeys = {
+  all: ["admin"] as const,
+  dashboard: () => [...adminKeys.all, "dashboard"] as const,
+}

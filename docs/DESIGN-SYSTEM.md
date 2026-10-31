@@ -21,7 +21,7 @@
 
 **Personality:** calm, sober, dependable, closer to a good spirit level than to a flashy app. It looks like a trustworthy tradesperson's tools: matte, precise, plain.
 
-**One memorable thing (spend boldness only here):** a single warm **marker-amber** colour reserved for *commitment moments*, meaning the action that books, accepts, pays or releases money, plus rating stars. Everything else is quiet petrol-teal, ink and plaster-grey. If amber appears anywhere else, it is a bug.
+**One memorable thing (spend boldness only here):** a single warm **marker-amber** colour reserved for *commitment moments*, meaning the action that books, accepts, pays or releases money, plus rating stars. Everything else is quiet violet (primary), ink and plaster-grey. If amber appears anywhere else, it is a bug.
 
 **What we deliberately avoid:** cream + terracotta, near-black + neon accent, identical rounded cards with the same soft shadow on everything, gradient washes, ALL-CAPS eyebrow labels, "→" on every link, scroll-triggered fade-ups on every section.
 
@@ -40,7 +40,7 @@ Semantic tokens only. Components use `bg-background`, `text-foreground`, `bg-pri
 | `background` | `#F4F6F5` | page ("plaster") |
 | `foreground` | `#14232F` | text ("ink") |
 | `card` / `popover` | `#FFFFFF` | surfaces |
-| `primary` | `#0F5C5A` | general primary actions, links, active nav ("petrol") |
+| `primary` | `#6B2FC4` | general primary actions, links, active nav (deep violet: brand `#B37AFD` darkened for AA on light surfaces) |
 | `primary-foreground` | `#FFFFFF` | |
 | `secondary` | `#E6EBEA` | secondary buttons, subtle fills |
 | `secondary-foreground` | `#14232F` | |
@@ -51,7 +51,7 @@ Semantic tokens only. Components use `bg-background`, `text-foreground`, `bg-pri
 | `commit` | `#F2B01E` | **commitment actions + rating stars only** |
 | `commit-foreground` | `#14232F` | text on amber (never white) |
 | `border` / `input` | `#D5DDDB` | |
-| `ring` | `#0F5C5A` | focus ring |
+| `ring` | `#6B2FC4` | focus ring |
 | `destructive` | `#B3261E` | errors, cancel, delete |
 | `success` | `#1E7A4C` | |
 | `warning` | `#8A5A00` | text-safe amber-brown; **not** the `commit` colour |
@@ -64,19 +64,19 @@ Semantic tokens only. Components use `bg-background`, `text-foreground`, `bg-pri
 | `background` | `#0E1A22` |
 | `foreground` | `#EAF0EE` |
 | `card` / `popover` | `#14232F` |
-| `primary` / `primary-foreground` | `#3FB8B0` / `#08201F` |
+| `primary` / `primary-foreground` | `#B37AFD` / `#1C0A3A` (brand violet) |
 | `secondary` / `muted` | `#1D3040` |
 | `muted-foreground` | `#9BB0B5` |
 | `accent` | `#1D3040` |
 | `commit` / `commit-foreground` | `#F2B01E` / `#14232F` |
 | `border` / `input` | `#25363F` |
-| `ring` | `#3FB8B0` |
+| `ring` | `#B37AFD` |
 | `destructive` | `#F2766E` |
 | `success` | `#4CC38A` |
 | `warning` | `#E0B04A` |
 | `info` | `#6FB0E8` |
 
-Charts (admin KPIs): `chart-1 #0F5C5A`, `chart-2 #F2B01E`, `chart-3 #1F5F99`, `chart-4 #1E7A4C`, `chart-5 #53636B`.
+Charts (admin KPIs): `chart-1 #6B2FC4` (dark: `#B37AFD`), `chart-2 #F2B01E`, `chart-3 #1F5F99`, `chart-4 #1E7A4C`, `chart-5 #53636B`.
 
 ### Colour rules
 1. **Never** use `commit` as text on a light background (fails contrast); only as a fill with `commit-foreground`, or as a filled star.
@@ -95,15 +95,15 @@ Charts (admin KPIs): `chart-1 #0F5C5A`, `chart-2 #F2B01E`, `chart-3 #1F5F99`, `c
   --background: #F4F6F5;  --foreground: #14232F;
   --card: #FFFFFF;        --card-foreground: #14232F;
   --popover: #FFFFFF;     --popover-foreground: #14232F;
-  --primary: #0F5C5A;     --primary-foreground: #FFFFFF;
+  --primary: #6B2FC4;     --primary-foreground: #FFFFFF;
   --secondary: #E6EBEA;   --secondary-foreground: #14232F;
   --muted: #E6EBEA;       --muted-foreground: #53636B;
   --accent: #DDE7E6;      --accent-foreground: #14232F;
   --commit: #F2B01E;      --commit-foreground: #14232F;
   --destructive: #B3261E;
   --success: #1E7A4C;  --warning: #8A5A00;  --info: #1F5F99;
-  --border: #D5DDDB;  --input: #D5DDDB;  --ring: #0F5C5A;
-  --chart-1: #0F5C5A; --chart-2: #F2B01E; --chart-3: #1F5F99; --chart-4: #1E7A4C; --chart-5: #53636B;
+  --border: #D5DDDB;  --input: #D5DDDB;  --ring: #6B2FC4;
+  --chart-1: #6B2FC4; --chart-2: #F2B01E; --chart-3: #1F5F99; --chart-4: #1E7A4C; --chart-5: #53636B;
   --radius: 0.5rem;
 }
 .dark { /* values from the dark table above */ }
@@ -192,7 +192,7 @@ Sizes (heights): `sm 36px` (admin tables only), `default 44px`, `lg 52px` (hero,
 
 | Variant | Use |
 |---|---|
-| `default` | petrol, standard primary action |
+| `default` | violet, standard primary action |
 | `commit` | **amber, commitment action. Max one per screen** (see §2) |
 | `secondary` | secondary action |
 | `outline` | tertiary, cancel |
@@ -414,6 +414,6 @@ src/
 | 1 | Default theme | **Light** (overrides CLAUDE.md's dark default); dark supported |
 | 2 | Digits | Western (0-9). Switch to Arabic-Indic only by changing `formatPrice`/`format.ts` |
 | 3 | Fonts | Readex Pro (headings) + IBM Plex Sans (body); confirm after seeing them in the style guide |
-| 4 | Brand colours | Petrol `#0F5C5A` + marker-amber `#F2B01E`; replace if a logo/brand identity already exists |
+| 4 | Brand colours | Violet `#B37AFD` (dark) / `#6B2FC4` (light) + marker-amber `#F2B01E` — changed from petrol `#0F5C5A` on 2026-10-31 |
 | 5 | Logo & brand name | Placeholder from `constants/site.ts` |
 | 6 | Mobile navigation | Bottom tab bar for customer/provider; revise if usability testing says otherwise |

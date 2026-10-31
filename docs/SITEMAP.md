@@ -57,7 +57,7 @@ Static/ISR, indexed, in `sitemap.ts`. Layouts read nothing from the request.
 | `/search` | Search service + area (**SHOULD**) | dynamic; `X-Robots-Tag: noindex, follow` set in proxy | MK-06 |
 | `/blog`, `/blog/[slug]` | **COULD** — skip in MVP | | MK-08 |
 
-### Auth pages — `src/app/`
+### Auth pages — `src/app/(auth)/` (marketing header + footer) and `src/app/`
 | Route | Page | Req |
 |---|---|---|
 | `/sign-in/[[...sign-in]]` | Phone + OTP sign-in | AU-01, AU-02 |

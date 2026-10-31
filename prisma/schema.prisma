@@ -1,0 +1,53 @@
+// Livo — Prisma schema. Conventions: CLAUDE.md §6.
+// Schema changes ship as additive, idempotent SQL in prisma/sql/ (applied by
+// scripts/prebuild-db.cjs), never as destructive `prisma db push`.
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"] // node:22-alpine image
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL") // pooled (transaction pooler) — runtime + build
+  directUrl = env("DIRECT_URL")   // session/direct — Prisma CLI only
+}
+
+/// Customer requests work, Provider delivers it, Admin runs the platform (SRS §2.1).
+enum Role {
+  CUSTOMER
+  PROVIDER
+  ADMIN
+}
+
+/// `id` IS the Clerk user id. Name/email/phone are a first-sign-in snapshot;
+/// the UI reads live identity from Clerk.
+model User {
+  id        String   @id
+  role      Role     @default(CUSTOMER)
+  email     String?
+  phone     String?
+  name      String?
+  imageUrl  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  files File[]
+
+  @@index([role])
+}
+
+/// Source of truth for every object stored in R2.
+model File {
+  id         String   @id @default(cuid())
+  key        String   @unique
+  mimeType   String
+  size       Int
+  sha256     String
+  uploadedBy String?
+  createdAt  DateTime @default(now())
+
+  uploader User? @relation(fields: [uploadedBy], references: [id], onDelete: SetNull)
+
+  @@index([uploadedBy])
+}

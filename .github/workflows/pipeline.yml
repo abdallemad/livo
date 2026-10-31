@@ -1,0 +1,107 @@
+name: pipeline
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      update_image:
+        description: Build a new Docker image
+        type: choice
+        options: ["yes", "no"]
+        default: "yes"
+      update_production:
+        description: Deploy to the VPS
+        type: choice
+        options: ["yes", "no"]
+        default: "yes"
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - name: Write .env
+        run: printf '%s\n' "${{ secrets.ENVS }}" > .env
+      - name: Check required env keys
+        run: node tests/prelaunch/check-env.mjs .env
+      - run: npm run lint
+      - run: npm test
+      - name: Build
+        run: set -a && . ./.env && set +a && npm run build
+
+  build:
+    needs: test
+    if: github.event_name == 'push' || inputs.update_image == 'yes'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Write .env
+        run: printf '%s\n' "${{ secrets.ENVS }}" > .env
+      - uses: docker/setup-buildx-action@v3
+      - uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: buildx-${{ github.sha }}
+          restore-keys: buildx-
+      - name: Build image
+        run: |
+          docker buildx build --load \
+            --secret id=env,src=.env \
+            --cache-from type=local,src=/tmp/.buildx-cache \
+            --cache-to type=local,dest=/tmp/.buildx-cache-new,mode=max \
+            -t livo-app:latest .
+          rm -rf /tmp/.buildx-cache && mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+      - name: Save image
+        run: docker save livo-app:latest | gzip > livo-app.tar.gz && gzip -t livo-app.tar.gz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: livo-app-image
+          path: livo-app.tar.gz
+          retention-days: 1
+
+  deploy:
+    needs: build
+    if: github.event_name == 'push' || inputs.update_production == 'yes'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: livo-app-image
+      - name: Copy image to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          source: livo-app.tar.gz
+          target: /tmp
+      - name: Run container
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            set -e
+            gunzip -c /tmp/livo-app.tar.gz | docker load
+            docker stop livo-app || true
+            docker rm livo-app || true
+            docker run -d --name livo-app --restart always -p 4000:3000 livo-app:latest
+            sleep 5 && docker logs --tail 50 livo-app
+            docker image prune -f
+            rm -f /tmp/livo-app.tar.gz

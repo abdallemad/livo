@@ -1,8 +1,10 @@
 import { Badge } from "@/components/ui/badge"
-import type { BookingStatus, DisputeStatus } from "@prisma/client"
+import type { BookingStatus, DisputeStatus, UserStatus, VerificationStatus as DbVerificationStatus } from "@prisma/client"
 import {
   BOOKING_STATUS,
   DISPUTE_STATUS,
+  PROVIDER_STATUS,
+  USER_STATUS,
   VERIFICATION_STATUS,
   WORK_STATUS,
   type VerificationStatus,
@@ -46,6 +48,28 @@ export function BookingStatusBadge({ status, className }: { status: BookingStatu
 /** `Dispute.status` (AD-05). */
 export function DisputeStatusBadge({ status, className }: { status: DisputeStatus; className?: string }) {
   const { label, variant, icon: Icon } = DISPUTE_STATUS[status]
+  return (
+    <Badge variant={variant} className={cn(className)}>
+      <Icon data-icon="inline-start" aria-hidden />
+      {label}
+    </Badge>
+  )
+}
+
+/** Exact `ProviderProfile.verificationStatus` (admin screens, includes DRAFT). */
+export function ProviderStatusBadge({ status, className }: { status: DbVerificationStatus; className?: string }) {
+  const { label, variant, icon: Icon } = PROVIDER_STATUS[status]
+  return (
+    <Badge variant={variant} className={cn(className)}>
+      <Icon data-icon="inline-start" aria-hidden />
+      {label}
+    </Badge>
+  )
+}
+
+/** `User.status` (AD-03). */
+export function UserStatusBadge({ status, className }: { status: UserStatus; className?: string }) {
+  const { label, variant, icon: Icon } = USER_STATUS[status]
   return (
     <Badge variant={variant} className={cn(className)}>
       <Icon data-icon="inline-start" aria-hidden />

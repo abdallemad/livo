@@ -27,9 +27,11 @@ export async function getCurrentUser(): Promise<User | null> {
   return userRepository.findById(userId)
 }
 
+/** Signed in AND active: a suspended (AD-03) or deleted account can't call any API that needs a user. */
 export async function requireUser(): Promise<User> {
   const user = await getCurrentUser()
   if (!user) throw new UnauthorizedError()
+  if (user.status !== "ACTIVE") throw new ForbiddenError("Your account is suspended. Contact support for help.")
   return user
 }
 
@@ -45,12 +47,13 @@ export const requireProvider = () => requireRole("PROVIDER", "ADMIN")
 export interface GateInfo {
   role: Role
   onboardingCompleted: boolean
+  suspended: boolean
 }
 
 /** Used by `src/proxy.ts` and the zone layouts to gate pages before anything renders. */
 export async function getGateById(userId: string): Promise<GateInfo | null> {
   const row = await userRepository.findGateById(userId)
-  return row ? { role: row.role, onboardingCompleted: isOnboarded(row) } : null
+  return row ? { role: row.role, onboardingCompleted: isOnboarded(row), suspended: row.status !== "ACTIVE" } : null
 }
 
 export async function getViewer(): Promise<ViewerDto | null> {

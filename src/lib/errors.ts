@@ -53,3 +53,10 @@ export class DependencyError extends AppError {
 }
 
 export const isAppError = (error: unknown): error is AppError => error instanceof AppError
+
+/** A dependency we can't reach right now (e.g. R2 not configured). */
+export class ServiceUnavailableError extends AppError {
+  constructor(message = "This isn't available right now. Try again in a little while.") {
+    super(message, "UNAVAILABLE", 503)
+  }
+}

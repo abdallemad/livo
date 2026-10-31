@@ -36,6 +36,7 @@ Header-only shell, no request reads, `noindex` only on `/search?…` (via the pr
 |---|---|---|---|---|---|
 | `/sign-in/[[...sign-in]]` | Sign in | Clerk sign-in inside the site header + footer (`(auth)` group); the header "Sign in" button links here (no modal) | built | ƒ | AU-01, AU-02 |
 | `/sign-up/[[...sign-up]]` | Create account | Clerk sign-up inside the site header + footer (`(auth)` group) | built | ƒ | AU-01 |
+| `/account-suspended` | Account suspended | Where the zone gate sends a suspended user (static) | built | ○ | AD-03 |
 | `/auth-callback` | (none) | Syncs the Clerk user to the DB, then routes to `/onboarding` or the dashboard | built | ○ | AU-03 |
 | `/onboarding` | Finish signing up | Post-signup wizard, customer and provider paths ([onboarding-feature.md](onboarding-feature.md)) | built | ○ | AU-03, PR-01, PR-02, PR-05 |
 
@@ -95,10 +96,10 @@ Dashboard shell, dynamic, `noindex`; non-admins get a 404 (proxy + layout + ever
 | Route | Page | What it shows | Status | Req |
 |---|---|---|---|---|
 | `/admin` | Dashboard | Live KPIs, "needs attention" counts, approve/reject pending providers, start dispute review, latest bookings ([admin-dashboard-feature.md](admin-dashboard-feature.md)) | built | AD-09, AD-01, AD-05 |
-| `/admin/providers` | Provider applications | Review queue by status | placeholder | AD-01 |
-| `/admin/providers/[id]` | Review provider | Documents, approve or reject with a reason | placeholder | AD-01 |
-| `/admin/users` | Users | All customers and providers; suspend or activate | placeholder | AD-03 |
-| `/admin/users/[id]` | User details | Account details and activity | placeholder | AD-03 |
+| `/admin/providers` | Provider applications | Status tabs with counts, search, approve / reject / suspend / reinstate ([admin-providers-users-feature.md](admin-providers-users-feature.md)) | built | AD-01 |
+| `/admin/providers/[id]` | Review provider | Profile, private documents (signed links), services, track record, history, decisions | built | AD-01 |
+| `/admin/users` | Users | Search + role/status filters, suspend / activate | built | AD-03 |
+| `/admin/users/[id]` | User details | Account, activity counts, recent bookings, history, suspend / activate | built | AD-03 |
 | `/admin/categories` | Categories | Fixed price, quote, or both | placeholder | AD-02 |
 | `/admin/categories/new` | New category | Type, parent, status | placeholder | AD-02 |
 | `/admin/categories/[id]/edit` | Edit category | Type, parent, status | placeholder | AD-02 |

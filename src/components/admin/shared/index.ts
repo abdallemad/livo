@@ -1,1 +1,6 @@
 export * from "@/components/shared"
+export { ReasonDialog } from "./ReasonDialog"
+export { HistoryCard } from "./HistoryCard"
+export { ListPagination } from "./ListPagination"
+export { SearchBox } from "./SearchBox"
+export { DetailField } from "./DetailField"

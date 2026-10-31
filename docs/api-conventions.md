@@ -18,8 +18,13 @@ Component → hook (TanStack Query) → api-client → /api/... route.ts → ser
 | `/api/provider/<feature>` | providers (and admins) | `requireProvider()` |
 | `/api/admin/<feature>` | admins only | proxy 404 + `requireAdmin()` |
 
-Admin endpoints today: `GET /api/admin/dashboard`, `PATCH /api/admin/providers/[id]/status`,
-`PATCH /api/admin/disputes/[id]/status` (see `docs/admin-dashboard-feature.md`).
+Admin endpoints today: `GET /api/admin/dashboard`, `GET /api/admin/providers`, `GET /api/admin/providers/[id]`,
+`PATCH /api/admin/providers/[id]/status`, `GET /api/admin/files/[id]`, `GET /api/admin/users`, `GET /api/admin/users/[id]`,
+`PATCH /api/admin/users/[id]/status`, `PATCH /api/admin/disputes/[id]/status` (see `docs/admin-dashboard-feature.md`,
+`docs/admin-providers-users-feature.md`).
+
+`requireUser()` (and so `requireRole`/`requireProvider`/`requireAdmin`) also rejects accounts whose
+`User.status` isn't `ACTIVE` with **403** (AD-03 suspension).
 | `/api/webhooks/<provider>` | payment gateway etc. | signature over raw body |
 
 Collections: `GET` (list, paginated via `?page&perPage`) and `POST` (create) in `route.ts`.

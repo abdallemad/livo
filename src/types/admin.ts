@@ -1,4 +1,5 @@
-import type { BookingStatus, DisputeStatus, VerificationStatus } from "@prisma/client"
+import type { BookingStatus, DisputeStatus, DocumentType, Role, UserStatus, VerificationStatus } from "@prisma/client"
+import type { Paginated } from "./api"
 
 /**
  * Admin dashboard contracts (`GET /api/admin/dashboard`). Money is a plain
@@ -68,4 +69,119 @@ export interface ProviderDecisionDto {
 export interface DisputeStatusDto {
   id: string
   status: DisputeStatus
+}
+
+// ---------------------------------------------------------------------------
+// Providers (`/admin/providers`, AD-01) and users (`/admin/users`, AD-03)
+// ---------------------------------------------------------------------------
+
+/** One row of the admin audit trail for an entity (AD-11). */
+export interface AuditEntryDto {
+  id: string
+  action: string
+  actor: string | null
+  /** `metadata.reason`, when the decision carried one. */
+  reason: string | null
+  createdAt: string
+}
+
+export interface AdminProviderListItem {
+  id: string
+  name: string
+  phone: string | null
+  email: string | null
+  city: string
+  categories: string[]
+  verificationStatus: VerificationStatus
+  documentCount: number
+  serviceCount: number
+  ratingAvg: number
+  ratingCount: number
+  /** Last profile change — for PENDING rows, when it was submitted for review. */
+  updatedAt: string
+}
+
+export interface AdminProviderList extends Paginated<AdminProviderListItem> {
+  /** Rows per verification status, for the tab badges. */
+  counts: Record<VerificationStatus, number>
+}
+
+export interface AdminProviderDocumentDto {
+  id: string
+  type: DocumentType
+  mimeType: string
+  sizeBytes: number
+  uploadedAt: string
+  /** Admin-only preview route (307 to a 5-minute signed link). */
+  url: string
+}
+
+export interface AdminProviderServiceDto {
+  id: string
+  title: string
+  category: string
+  price: number
+  isActive: boolean
+  imageCount: number
+}
+
+export interface AdminProviderDetail {
+  id: string
+  name: string
+  phone: string | null
+  email: string | null
+  avatarUrl: string | null
+  userStatus: UserStatus
+  joinedAt: string
+  verificationStatus: VerificationStatus
+  rejectionReason: string | null
+  reviewedAt: string | null
+  reviewedBy: string | null
+  bio: string | null
+  yearsExperience: number | null
+  city: string
+  areas: string[]
+  categories: string[]
+  ratingAvg: number
+  ratingCount: number
+  completedCount: number
+  underReview: boolean
+  portfolioCount: number
+  documents: AdminProviderDocumentDto[]
+  services: AdminProviderServiceDto[]
+  history: AuditEntryDto[]
+}
+
+export interface AdminUserListItem {
+  id: string
+  name: string
+  email: string | null
+  phone: string | null
+  role: Role
+  status: UserStatus
+  city: string | null
+  onboardingCompleted: boolean
+  joinedAt: string
+}
+
+export interface AdminUserDetail extends AdminUserListItem {
+  avatarUrl: string | null
+  deletedAt: string | null
+  /** Reason from the latest `user.suspend` audit entry while suspended. */
+  suspensionReason: string | null
+  provider: { verificationStatus: VerificationStatus } | null
+  counts: {
+    requests: number
+    bookingsAsCustomer: number
+    bookingsAsProvider: number
+    reviewsWritten: number
+    disputesOpened: number
+  }
+  recentBookings: (RecentBookingDto & { side: "CUSTOMER" | "PROVIDER" })[]
+  history: AuditEntryDto[]
+}
+
+export interface UserStatusDto {
+  id: string
+  status: UserStatus
 }

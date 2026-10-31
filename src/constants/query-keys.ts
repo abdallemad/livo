@@ -16,4 +16,10 @@ export const onboardingKeys = {
 export const adminKeys = {
   all: ["admin"] as const,
   dashboard: () => [...adminKeys.all, "dashboard"] as const,
+  providers: () => [...adminKeys.all, "providers"] as const,
+  providerList: (query: object) => [...adminKeys.providers(), "list", query] as const,
+  provider: (id: string) => [...adminKeys.providers(), "detail", id] as const,
+  users: () => [...adminKeys.all, "users"] as const,
+  userList: (query: object) => [...adminKeys.users(), "list", query] as const,
+  user: (id: string) => [...adminKeys.users(), "detail", id] as const,
 }

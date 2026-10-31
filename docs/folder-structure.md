@@ -19,9 +19,9 @@ src/
     (admin)/admin/   admin dashboard shell (SITEMAP §5)        — dynamic, noindex, 404 gate
     design-system-preview/ living style guide (dev; admin-only in prod)
     (onboarding)/onboarding/ post-signup wizard (minimal static layout, noindex)
-    (auth)/          /sign-in, /sign-up: marketing header + footer around Clerk's embedded forms
+    (auth)/          /sign-in, /sign-up, /account-suspended: marketing header + footer around Clerk's embedded forms
     auth-callback/
-    api/             me/, auth/sync/, onboarding/, admin/ (dashboard, providers/[id]/status, disputes/[id]/status),
+    api/             me/, auth/sync/, onboarding/, admin/ (dashboard, providers, users, files, disputes),
                      health/, webhooks/ — every server endpoint
     robots.ts sitemap.ts not-found.tsx
   components/
@@ -35,7 +35,8 @@ src/
     design-system/   style-guide sections
     providers/       query-provider, theme-provider
     forms/           PhoneField, OtpField
-    admin/dashboard/ AdminDashboard (KPIs, queues), ProviderDecisionActions
+    admin/           dashboard/ (KPIs, queues), providers/ (list, review, decision actions), users/ (list, detail,
+                     status actions), shared/ (ReasonDialog, SearchBox, ListPagination, HistoryCard, DetailField)
     auth/ seo/ marketing/ landing/ motion/
   hooks/             use-<feature>.ts (TanStack Query over the api-client)
   services/          <feature>.service.ts (business rules, auth guards)
@@ -50,4 +51,5 @@ src/
   data/              static data files
 ```
 
-Feature docs: `docs/api-conventions.md`, `docs/onboarding-feature.md`, `docs/admin-dashboard-feature.md`. Page map: `docs/page-map.md`.
+Feature docs: `docs/api-conventions.md`, `docs/onboarding-feature.md`, `docs/admin-dashboard-feature.md`,
+`docs/admin-providers-users-feature.md`. Page map: `docs/page-map.md`.

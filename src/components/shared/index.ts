@@ -8,6 +8,13 @@ export { PagePlaceholder } from "./page-placeholder"
 export { PriceTag } from "./price-tag"
 export { RatingInput, RatingStars } from "./rating-stars"
 export { StatCard } from "./stat-card"
-export { BookingStatusBadge, DisputeStatusBadge, StatusBadge, VerificationBadge } from "./status-badge"
+export {
+  BookingStatusBadge,
+  DisputeStatusBadge,
+  ProviderStatusBadge,
+  StatusBadge,
+  UserStatusBadge,
+  VerificationBadge,
+} from "./status-badge"
 export { Stepper } from "./stepper"
 export { VerifiedBadge } from "./verified-badge"

@@ -16,7 +16,12 @@ export interface ZoneViewer {
   /** null = signed in with Clerk but no DB row yet. */
   role: ZoneRole | null
   onboardingCompleted: boolean
+  /** `User.status = SUSPENDED` (AD-03): kept out of every dashboard zone. */
+  suspended?: boolean
 }
+
+/** Where a suspended user is sent from any gated zone (a public page explaining the suspension). */
+export const SUSPENDED_PATH = "/account-suspended"
 
 export const ZONE_ROOT: Record<GatedZone, string> = { account: "/account", provider: "/provider", onboarding: "/onboarding" }
 
@@ -31,6 +36,7 @@ export function getZoneRedirect(
   if (!viewer.signedIn) return `/sign-in?redirect_url=${encodeURIComponent(pathname)}`
   // Signed in with Clerk but no DB row yet → finish the first-sign-in sync.
   if (!viewer.role) return "/auth-callback"
+  if (viewer.suspended) return SUSPENDED_PATH
 
   // The wizard: only for users who haven't finished it; never shown again after.
   if (zone === "onboarding") return viewer.onboardingCompleted ? dashboardFor(viewer.role) : null

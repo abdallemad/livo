@@ -23,7 +23,14 @@ export const API_ROUTES = {
   },
   admin: {
     dashboard: "/api/admin/dashboard",
+    providers: "/api/admin/providers",
+    provider: (id: string) => `/api/admin/providers/${encodeURIComponent(id)}`,
     providerStatus: (id: string) => `/api/admin/providers/${encodeURIComponent(id)}/status`,
     disputeStatus: (id: string) => `/api/admin/disputes/${encodeURIComponent(id)}/status`,
+    users: "/api/admin/users",
+    user: (id: string) => `/api/admin/users/${encodeURIComponent(id)}`,
+    userStatus: (id: string) => `/api/admin/users/${encodeURIComponent(id)}/status`,
+    /** Admin-only preview of a provider verification document (307 to a signed link). */
+    file: (id: string) => `/api/admin/files/${encodeURIComponent(id)}`,
   },
 } as const

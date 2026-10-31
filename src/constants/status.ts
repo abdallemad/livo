@@ -7,6 +7,7 @@ import {
   CreditCard,
   Eye,
   Ban,
+  RotateCcw,
   Trash2,
   Hourglass,
   FileEdit,
@@ -18,7 +19,18 @@ import {
   XCircle,
   type LucideIcon,
 } from "lucide-react"
-import type { BookingStatus, DisputeStatus, Role, UserStatus, VerificationStatus as DbVerificationStatus } from "@prisma/client"
+import type {
+  BookingStatus,
+  DisputeStatus,
+  EscrowState,
+  PaymentMethod,
+  PaymentStatus,
+  QuoteStatus,
+  RequestStatus,
+  Role,
+  UserStatus,
+  VerificationStatus as DbVerificationStatus,
+} from "@prisma/client"
 
 /**
  * Request / booking state machine → label, badge variant and icon
@@ -27,7 +39,7 @@ import type { BookingStatus, DisputeStatus, Role, UserStatus, VerificationStatus
  */
 export type StatusVariant = "neutral" | "info" | "primary" | "warning" | "success" | "destructive"
 
-interface StatusMeta {
+export interface StatusMeta {
   label: string
   variant: StatusVariant
   icon: LucideIcon
@@ -115,3 +127,41 @@ export const USER_STATUS: Record<UserStatus, StatusMeta> = {
 }
 
 export const ROLE_LABEL: Record<Role, string> = { CUSTOMER: "Customer", PROVIDER: "Provider", ADMIN: "Admin" }
+
+/** `ServiceRequest.status` (DB enum) for admin screens. OPEN with quotes reads "Quotes received" in the UI. */
+export const REQUEST_STATUS: Record<RequestStatus, StatusMeta> = {
+  DRAFT: WORK_STATUS.DRAFT,
+  OPEN: WORK_STATUS.OPEN,
+  ACCEPTED: { label: "Booked", variant: "primary", icon: Handshake },
+  CANCELLED: WORK_STATUS.CANCELLED,
+  EXPIRED: WORK_STATUS.EXPIRED,
+}
+
+/** `Quote.status`. */
+export const QUOTE_STATUS: Record<QuoteStatus, StatusMeta> = {
+  PENDING: { label: "Waiting", variant: "info", icon: Clock },
+  ACCEPTED: { label: "Accepted", variant: "success", icon: CheckCircle2 },
+  REJECTED: { label: "Not chosen", variant: "neutral", icon: XCircle },
+  WITHDRAWN: { label: "Withdrawn", variant: "neutral", icon: Archive },
+  EXPIRED: { label: "Expired", variant: "neutral", icon: Clock },
+}
+
+/** `Payment.status`. */
+export const PAYMENT_STATUS: Record<PaymentStatus, StatusMeta> = {
+  PENDING: { label: "Pending", variant: "neutral", icon: Clock },
+  PAID: { label: "Paid", variant: "success", icon: CheckCircle2 },
+  FAILED: { label: "Failed", variant: "destructive", icon: XCircle },
+  REFUNDED: { label: "Refunded", variant: "warning", icon: RotateCcw },
+  PARTIALLY_REFUNDED: { label: "Partly refunded", variant: "warning", icon: RotateCcw },
+}
+
+/** `Payment.escrowState` (BR-08). */
+export const ESCROW_LABEL: Record<EscrowState, string> = {
+  NONE: "No escrow",
+  HELD: "Held by Livo",
+  RELEASED: "Released to provider",
+  REFUNDED: "Refunded",
+  PARTIALLY_REFUNDED: "Partly refunded",
+}
+
+export const PAYMENT_METHOD_LABEL: Record<PaymentMethod, string> = { ONLINE: "Online", CASH: "Cash" }

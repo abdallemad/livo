@@ -1,8 +1,15 @@
 import type {
+  BookingSource,
   BookingStatus,
   CategoryType,
   DisputeStatus,
   DocumentType,
+  EscrowState,
+  MilestoneStatus,
+  PaymentMethod,
+  PaymentStatus,
+  QuoteStatus,
+  RequestStatus,
   Role,
   UserStatus,
   VerificationStatus,
@@ -258,4 +265,117 @@ export interface AdminServiceListItem {
 export interface ServiceModerationDto {
   id: string
   hiddenByAdminAt: string | null
+}
+
+// ---------------------------------------------------------------------------
+// Requests & bookings (`/admin/requests`, `/admin/bookings`, AD-04)
+// ---------------------------------------------------------------------------
+
+export interface AdminRequestListItem {
+  id: string
+  title: string
+  customerId: string
+  customerName: string
+  category: string
+  area: string | null
+  city: string
+  budget: number | null
+  status: RequestStatus
+  quoteCount: number
+  pendingQuoteCount: number
+  preferredDate: string | null
+  expiresAt: string | null
+  createdAt: string
+}
+
+export interface AdminQuoteDto {
+  id: string
+  providerId: string
+  providerName: string
+  price: number
+  durationDays: number | null
+  message: string | null
+  status: QuoteStatus
+  validUntil: string | null
+  createdAt: string
+  bookingId: string | null
+}
+
+export interface AdminRequestDetail extends AdminRequestListItem {
+  description: string
+  mediaCount: number
+  address: string | null
+  quotes: AdminQuoteDto[]
+  bookings: { id: string; number: string; status: BookingStatus }[]
+  history: AuditEntryDto[]
+}
+
+export interface AdminBookingListItem {
+  id: string
+  number: string
+  source: BookingSource
+  title: string
+  customerId: string
+  customerName: string
+  providerId: string
+  providerName: string
+  amount: number
+  commissionAmount: number
+  status: BookingStatus
+  paymentMethod: PaymentMethod | null
+  escrowState: EscrowState | null
+  scheduledAt: string | null
+  createdAt: string
+}
+
+export interface AdminPaymentDto {
+  id: string
+  method: PaymentMethod
+  amount: number
+  status: PaymentStatus
+  escrowState: EscrowState
+  refundedAmount: number
+  milestone: string | null
+  gatewayRef: string | null
+  paidAt: string | null
+  releasedAt: string | null
+  createdAt: string
+}
+
+export interface AdminBookingEvent {
+  key: string
+  label: string
+  at: string
+  /** A deadline that hasn't passed yet (e.g. auto-release). */
+  upcoming?: boolean
+}
+
+export interface AdminBookingDetail extends AdminBookingListItem {
+  commissionRate: number
+  providerNet: number
+  notes: string | null
+  address: string | null
+  serviceId: string | null
+  requestId: string | null
+  contactUnlocked: boolean
+  cancelReason: string | null
+  cancelledBy: string | null
+  /** Admin may cancel only while no money has been captured (see admin-booking.service.ts). */
+  canCancel: boolean
+  cancelBlockedReason: string | null
+  events: AdminBookingEvent[]
+  payments: AdminPaymentDto[]
+  milestones: { id: string; title: string; amount: number; status: MilestoneStatus; dueAt: string | null }[]
+  messages: { id: string; senderSide: "CUSTOMER" | "PROVIDER" | "OTHER"; senderName: string; body: string; contactBlocked: boolean; createdAt: string }[]
+  reviews: { id: string; byProvider: boolean; rating: number; comment: string | null; isHidden: boolean; createdAt: string }[]
+  dispute: { id: string; status: DisputeStatus; reason: string } | null
+  history: AuditEntryDto[]
+}
+
+export interface AdminRequestList extends Paginated<AdminRequestListItem> {
+  counts: Record<RequestStatus, number>
+}
+
+export interface AdminBookingList extends Paginated<AdminBookingListItem> {
+  counts: Record<BookingStatus, number>
 }

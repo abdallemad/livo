@@ -100,3 +100,52 @@ export const serviceModerationSchema = z.discriminatedUnion("action", [
 
 export type ServiceListQuery = z.infer<typeof serviceListQuerySchema>
 export type ServiceModerationValues = z.infer<typeof serviceModerationSchema>
+
+// ---------------------------------------------------------------------------
+// Requests & bookings (AD-04, docs/admin-requests-bookings-feature.md)
+// ---------------------------------------------------------------------------
+
+const optionalId = z
+  .string()
+  .trim()
+  .max(64)
+  .optional()
+  .transform((v) => v || undefined)
+
+export const ADMIN_REQUEST_STATUSES = ["DRAFT", "OPEN", "ACCEPTED", "CANCELLED", "EXPIRED"] as const
+
+export const requestListQuerySchema = paginationQuerySchema.extend({
+  status: z.enum(ADMIN_REQUEST_STATUSES).optional(),
+  categoryId: optionalId,
+  q: searchSchema,
+})
+
+export const ADMIN_BOOKING_STATUSES = [
+  "PENDING_PAYMENT",
+  "PENDING_PROVIDER",
+  "CONFIRMED",
+  "IN_PROGRESS",
+  "AWAITING_CONFIRMATION",
+  "COMPLETED",
+  "CLOSED",
+  "CANCELLED",
+  "REJECTED",
+  "DISPUTED",
+] as const
+export const ADMIN_BOOKING_SOURCES = ["SERVICE", "QUOTE"] as const
+
+export const bookingListQuerySchema = paginationQuerySchema.extend({
+  status: z.enum(ADMIN_BOOKING_STATUSES).optional(),
+  source: z.enum(ADMIN_BOOKING_SOURCES).optional(),
+  q: searchSchema,
+})
+
+/**
+ * Admin cancellation of a request (DRAFT/OPEN) or an unpaid booking — always with a reason both
+ * sides see. Sent to `PATCH …/[id]/status` (status changes are a sub-resource, CLAUDE.md §2.1).
+ */
+export const adminCancelStatusSchema = z.object({ status: z.literal("CANCELLED"), reason: reasonSchema })
+
+export type RequestListQuery = z.infer<typeof requestListQuerySchema>
+export type BookingListQuery = z.infer<typeof bookingListQuerySchema>
+export type AdminCancelValues = z.infer<typeof adminCancelStatusSchema>

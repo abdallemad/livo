@@ -35,6 +35,12 @@ export const API_ROUTES = {
     categoryStatus: (id: string) => `/api/admin/categories/${encodeURIComponent(id)}/status`,
     services: "/api/admin/services",
     serviceStatus: (id: string) => `/api/admin/services/${encodeURIComponent(id)}/status`,
+    requests: "/api/admin/requests",
+    request: (id: string) => `/api/admin/requests/${encodeURIComponent(id)}`,
+    requestStatus: (id: string) => `/api/admin/requests/${encodeURIComponent(id)}/status`,
+    bookings: "/api/admin/bookings",
+    booking: (id: string) => `/api/admin/bookings/${encodeURIComponent(id)}`,
+    bookingStatus: (id: string) => `/api/admin/bookings/${encodeURIComponent(id)}/status`,
     /** Admin-only preview of a provider verification document (307 to a signed link). */
     file: (id: string) => `/api/admin/files/${encodeURIComponent(id)}`,
   },

@@ -1,9 +1,24 @@
+import { cache } from "react"
 import type { Metadata } from "next"
-import { PagePlaceholder } from "@/components/shared"
+import { notFound } from "next/navigation"
+import { BookingDetail } from "@/components/admin/orders/BookingDetail"
+import { getBookingForAdmin } from "@/services/admin-booking.service"
 
-/** /admin/bookings/[id] — docs/SITEMAP.md (AD-04). Private: `noindex` comes from the zone layout. */
-export const metadata: Metadata = { title: "Booking details" }
+/**
+ * /admin/bookings/[id] — one booking: money, payments/escrow, chat (for disputes), history (AD-04).
+ * First snapshot read on the server (service called directly — CLAUDE.md §2 exception; the admin
+ * layout enforced the role) and handed to the client as `initialData`; cancelling goes through
+ * `PATCH /api/admin/bookings/[id]/status`.
+ */
+const load = cache(getBookingForAdmin)
 
-export default function AdminBookingsIdPage() {
-  return <PagePlaceholder title={"Booking details"} description={"Payment status, amount held, and chats (for disputes)."} route="/admin/bookings/[id]" reqs={["AD-04"]} />
+export async function generateMetadata({ params }: PageProps<"/admin/bookings/[id]">): Promise<Metadata> {
+  const booking = await load((await params).id)
+  return { title: booking ? `Booking ${booking.number}` : "Booking not found" }
+}
+
+export default async function AdminBookingDetailPage({ params }: PageProps<"/admin/bookings/[id]">) {
+  const booking = await load((await params).id)
+  if (!booking) notFound()
+  return <BookingDetail initialData={booking} />
 }

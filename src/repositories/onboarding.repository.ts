@@ -45,16 +45,16 @@ class OnboardingRepository {
   findActiveCities() {
     return db.city.findMany({
       where: { isActive: true },
-      orderBy: { nameAr: "asc" },
-      include: { areas: { where: { isActive: true }, orderBy: { nameAr: "asc" } } },
+      orderBy: { nameEn: "asc" },
+      include: { areas: { where: { isActive: true }, orderBy: { nameEn: "asc" } } },
     })
   }
 
   findActiveCategories() {
     return db.category.findMany({
       where: { isActive: true },
-      orderBy: [{ sortOrder: "asc" }, { nameAr: "asc" }],
-      include: { parent: { select: { nameAr: true, isActive: true } } },
+      orderBy: [{ sortOrder: "asc" }, { nameEn: "asc" }],
+      include: { parent: { select: { nameAr: true, nameEn: true, isActive: true } } },
     })
   }
 
@@ -99,7 +99,7 @@ class OnboardingRepository {
   ) {
     const existing = await client.address.findFirst({ where: { userId, isDefault: true } })
     if (existing) return client.address.update({ where: { id: existing.id }, data })
-    return client.address.create({ data: { ...data, userId, label: "البيت", isDefault: true } })
+    return client.address.create({ data: { ...data, userId, label: "Home", isDefault: true } })
   }
 
   async replaceInterests(userId: string, categoryIds: string[], client: Client) {

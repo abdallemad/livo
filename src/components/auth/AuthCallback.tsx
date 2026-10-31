@@ -37,11 +37,11 @@ export function AuthCallback() {
           variant="outline"
           onClick={() => mutate({}, { onSuccess: (viewer) => router.replace(homeFor(viewer)) })}
         >
-          حاول مرة أخرى
+          Try again
         </Button>
       </div>
     )
   }
 
-  return <Loader2 className="size-6 animate-spin text-muted-foreground" aria-label="جارٍ التحميل" />
+  return <Loader2 className="size-6 animate-spin text-muted-foreground" aria-label="Loading" />
 }

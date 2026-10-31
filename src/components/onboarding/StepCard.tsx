@@ -47,24 +47,24 @@ export function StepActions({ onBack, onPrimary, primaryLabel, pending, onSkip, 
     <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
       {onBack ? (
         <Button type="button" variant="ghost" size="lg" onClick={onBack} disabled={pending}>
-          <ArrowRight data-icon="inline-start" aria-hidden />
-          رجوع
+          <ArrowLeft data-icon="inline-start" aria-hidden />
+          Back
         </Button>
       ) : null}
       <div className="flex flex-col-reverse gap-3 sm:ms-auto sm:flex-row">
         {onSaveAndExit ? (
           <Button type="button" variant="outline" size="lg" onClick={onSaveAndExit} disabled={pending}>
-            احفظ وكمّل بعدين
+            Save and continue later
           </Button>
         ) : null}
         {onSkip ? (
           <Button type="button" variant="outline" size="lg" onClick={onSkip} disabled={pending}>
-            تخطّى
+            Skip
           </Button>
         ) : null}
         <Button type="button" size="lg" onClick={onPrimary} loading={pending}>
           {primaryLabel}
-          <ArrowLeft data-icon="inline-end" aria-hidden />
+          <ArrowRight data-icon="inline-end" aria-hidden />
         </Button>
       </div>
     </div>

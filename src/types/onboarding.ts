@@ -16,7 +16,7 @@ export interface OnboardingCityDto extends OnboardingOptionDto {
 }
 
 export interface OnboardingCategoryDto extends OnboardingOptionDto {
-  /** Parent category name, so sub-categories read "سباكة · تركيب السخانات". */
+  /** Parent category name, so sub-categories read "Plumbing · Water heater installation". */
   parentName: string | null
   /** FIXED-only categories can't be requested as quotes, QUOTE-only can't hold fixed-price services. */
   allowsFixedPrice: boolean

@@ -58,11 +58,11 @@ export function OnboardingWizard() {
   if (isError || !data || !step) {
     return (
       <Card className="items-center gap-4 px-6 py-10 text-center">
-        <p className="text-lg font-medium">ما قدرناش نحمّل خطوات التسجيل.</p>
-        <p className="text-muted-foreground">اتأكد من الإنترنت وجرّب تاني.</p>
+        <p className="text-lg font-medium">We couldn’t load the sign-up steps.</p>
+        <p className="text-muted-foreground">Check your internet connection and try again.</p>
         <Button variant="outline" onClick={() => void refetch()}>
           <RotateCcw data-icon="inline-start" aria-hidden />
-          جرّب تاني
+          Try again
         </Button>
       </Card>
     )
@@ -80,7 +80,7 @@ export function OnboardingWizard() {
   const onAdvance = (intent: StepIntent) => {
     setDirty(false)
     if (intent === "exit") {
-      toast.success("اتحفظ. كمّل من نفس المكان وقت ما تحب.")
+      toast.success("Saved. Pick up where you left off any time.")
       router.push("/")
       return
     }
@@ -100,7 +100,7 @@ export function OnboardingWizard() {
       : undefined
 
   const props: StepProps = { state: data, onBack, onAdvance, onDirtyChange: setDirty }
-  const offset = reduceMotion ? 0 : forward ? -24 : 24 // RTL: the next step enters from the inline end (left)
+  const offset = reduceMotion ? 0 : forward ? 24 : -24 // LTR: the next step enters from the inline end (right)
 
   return (
     <div className="flex flex-col gap-6">
@@ -136,7 +136,7 @@ export function OnboardingWizard() {
 /** Same shape as a step card, so nothing jumps when the state arrives. */
 function WizardSkeleton() {
   return (
-    <div className="flex flex-col gap-6" aria-busy="true" aria-label="جارٍ التحميل">
+    <div className="flex flex-col gap-6" aria-busy="true" aria-label="Loading">
       <div className="flex flex-col gap-2">
         <Skeleton className="h-5 w-40" />
         <Skeleton className="h-2 w-full" />

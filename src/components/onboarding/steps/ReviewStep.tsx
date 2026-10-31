@@ -39,8 +39,8 @@ export function ReviewStep({ state, onBack, onEdit, onFinished }: ReviewStepProp
   const certificates = state.documents.filter((d) => d.type === "CERTIFICATE").length
 
   const onSubmit = () =>
-    handleSubmit(() =>
-      submit.mutate(undefined, {
+    handleSubmit((values) =>
+      submit.mutate(values, {
         onSuccess: onFinished,
         onError: (error) => applyApiErrors(error, setError, ["acceptTerms"] as const),
       })
@@ -48,12 +48,12 @@ export function ReviewStep({ state, onBack, onEdit, onFinished }: ReviewStepProp
 
   return (
     <StepCard
-      title="راجع ملفك قبل ما تبعته"
-      description="اتأكد إن كل حاجة صح. بعد ما تبعته هنراجعه ونبلغك."
-      footer={<StepActions onBack={onBack} onPrimary={onSubmit} primaryLabel="ابعت ملفك للمراجعة" pending={submit.isPending} />}
+      title="Review your profile before sending it"
+      description="Make sure everything is correct. Once you send it, we'll review it and let you know."
+      footer={<StepActions onBack={onBack} onPrimary={onSubmit} primaryLabel="Send your profile for review" pending={submit.isPending} />}
     >
       <div className="grid gap-4">
-        <Section title="بياناتك" onEdit={() => onEdit("basic")}>
+        <Section title="Your details" onEdit={() => onEdit("basic")}>
           <p className="font-medium">{state.basic.name}</p>
           <p className="text-muted-foreground">
             {city?.name}
@@ -61,10 +61,10 @@ export function ReviewStep({ state, onBack, onEdit, onFinished }: ReviewStepProp
           </p>
         </Section>
 
-        <Section title="ملفك المهني" onEdit={() => onEdit("profile")}>
+        <Section title="Your professional profile" onEdit={() => onEdit("profile")}>
           <p className="line-clamp-3">{state.profile?.bio}</p>
           <p className="text-muted-foreground">
-            خبرة <span className="tabular-nums">{state.profile?.yearsExperience ?? 0}</span> سنة
+            Experience <span className="tabular-nums">{state.profile?.yearsExperience ?? 0}</span> years
           </p>
           <div className="flex flex-wrap gap-1.5">
             {state.profile?.categoryIds.map((id) => (
@@ -73,18 +73,18 @@ export function ReviewStep({ state, onBack, onEdit, onFinished }: ReviewStepProp
               </Badge>
             ))}
           </div>
-          <p className="text-sm text-muted-foreground">{state.profile?.areaIds.map(areaName).join("، ")}</p>
+          <p className="text-sm text-muted-foreground">{state.profile?.areaIds.map(areaName).join(", ")}</p>
         </Section>
 
-        <Section title="التوثيق" onEdit={() => onEdit("documents")}>
-          <DocLine ok={has("NATIONAL_ID")} label="صورة البطاقة" />
-          <DocLine ok={has("SELFIE")} label="صورة شخصية" />
+        <Section title="Verification" onEdit={() => onEdit("documents")}>
+          <DocLine ok={has("NATIONAL_ID")} label="ID photo" />
+          <DocLine ok={has("SELFIE")} label="Selfie" />
           <p className="text-sm text-muted-foreground">
-            الشهادات: <span className="tabular-nums">{certificates}</span>
+            Certificates: <span className="tabular-nums">{certificates}</span>
           </p>
         </Section>
 
-        <Section title="أول خدمة" onEdit={() => onEdit("service")}>
+        <Section title="First service" onEdit={() => onEdit("service")}>
           {state.service ? (
             <div className="flex flex-wrap items-end justify-between gap-2">
               <div>
@@ -94,7 +94,7 @@ export function ReviewStep({ state, onBack, onEdit, onFinished }: ReviewStepProp
               <PriceTag amount={state.service.price} kind="fixed" />
             </div>
           ) : (
-            <p className="text-muted-foreground">تخصصاتك بعروض أسعار، مفيش خدمة بسعر ثابت.</p>
+            <p className="text-muted-foreground">Your specialties use quotes, so there’s no fixed-price service.</p>
           )}
         </Section>
 
@@ -112,11 +112,11 @@ export function ReviewStep({ state, onBack, onEdit, onFinished }: ReviewStepProp
                   aria-describedby="ob-terms-msg"
                 />
                 <span>
-                  قريت ووافقت على{" "}
+                  I have read and agree to the{" "}
                   <Link href="/terms" target="_blank" className="font-medium text-primary underline underline-offset-4">
-                    شروط الاستخدام
+                    Terms of use
                   </Link>
-                  ، وإن البيانات والمستندات اللي رفعتها صحيحة.
+                  , and confirm that the details and documents I uploaded are correct.
                 </span>
               </Label>
               <p id="ob-terms-msg" aria-live="polite" className="flex min-h-5 items-center gap-1 text-sm text-destructive">
@@ -136,9 +136,9 @@ function Section({ title, onEdit, children }: { title: string; onEdit: () => voi
     <section className="flex flex-col gap-2 rounded-lg border p-4">
       <div className="flex items-center justify-between gap-2">
         <h2 className="text-lg font-semibold">{title}</h2>
-        <Button type="button" variant="ghost" size="sm" onClick={onEdit} aria-label={`عدّل ${title}`}>
+        <Button type="button" variant="ghost" size="sm" onClick={onEdit} aria-label={`Edit ${title}`}>
           <Pencil data-icon="inline-start" aria-hidden />
-          عدّل
+          Edit
         </Button>
       </div>
       {children}
@@ -151,7 +151,7 @@ function DocLine({ ok, label }: { ok: boolean; label: string }) {
     <p className={ok ? "flex items-center gap-2" : "flex items-center gap-2 text-destructive"}>
       {ok ? <CheckCircle2 className="size-4 text-success" aria-hidden /> : <AlertCircle className="size-4" aria-hidden />}
       {label}
-      {ok ? null : " — ناقصة"}
+      {ok ? null : " — Missing"}
     </p>
   )
 }

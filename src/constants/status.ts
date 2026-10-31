@@ -44,28 +44,28 @@ export const WORK_STATUSES = [
 export type WorkStatus = (typeof WORK_STATUSES)[number]
 
 export const WORK_STATUS: Record<WorkStatus, StatusMeta> = {
-  DRAFT: { label: "مسودة", variant: "neutral", icon: FileEdit },
-  OPEN: { label: "مفتوح", variant: "info", icon: CircleDot },
-  QUOTES_RECEIVED: { label: "وصلت عروض", variant: "info", icon: MessageSquareQuote },
-  ACCEPTED: { label: "تم القبول", variant: "primary", icon: Handshake },
-  PAID: { label: "الدفع محجوز", variant: "primary", icon: ShieldCheck },
-  IN_PROGRESS: { label: "قيد التنفيذ", variant: "warning", icon: Wrench },
-  COMPLETED: { label: "مكتمل", variant: "success", icon: CheckCircle2 },
-  REVIEWED: { label: "تم التقييم", variant: "success", icon: Star },
-  CLOSED: { label: "مغلق", variant: "neutral", icon: Archive },
-  CANCELLED: { label: "ملغي", variant: "destructive", icon: XCircle },
-  DISPUTED: { label: "نزاع", variant: "destructive", icon: AlertTriangle },
-  EXPIRED: { label: "منتهي", variant: "neutral", icon: Clock },
+  DRAFT: { label: "Draft", variant: "neutral", icon: FileEdit },
+  OPEN: { label: "Open", variant: "info", icon: CircleDot },
+  QUOTES_RECEIVED: { label: "Quotes received", variant: "info", icon: MessageSquareQuote },
+  ACCEPTED: { label: "Accepted", variant: "primary", icon: Handshake },
+  PAID: { label: "Payment held", variant: "primary", icon: ShieldCheck },
+  IN_PROGRESS: { label: "In progress", variant: "warning", icon: Wrench },
+  COMPLETED: { label: "Completed", variant: "success", icon: CheckCircle2 },
+  REVIEWED: { label: "Reviewed", variant: "success", icon: Star },
+  CLOSED: { label: "Closed", variant: "neutral", icon: Archive },
+  CANCELLED: { label: "Cancelled", variant: "destructive", icon: XCircle },
+  DISPUTED: { label: "Dispute", variant: "destructive", icon: AlertTriangle },
+  EXPIRED: { label: "Expired", variant: "neutral", icon: Clock },
 }
 
 export const VERIFICATION_STATUSES = ["PENDING", "ACTIVE", "SUSPENDED", "REJECTED"] as const
 export type VerificationStatus = (typeof VERIFICATION_STATUSES)[number]
 
 export const VERIFICATION_STATUS: Record<VerificationStatus, StatusMeta> = {
-  PENDING: { label: "قيد المراجعة", variant: "warning", icon: Clock },
-  ACTIVE: { label: "مفعّل", variant: "success", icon: CheckCircle2 },
-  SUSPENDED: { label: "موقوف", variant: "destructive", icon: AlertTriangle },
-  REJECTED: { label: "مرفوض", variant: "destructive", icon: XCircle },
+  PENDING: { label: "Under review", variant: "warning", icon: Clock },
+  ACTIVE: { label: "Active", variant: "success", icon: CheckCircle2 },
+  SUSPENDED: { label: "Suspended", variant: "destructive", icon: AlertTriangle },
+  REJECTED: { label: "Rejected", variant: "destructive", icon: XCircle },
 }
 
 /** The happy path shown by `BookingTimeline` (exceptions are rendered as a final step). */

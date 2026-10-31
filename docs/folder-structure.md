@@ -6,13 +6,13 @@ The authoritative rules are in `CLAUDE.md` §2–§3; this is the map of what ex
 prisma/              schema.prisma, seed.ts, sql/ (dated idempotent migrations: 2026-11-01-schema-baseline, 2026-11-01-onboarding)
 scripts/             prebuild-db.cjs, build-with-deployment-id.mjs, prepare-standalone.mjs,
                      deployment-id.mjs, warm-cache.mjs, archive/ (one-offs)
-tests/               node:test suites — api/, utils/, ui/ (RTL class guard), onboarding/, prelaunch/ + alias loader
+tests/               node:test suites — api/, utils/, ui/ (logical-class direction guard), onboarding/, prelaunch/ + alias loader
 docs/                SITEMAP.md, DESIGN-SYSTEM.md, srs.md, business-analysis, api-conventions.md, tech-stack.md, onboarding-feature.md, releases/
 src/
   proxy.ts           Clerk + CSRF guard + /admin 404 gate + /account & /provider role redirects
                      + ?page=1 redirect + /search noindex header
   app/
-    layout.tsx       <html lang="ar" dir="rtl">, fonts, ClerkProvider > DirectionProvider > ThemeProvider > QueryProvider
+    layout.tsx       <html lang="en" dir="ltr">, fonts, ClerkProvider > DirectionProvider > ThemeProvider > QueryProvider
     (marketing)/     header shell, public pages (SITEMAP §2)   — static / ISR / SSG
     (app)/account/   customer sidebar shell (SITEMAP §3)       — dynamic, noindex
     (provider)/provider/ provider sidebar shell (SITEMAP §4)   — dynamic, noindex
@@ -47,4 +47,4 @@ src/
   data/              static data files
 ```
 
-Feature docs: `docs/api-conventions.md`, `docs/onboarding-feature.md`.
+Feature docs: `docs/api-conventions.md`, `docs/onboarding-feature.md`. Page map: `docs/page-map.md`.

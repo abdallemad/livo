@@ -11,7 +11,7 @@ so nobody is trapped.
 
 | # | Customer | Provider |
 |---|---|---|
-| 1 | Role (`عايز أطلب خدمة` / `أنا مقدم خدمة`) | same |
+| 1 | Role (`I want to hire` / `I offer services`) | same |
 | 2 | Name, email (opt.), photo (opt., stored in Clerk), city, area (opt.) | same, area **required** = first coverage area (creates the DRAFT `ProviderProfile`) |
 | 3 | Default address (optional, skippable) | Bio, years, categories, coverage areas |
 | 4 | Interests (optional) → **finish**: `CustomerProfile` + `onboardingCompletedAt` | Documents: national ID + selfie (required), up to 3 certificates |
@@ -26,7 +26,7 @@ Providers can "save and exit" on every step; the wizard resumes where the DB say
 |---|---|
 | Constants | `src/constants/onboarding.ts` (limits, step lists, terms version) |
 | Pure rules | `src/utils/onboarding-state.ts` (step derivation, edit guards, `homeFor`), `src/utils/zone-access.ts` (redirects), `src/utils/file-signature.ts` (magic bytes) |
-| Schemas | `src/schemas/onboarding.schema.ts` (one Zod schema per step, Arabic messages) |
+| Schemas | `src/schemas/onboarding.schema.ts` (one Zod schema per step, English messages) |
 | Repository | `src/repositories/onboarding.repository.ts` |
 | Service | `src/services/onboarding.service.ts` |
 | API routes | `src/app/api/onboarding/**` (table below) |

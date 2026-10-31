@@ -34,8 +34,8 @@ function Command({
 }
 
 function CommandDialog({
-  title = "لوحة الأوامر",
-  description = "ابحث عن أمر...",
+  title = "Command palette",
+  description = "Search for a command...",
   children,
   className,
   showCloseButton = false,

@@ -14,9 +14,9 @@ export async function POST(request: Request) {
     const user = await requireUser()
     const { file, fields } = await parseUpload(request, MAX_PDF_BYTES)
     const type = documentTypeSchema.safeParse(fields.type)
-    if (!type.success) throw new ValidationError("راجع البيانات.", { type: ["اختار نوع المستند."] })
+    if (!type.success) throw new ValidationError("Please check your details.", { type: ["Choose the document type."] })
     return created(await uploadDocument(user.id, type.data, file))
   } catch (error) {
-    return toErrorResponse(error, "تعذّر رفع المستند.")
+    return toErrorResponse(error, "Couldn't upload the document.")
   }
 }

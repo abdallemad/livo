@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { SignUp } from "@clerk/nextjs"
 
-export const metadata: Metadata = { title: "إنشاء حساب", robots: { index: false, follow: false } }
+export const metadata: Metadata = { title: "Create account", robots: { index: false, follow: false } }
 
 export default function SignUpPage() {
   return (

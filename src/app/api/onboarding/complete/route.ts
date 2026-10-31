@@ -10,6 +10,6 @@ export async function POST(request: Request) {
     const values = await parseBody(request, interestsStepSchema) // 2. validate
     return ok(await finishCustomer(user.id, values)) // 3. delegate
   } catch (error) {
-    return toErrorResponse(error, "تعذّر إنهاء التسجيل.")
+    return toErrorResponse(error, "Couldn't finish signing up.")
   }
 }

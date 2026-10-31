@@ -11,7 +11,7 @@ export function BottomTabs({ zone }: { zone: DashboardZone }) {
   const items = DASHBOARD_NAV[zone].tabs ?? []
   const pathname = usePathname()
   return (
-    <nav aria-label="التنقل الرئيسي" className="shrink-0 border-t bg-card pb-[env(safe-area-inset-bottom)] md:hidden">
+    <nav aria-label="Main navigation" className="shrink-0 border-t bg-card pb-[env(safe-area-inset-bottom)] md:hidden">
       <ul className="grid" style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}>
         {items.map((item) => {
           const active = isActivePath(pathname, item)

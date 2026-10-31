@@ -22,5 +22,5 @@ export function applyApiErrors<T extends FieldValues>(error: unknown, setError: 
     }
     if (shown) return
   }
-  toast.error(error instanceof Error ? error.message : "حصلت مشكلة. جرّب تاني.")
+  toast.error(error instanceof Error ? error.message : "Something went wrong. Try again.")
 }

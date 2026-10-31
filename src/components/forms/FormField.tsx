@@ -19,7 +19,7 @@ export function FormField({ id, label, helper, error, optional, className, child
     <div className={cn("flex flex-col gap-2", className)}>
       <Label htmlFor={id} className="text-base">
         {label}
-        {optional ? <span className="font-normal text-muted-foreground"> (اختياري)</span> : null}
+        {optional ? <span className="font-normal text-muted-foreground"> (optional)</span> : null}
       </Label>
       {children}
       <p

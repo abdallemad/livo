@@ -40,14 +40,14 @@ export type CustomerStep = (typeof ONBOARDING_STEPS.CUSTOMER)[number]
 export type ProviderStep = (typeof ONBOARDING_STEPS.PROVIDER)[number]
 export type OnboardingStep = CustomerStep | ProviderStep
 
-/** Arabic step titles for the progress bar. */
+/** Step titles for the progress bar. */
 export const STEP_LABELS: Record<OnboardingStep, string> = {
-  role: "نوع الحساب",
-  basic: "بياناتك",
-  address: "العنوان",
-  interests: "اهتماماتك",
-  profile: "ملفك المهني",
-  documents: "التوثيق",
-  service: "أول خدمة",
-  review: "المراجعة",
+  role: "Account type",
+  basic: "Your details",
+  address: "Address",
+  interests: "Your interests",
+  profile: "Your professional profile",
+  documents: "Verification",
+  service: "First service",
+  review: "Review",
 }

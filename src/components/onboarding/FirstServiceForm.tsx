@@ -86,11 +86,11 @@ export function FirstServiceForm({ state, onBack, onSaved, onDirtyChange }: Firs
     <>
       <div className="grid gap-6 lg:grid-cols-[1fr_18rem]">
         <form className="grid gap-5" onSubmit={(e) => (e.preventDefault(), submit("next"))} noValidate>
-          <FormField id="ob-svc-title" label="اسم الخدمة" error={formState.errors.title?.message} helper="مثال: تركيب سخان غاز، تنظيف شقة لحد 120 متر.">
+          <FormField id="ob-svc-title" label="Service name" error={formState.errors.title?.message} helper="e.g. Gas water heater installation, cleaning an apartment up to 120 m².">
             <Input id="ob-svc-title" aria-invalid={!!formState.errors.title} aria-describedby="ob-svc-title-msg" {...register("title")} />
           </FormField>
 
-          <FormField id="ob-svc-category" label="التصنيف" error={formState.errors.categoryId?.message}>
+          <FormField id="ob-svc-category" label="Category" error={formState.errors.categoryId?.message}>
             <Controller
               control={control}
               name="categoryId"
@@ -100,7 +100,7 @@ export function FirstServiceForm({ state, onBack, onSaved, onDirtyChange }: Firs
                   value={field.value}
                   onChange={field.onChange}
                   options={myCategories.map((c) => ({ id: c.id, name: c.parentName ? `${c.parentName} · ${c.name}` : c.name }))}
-                  placeholder="اختار من تخصصاتك"
+                  placeholder="Choose from your specialties"
                   invalid={!!formState.errors.categoryId}
                 />
               )}
@@ -109,9 +109,9 @@ export function FirstServiceForm({ state, onBack, onSaved, onDirtyChange }: Firs
 
           <FormField
             id="ob-svc-desc"
-            label="وصف الخدمة"
+            label="Service description"
             error={formState.errors.description?.message}
-            helper="الخدمة بتشمل إيه، وإيه اللي مش داخل في السعر (زي الخامات)."
+            helper="What the service includes, and what isn't in the price (like materials)."
           >
             <Textarea
               id="ob-svc-desc"
@@ -126,9 +126,9 @@ export function FirstServiceForm({ state, onBack, onSaved, onDirtyChange }: Firs
           <div className="grid gap-5 sm:grid-cols-2">
             <FormField
               id="ob-svc-price"
-              label="السعر (ج.م)"
+              label="Price (EGP)"
               error={formState.errors.price?.message}
-              helper={`من ${SERVICE_PRICE_MIN} لـ ${SERVICE_PRICE_MAX.toLocaleString("en")} ج.م`}
+              helper={`From ${SERVICE_PRICE_MIN} to ${SERVICE_PRICE_MAX.toLocaleString("en")} EGP`}
             >
               <Input
                 id="ob-svc-price"
@@ -142,7 +142,7 @@ export function FirstServiceForm({ state, onBack, onSaved, onDirtyChange }: Firs
                 {...register("price")}
               />
             </FormField>
-            <FormField id="ob-svc-duration" label="المدة المتوقعة" error={formState.errors.durationMinutes?.message}>
+            <FormField id="ob-svc-duration" label="Estimated duration" error={formState.errors.durationMinutes?.message}>
               <Controller
                 control={control}
                 name="durationMinutes"
@@ -152,7 +152,7 @@ export function FirstServiceForm({ state, onBack, onSaved, onDirtyChange }: Firs
                     value={String(field.value ?? "")}
                     onChange={(v) => field.onChange(Number(v))}
                     options={SERVICE_DURATION_OPTIONS.map((m) => ({ id: String(m), name: formatDuration(m) }))}
-                    placeholder="اختار المدة"
+                    placeholder="Choose the duration"
                     invalid={!!formState.errors.durationMinutes}
                   />
                 )}
@@ -162,14 +162,14 @@ export function FirstServiceForm({ state, onBack, onSaved, onDirtyChange }: Firs
 
           <FormField
             id="ob-svc-images"
-            label="صور من شغلك"
+            label="Photos of your work"
             optional
             error={formState.errors.imageIds?.message}
-            helper={`لحد ${SERVICE_MAX_IMAGES} صور. الصورة الأولى هي اللي هتظهر في الكارت.`}
+            helper={`Up to ${SERVICE_MAX_IMAGES} photos. The first photo is the one shown on the card.`}
           >
             <ImageUploader
               id="ob-svc-images"
-              label="ضيف صور"
+              label="Add photos"
               files={images}
               maxFiles={SERVICE_MAX_IMAGES}
               upload={(file, onProgress) => uploadImage.mutateAsync({ file, onProgress })}
@@ -181,7 +181,7 @@ export function FirstServiceForm({ state, onBack, onSaved, onDirtyChange }: Firs
         </form>
 
         <div className="lg:sticky lg:top-4 lg:self-start">
-          <p className="mb-2 text-sm font-medium text-muted-foreground">كده هتظهر للعملاء</p>
+          <p className="mb-2 text-sm font-medium text-muted-foreground">This is how customers will see it</p>
           <ServicePreviewCard
             title={values.title ?? ""}
             providerName={state.basic.name}
@@ -197,7 +197,7 @@ export function FirstServiceForm({ state, onBack, onSaved, onDirtyChange }: Firs
           onBack={onBack}
           onPrimary={() => submit("next")}
           onSaveAndExit={() => submit("exit")}
-          primaryLabel="احفظ الخدمة"
+          primaryLabel="Save service"
           pending={save.isPending}
         />
       </div>

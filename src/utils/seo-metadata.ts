@@ -23,5 +23,5 @@ export function pageMetadata({
 }
 
 export function notFoundMetadata(): Metadata {
-  return { title: "غير موجود", robots: { index: false, follow: true } }
+  return { title: "Not found", robots: { index: false, follow: true } }
 }

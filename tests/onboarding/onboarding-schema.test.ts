@@ -11,9 +11,9 @@ import {
 } from "@/schemas/onboarding.schema"
 
 const service = {
-  title: "تركيب سخان غاز",
+  title: "Gas water heater installation",
   categoryId: "cat1",
-  description: "تركيب السخان وتوصيل المية والغاز واختبار التسريب.",
+  description: "Install the water heater, connect water and gas, and test for leaks.",
   price: 450,
   durationMinutes: 120,
 }

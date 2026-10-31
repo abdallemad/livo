@@ -2,37 +2,37 @@ import { SITE_NAME } from "@/constants/site"
 
 /**
  * Public header + footer navigation (docs/DESIGN-SYSTEM.md §7). Labels are
- * Arabic. Only list routes that exist — every link here ends up in crawled HTML.
+ * English. Only list routes that exist — every link here ends up in crawled HTML.
  * Dashboard navs live in customer-nav.ts / provider-nav.ts / admin-nav.ts.
  */
 export const MARKETING_NAV = [
-  { href: "/services", label: "الخدمات" },
-  { href: "/how-it-works", label: "كيف تعمل المنصة" },
-  { href: "/become-provider", label: "انضم كمزود" },
+  { href: "/services", label: "Services" },
+  { href: "/how-it-works", label: "How it works" },
+  { href: "/become-provider", label: "Become a provider" },
 ] as const
 
 export const FOOTER_NAV = [
   {
-    label: "المنصة",
+    label: "Platform",
     items: [
-      { href: "/services", label: "الخدمات" },
-      { href: "/how-it-works", label: "كيف تعمل المنصة" },
-      { href: "/become-provider", label: "انضم كمزود" },
+      { href: "/services", label: "Services" },
+      { href: "/how-it-works", label: "How it works" },
+      { href: "/become-provider", label: "Become a provider" },
     ],
   },
   {
-    label: `عن ${SITE_NAME}`,
+    label: `About ${SITE_NAME}`,
     items: [
-      { href: "/about", label: "من نحن" },
-      { href: "/contact", label: "تواصل معنا" },
-      { href: "/faq", label: "الأسئلة الشائعة" },
+      { href: "/about", label: "About us" },
+      { href: "/contact", label: "Contact us" },
+      { href: "/faq", label: "FAQ" },
     ],
   },
   {
-    label: "قانوني",
+    label: "Legal",
     items: [
-      { href: "/terms", label: "شروط الاستخدام" },
-      { href: "/privacy", label: "سياسة الخصوصية" },
+      { href: "/terms", label: "Terms of use" },
+      { href: "/privacy", label: "Privacy policy" },
     ],
   },
 ] as const

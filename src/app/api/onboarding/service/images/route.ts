@@ -10,6 +10,6 @@ export async function POST(request: Request) {
     const { file } = await parseUpload(request, MAX_IMAGE_BYTES)
     return created(await uploadServiceImage(user.id, file))
   } catch (error) {
-    return toErrorResponse(error, "تعذّر رفع الصورة.")
+    return toErrorResponse(error, "Couldn't upload the photo.")
   }
 }

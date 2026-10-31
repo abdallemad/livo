@@ -38,7 +38,7 @@ export function OtpField({ value, onChange, onComplete, onResend, resendAfter = 
           onComplete={onComplete}
           inputMode="numeric"
           autoComplete="one-time-code"
-          aria-label="كود التحقق"
+          aria-label="Verification code"
           aria-invalid={error ? true : undefined}
         >
           <InputOTPGroup>
@@ -64,10 +64,10 @@ export function OtpField({ value, onChange, onComplete, onResend, resendAfter = 
       >
         {left > 0 ? (
           <>
-            ابعت الكود تاني بعد <span className="tabular-nums">{left}</span> ثانية
+            Resend code in <span className="tabular-nums">{left}</span> seconds
           </>
         ) : (
-          "ابعت الكود تاني"
+          "Resend code"
         )}
       </Button>
     </div>

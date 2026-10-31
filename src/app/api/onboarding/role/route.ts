@@ -10,6 +10,6 @@ export async function PUT(request: Request) {
     const values = await parseBody(request, roleStepSchema) // 2. validate
     return ok(await saveRole(user.id, values)) // 3. delegate
   } catch (error) {
-    return toErrorResponse(error, "تعذّر حفظ نوع الحساب.")
+    return toErrorResponse(error, "Couldn't save the account type.")
   }
 }

@@ -18,43 +18,43 @@ import type { NavGroup } from "@/types/nav"
 
 /** Admin sidebar (`/admin/*`, docs/SITEMAP.md §5). One entry per admin feature (CLAUDE.md §14 step 7). */
 export const ADMIN_NAV: NavGroup[] = [
-  { items: [{ href: "/admin", label: "لوحة التحكم", icon: Gauge, exact: true }] },
+  { items: [{ href: "/admin", label: "Dashboard", icon: Gauge, exact: true }] },
   {
-    label: "الناس",
+    label: "People",
     items: [
-      { href: "/admin/providers", label: "طلبات المزودين", icon: BadgeCheck },
-      { href: "/admin/users", label: "المستخدمون", icon: Users },
+      { href: "/admin/providers", label: "Provider applications", icon: BadgeCheck },
+      { href: "/admin/users", label: "Users", icon: Users },
     ],
   },
   {
-    label: "الكتالوج",
+    label: "Catalog",
     items: [
-      { href: "/admin/categories", label: "التصنيفات", icon: Tags },
-      { href: "/admin/services", label: "الخدمات", icon: BriefcaseBusiness },
+      { href: "/admin/categories", label: "Categories", icon: Tags },
+      { href: "/admin/services", label: "Services", icon: BriefcaseBusiness },
     ],
   },
   {
-    label: "التشغيل",
+    label: "Operations",
     items: [
-      { href: "/admin/requests", label: "الطلبات وعروض الأسعار", icon: ClipboardList },
-      { href: "/admin/bookings", label: "الحجوزات", icon: CalendarCheck },
-      { href: "/admin/disputes", label: "النزاعات", icon: Scale },
-      { href: "/admin/reviews", label: "التقييمات", icon: Star },
+      { href: "/admin/requests", label: "Requests and quotes", icon: ClipboardList },
+      { href: "/admin/bookings", label: "Bookings", icon: CalendarCheck },
+      { href: "/admin/disputes", label: "Disputes", icon: Scale },
+      { href: "/admin/reviews", label: "Reviews", icon: Star },
     ],
   },
   {
-    label: "الفلوس",
+    label: "Money",
     items: [
-      { href: "/admin/payments", label: "المدفوعات", icon: CreditCard },
-      { href: "/admin/payouts", label: "طلبات السحب", icon: Banknote },
-      { href: "/admin/settings/commission", label: "العمولة", icon: Percent },
+      { href: "/admin/payments", label: "Payments", icon: CreditCard },
+      { href: "/admin/payouts", label: "Payout requests", icon: Banknote },
+      { href: "/admin/settings/commission", label: "Commission", icon: Percent },
     ],
   },
   {
-    label: "النظام",
+    label: "System",
     items: [
-      { href: "/admin/content", label: "محتوى الصفحات", icon: FileText },
-      { href: "/admin/audit-log", label: "سجل العمليات", icon: History },
+      { href: "/admin/content", label: "Page content", icon: FileText },
+      { href: "/admin/audit-log", label: "Audit log", icon: History },
     ],
   },
 ]

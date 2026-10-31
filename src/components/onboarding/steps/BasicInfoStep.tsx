@@ -47,7 +47,7 @@ export function BasicInfoStep({ state, onBack, onAdvance, onDirtyChange }: StepP
   const submit = (intent: "next" | "exit") =>
     handleSubmit((values) => {
       if (isProvider && !values.areaId) {
-        setError("areaId", { message: "اختار المنطقة اللي بتشتغل فيها أكتر." }, { shouldFocus: true })
+        setError("areaId", { message: "Choose the area you work in most." }, { shouldFocus: true })
         return
       }
       save.mutate(values, {
@@ -62,9 +62,9 @@ export function BasicInfoStep({ state, onBack, onAdvance, onDirtyChange }: StepP
     try {
       const blob = await compressImage(file, 512)
       await user.setProfileImage({ file: blob })
-      toast.success("تم تغيير الصورة")
+      toast.success("Photo updated")
     } catch {
-      toast.error("الصورة ما اترفعتش. جرّب صورة تانية.")
+      toast.error("The photo wasn't uploaded. Try a different one.")
     } finally {
       setPhotoBusy(false)
     }
@@ -72,14 +72,14 @@ export function BasicInfoStep({ state, onBack, onAdvance, onDirtyChange }: StepP
 
   return (
     <StepCard
-      title="عرّفنا بنفسك"
-      description={isProvider ? "البيانات دي هتظهر في ملفك للعملاء (من غير رقمك أو إيميلك)." : "عشان مزود الخدمة يعرف يتعامل معاك."}
+      title="Tell us about yourself"
+      description={isProvider ? "These details will appear on your profile for customers (without your phone number or email)." : "So the provider knows how to reach you."}
       footer={
         <StepActions
           onBack={onBack}
           onPrimary={() => submit("next")}
           onSaveAndExit={isProvider ? () => submit("exit") : undefined}
-          primaryLabel="التالي"
+          primaryLabel="Next"
           pending={save.isPending}
         />
       }
@@ -88,14 +88,14 @@ export function BasicInfoStep({ state, onBack, onAdvance, onDirtyChange }: StepP
         <div className="flex items-center gap-4">
           <Avatar className="size-16">
             {user?.hasImage ? <AvatarImage src={user.imageUrl} alt="" /> : null}
-            <AvatarFallback className="text-xl">{(name || "؟").slice(0, 1)}</AvatarFallback>
+            <AvatarFallback className="text-xl">{(name || "?").slice(0, 1)}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col gap-1">
             <Button type="button" variant="outline" loading={photoBusy} render={<label htmlFor="ob-photo" />} nativeButton={false}>
               <Camera data-icon="inline-start" aria-hidden />
-              {user?.hasImage ? "غيّر الصورة" : "ضيف صورة"}
+              {user?.hasImage ? "Change photo" : "Add a photo"}
             </Button>
-            <span className="text-sm text-muted-foreground">اختياري</span>
+            <span className="text-sm text-muted-foreground">Optional</span>
             <input
               id="ob-photo"
               type="file"
@@ -106,17 +106,17 @@ export function BasicInfoStep({ state, onBack, onAdvance, onDirtyChange }: StepP
           </div>
         </div>
 
-        <FormField id="ob-name" label="الاسم بالكامل" error={formState.errors.name?.message}>
+        <FormField id="ob-name" label="Full name" error={formState.errors.name?.message}>
           <Input id="ob-name" autoComplete="name" aria-invalid={!!formState.errors.name} aria-describedby="ob-name-msg" {...register("name")} />
         </FormField>
 
-        <FormField id="ob-phone" label="رقم الموبايل" helper="اتأكدنا منه وقت التسجيل.">
+        <FormField id="ob-phone" label="Mobile number" helper="We verified it when you signed up.">
           <div id="ob-phone" className="flex h-11 items-center rounded-md border bg-muted px-3 text-muted-foreground" aria-describedby="ob-phone-msg">
             {state.phone ? <Ltr>{formatPhone(state.phone)}</Ltr> : "—"}
           </div>
         </FormField>
 
-        <FormField id="ob-email" label="الإيميل" optional error={formState.errors.email?.message}>
+        <FormField id="ob-email" label="Email" optional error={formState.errors.email?.message}>
           <Input
             id="ob-email"
             type="email"
@@ -131,7 +131,7 @@ export function BasicInfoStep({ state, onBack, onAdvance, onDirtyChange }: StepP
         </FormField>
 
         <div className="grid gap-5 sm:grid-cols-2">
-          <FormField id="ob-city" label="المدينة" error={formState.errors.cityId?.message}>
+          <FormField id="ob-city" label="City" error={formState.errors.cityId?.message}>
             <Controller
               control={control}
               name="cityId"
@@ -144,7 +144,7 @@ export function BasicInfoStep({ state, onBack, onAdvance, onDirtyChange }: StepP
                     setValue("areaId", "", { shouldDirty: true })
                   }}
                   options={state.options.cities}
-                  placeholder="اختار المدينة"
+                  placeholder="Choose the city"
                   invalid={!!formState.errors.cityId}
                 />
               )}
@@ -152,7 +152,7 @@ export function BasicInfoStep({ state, onBack, onAdvance, onDirtyChange }: StepP
           </FormField>
           <FormField
             id="ob-area"
-            label={isProvider ? "المنطقة اللي بتشتغل فيها أكتر" : "المنطقة"}
+            label={isProvider ? "The area you work in most" : "Area"}
             optional={!isProvider}
             error={formState.errors.areaId?.message}
           >
@@ -165,7 +165,7 @@ export function BasicInfoStep({ state, onBack, onAdvance, onDirtyChange }: StepP
                   value={field.value ?? ""}
                   onChange={field.onChange}
                   options={areas}
-                  placeholder={cityId ? "اختار المنطقة" : "اختار المدينة الأول"}
+                  placeholder={cityId ? "Choose the area" : "Choose the city first"}
                   disabled={!cityId}
                   invalid={!!formState.errors.areaId}
                 />

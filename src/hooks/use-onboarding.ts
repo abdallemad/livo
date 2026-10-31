@@ -12,6 +12,7 @@ import type {
   InterestsStepValues,
   ProviderProfileStepValues,
   RoleStepValues,
+  SubmitStepValues,
 } from "@/schemas/onboarding.schema"
 import type { OnboardingDocumentDto, OnboardingFileDto, OnboardingFinishDto, OnboardingStateDto } from "@/types/onboarding"
 
@@ -74,7 +75,7 @@ export const useFinishCustomer = () =>
   useFinishMutation((v: InterestsStepValues) => api.post<OnboardingFinishDto>(API_ROUTES.onboarding.complete, v))
 
 export const useSubmitProvider = () =>
-  useFinishMutation(() => api.post<OnboardingFinishDto>(API_ROUTES.onboarding.submit, { acceptTerms: true }))
+  useFinishMutation((v: SubmitStepValues) => api.post<OnboardingFinishDto>(API_ROUTES.onboarding.submit, v))
 
 export interface UploadVariables {
   file: Blob

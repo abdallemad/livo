@@ -37,8 +37,8 @@ export function AddressStep({ state, onBack, onAdvance, onDirtyChange }: StepPro
 
   return (
     <StepCard
-      title="عنوانك"
-      description="هنستخدمه وقت الحجز عشان ما تكتبوش كل مرة. بيظهر لمزود الخدمة بعد تأكيد الحجز بس."
+      title="Your address"
+      description="We'll use it when you book so you don't have to type it every time. The provider sees it only after the booking is confirmed."
       footer={
         <StepActions
           onBack={onBack}
@@ -47,13 +47,13 @@ export function AddressStep({ state, onBack, onAdvance, onDirtyChange }: StepPro
             onAdvance("next")
           }}
           onPrimary={submit}
-          primaryLabel="احفظ العنوان"
+          primaryLabel="Save address"
           pending={save.isPending}
         />
       }
     >
       <form className="grid gap-5" onSubmit={(e) => (e.preventDefault(), submit())} noValidate>
-        <FormField id="ob-addr-area" label="المنطقة" error={formState.errors.areaId?.message}>
+        <FormField id="ob-addr-area" label="Area" error={formState.errors.areaId?.message}>
           <Controller
             control={control}
             name="areaId"
@@ -63,17 +63,17 @@ export function AddressStep({ state, onBack, onAdvance, onDirtyChange }: StepPro
                 value={field.value}
                 onChange={field.onChange}
                 options={areas}
-                placeholder="اختار المنطقة"
+                placeholder="Choose the area"
                 invalid={!!formState.errors.areaId}
               />
             )}
           />
         </FormField>
-        <FormField id="ob-street" label="الشارع" error={formState.errors.street?.message}>
+        <FormField id="ob-street" label="Street" error={formState.errors.street?.message}>
           <Input
             id="ob-street"
             autoComplete="street-address"
-            placeholder="مثال: شارع عباس العقاد"
+            placeholder="e.g. Abbas El Akkad St."
             aria-invalid={!!formState.errors.street}
             aria-describedby="ob-street-msg"
             {...register("street")}
@@ -81,9 +81,9 @@ export function AddressStep({ state, onBack, onAdvance, onDirtyChange }: StepPro
         </FormField>
         <FormField
           id="ob-details"
-          label="تفاصيل العنوان"
+          label="Address details"
           optional
-          helper="رقم العمارة، الدور، الشقة، أو علامة مميزة."
+          helper="Building number, floor, apartment, or a landmark."
           error={formState.errors.details?.message}
         >
           <Textarea id="ob-details" rows={3} aria-describedby="ob-details-msg" {...register("details")} />

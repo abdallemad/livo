@@ -10,6 +10,6 @@ export async function PUT(request: Request) {
     const values = await parseBody(request, providerProfileStepSchema) // 2. validate
     return ok(await saveProviderProfile(user.id, values)) // 3. delegate
   } catch (error) {
-    return toErrorResponse(error, "تعذّر حفظ ملفك المهني.")
+    return toErrorResponse(error, "Couldn't save your professional profile.")
   }
 }

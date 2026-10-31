@@ -58,14 +58,14 @@ export function ProviderProfileStep({ state, onBack, onAdvance, onDirtyChange }:
 
   return (
     <StepCard
-      title="ملفك المهني"
-      description="ده اللي العملاء هيشوفوه قبل ما يختاروك."
+      title="Your professional profile"
+      description="This is what customers will see before they choose you."
       footer={
         <StepActions
           onBack={onBack}
           onPrimary={() => submit("next")}
           onSaveAndExit={() => submit("exit")}
-          primaryLabel="التالي"
+          primaryLabel="Next"
           pending={save.isPending}
         />
       }
@@ -73,11 +73,11 @@ export function ProviderProfileStep({ state, onBack, onAdvance, onDirtyChange }:
       <form className="grid gap-6" onSubmit={(e) => (e.preventDefault(), submit("next"))} noValidate>
         <FormField
           id="ob-bio"
-          label="نبذة عن شغلك"
+          label="About your work"
           error={formState.errors.bio?.message}
           helper={
             <span className="tabular-nums">
-              {bioLength} / {PROVIDER_BIO_MAX} — اكتب {PROVIDER_BIO_MIN} حرف على الأقل: خبرتك، نوع الشغل، وبتتميّز في إيه.
+              {bioLength} / {PROVIDER_BIO_MAX} — write at least {PROVIDER_BIO_MIN} characters: your experience, the kind of work, and what sets you apart.
             </span>
           }
         >
@@ -85,14 +85,14 @@ export function ProviderProfileStep({ state, onBack, onAdvance, onDirtyChange }:
             id="ob-bio"
             rows={5}
             maxLength={PROVIDER_BIO_MAX}
-            placeholder="مثال: سباك بخبرة 10 سنين في الشقق والفيلات، بشتغل بخامات مضمونة وبنضّف بعد الشغل."
+            placeholder="e.g. Plumber with 10 years of experience in apartments and villas. I use reliable materials and clean up after the job."
             aria-invalid={!!formState.errors.bio}
             aria-describedby="ob-bio-msg"
             {...register("bio")}
           />
         </FormField>
 
-        <FormField id="ob-years" label="سنين الخبرة" error={formState.errors.yearsExperience?.message} className="sm:max-w-48">
+        <FormField id="ob-years" label="Years of experience" error={formState.errors.yearsExperience?.message} className="sm:max-w-48">
           <Input
             id="ob-years"
             type="number"
@@ -108,9 +108,9 @@ export function ProviderProfileStep({ state, onBack, onAdvance, onDirtyChange }:
 
         <FormField
           id="ob-categories"
-          label="تخصصاتك"
+          label="Your specialties"
           error={formState.errors.categoryIds?.message}
-          helper={`اختار لحد ${PROVIDER_MAX_CATEGORIES} تخصصات.`}
+          helper={`Choose up to ${PROVIDER_MAX_CATEGORIES} specialties.`}
         >
           <Controller
             control={control}
@@ -118,7 +118,7 @@ export function ProviderProfileStep({ state, onBack, onAdvance, onDirtyChange }:
             render={({ field }) => (
               <CheckboxChips
                 id="ob-categories"
-                legend="التخصصات"
+                legend="Specialties"
                 options={categories}
                 value={field.value ?? []}
                 onChange={field.onChange}
@@ -131,9 +131,9 @@ export function ProviderProfileStep({ state, onBack, onAdvance, onDirtyChange }:
 
         <FormField
           id="ob-areas"
-          label="المناطق اللي بتشتغل فيها"
+          label="Areas you work in"
           error={formState.errors.areaIds?.message}
-          helper="هتوصلك طلبات من المناطق دي بس."
+          helper="You'll only get requests from these areas."
         >
           <Controller
             control={control}
@@ -141,7 +141,7 @@ export function ProviderProfileStep({ state, onBack, onAdvance, onDirtyChange }:
             render={({ field }) => (
               <CheckboxChips
                 id="ob-areas"
-                legend="المناطق"
+                legend="Areas"
                 options={areas.map((a) => ({ id: a.id, label: a.name }))}
                 value={field.value ?? []}
                 onChange={field.onChange}

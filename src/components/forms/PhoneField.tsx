@@ -16,7 +16,7 @@ interface PhoneFieldProps extends Omit<React.ComponentProps<"input">, "type" | "
  * Egyptian mobile input (§5): label above, LTR digits, `inputMode="tel"`,
  * fixed +20 prefix, accepts `01XXXXXXXXX`. Error replaces the helper text.
  */
-export function PhoneField({ label = "رقم الموبايل", helper = "11 رقم يبدأ بـ 01", error, className, id, ...props }: PhoneFieldProps) {
+export function PhoneField({ label = "Mobile number", helper = "11 digits starting with 01", error, className, id, ...props }: PhoneFieldProps) {
   const autoId = useId()
   const inputId = id ?? autoId
   const msgId = `${inputId}-msg`

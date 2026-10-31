@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 export interface QuoteCardData {
   providerName: string
   price: number
-  /** Pre-formatted duration, e.g. "3 أيام". */
+  /** Pre-formatted duration, e.g. "3 days". */
   duration: string
   rating: number
   reviewsCount: number
@@ -38,7 +38,7 @@ export function QuoteCard({ quote, action, selected, className }: QuoteCardProps
       </div>
       <p className="flex items-center gap-1 text-sm text-muted-foreground">
         <Clock className="size-4" aria-hidden />
-        مدة التنفيذ: {quote.duration}
+        Duration: {quote.duration}
       </p>
       <p className="max-w-prose">{quote.message}</p>
       {action ? <div className="pt-1">{action}</div> : null}

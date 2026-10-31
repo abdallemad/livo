@@ -11,6 +11,6 @@ export async function DELETE(_request: Request, ctx: RouteContext<"/api/onboardi
     await deleteServiceImage(user.id, id)
     return noContent()
   } catch (error) {
-    return toErrorResponse(error, "تعذّر مسح الصورة.")
+    return toErrorResponse(error, "Couldn't delete the photo.")
   }
 }

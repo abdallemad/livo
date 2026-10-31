@@ -13,11 +13,11 @@ interface ServicePreviewCardProps {
 }
 
 export function formatDuration(minutes: number): string {
-  if (minutes < 60) return `${minutes} دقيقة`
+  if (minutes < 60) return `${minutes} min`
   const hours = minutes / 60
-  if (hours === 1) return "ساعة"
-  if (hours === 2) return "ساعتين"
-  return Number.isInteger(hours) ? `${hours} ساعات` : `${hours.toFixed(1)} ساعة`
+  if (hours === 1) return "hour"
+  if (hours === 2) return "2 hours"
+  return Number.isInteger(hours) ? `${hours} hours` : `${hours.toFixed(1)} hour`
 }
 
 /**
@@ -26,7 +26,7 @@ export function formatDuration(minutes: number): string {
  */
 export function ServicePreviewCard({ title, providerName, categoryName, price, durationMinutes, imageUrl }: ServicePreviewCardProps) {
   return (
-    <Card className="gap-0 overflow-hidden py-0" aria-label="معاينة الخدمة">
+    <Card className="gap-0 overflow-hidden py-0" aria-label="Service preview">
       <div className="flex aspect-[4/3] items-center justify-center bg-muted text-muted-foreground">
         {imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element -- owner-only signed preview, not optimisable by next/image
@@ -37,10 +37,10 @@ export function ServicePreviewCard({ title, providerName, categoryName, price, d
       </div>
       <div className="flex flex-col gap-2 p-4">
         {categoryName ? <Badge variant="secondary">{categoryName}</Badge> : null}
-        <h3 className="text-lg font-semibold">{title || "عنوان الخدمة"}</h3>
+        <h3 className="text-lg font-semibold">{title || "Service title"}</h3>
         <p className="text-sm text-muted-foreground">{providerName}</p>
         <div className="flex items-end justify-between gap-2 pt-2">
-          {price && price > 0 ? <PriceTag amount={price} kind="fixed" /> : <span className="text-muted-foreground">السعر</span>}
+          {price && price > 0 ? <PriceTag amount={price} kind="fixed" /> : <span className="text-muted-foreground">Price</span>}
           {durationMinutes ? (
             <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
               <Clock className="size-4" aria-hidden />

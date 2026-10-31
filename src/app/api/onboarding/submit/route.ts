@@ -14,6 +14,6 @@ export async function POST(request: Request) {
     await parseBody(request, submitStepSchema)
     return ok(await submitProvider(user.id))
   } catch (error) {
-    return toErrorResponse(error, "تعذّر إرسال ملفك للمراجعة.")
+    return toErrorResponse(error, "Couldn't send your profile for review.")
   }
 }

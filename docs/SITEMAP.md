@@ -5,7 +5,7 @@
 > **Before creating any route, check it is listed here.** If a page is not listed, do not invent it. Ask, or add it here first.
 > When you add/remove a page, update this file in the same change.
 
-- Language: **Arabic, RTL** (`<html lang="ar" dir="rtl">`). All UI copy in Arabic. Route paths stay English.
+- Language: **English, LTR** (`<html lang="en" dir="ltr">`). All UI copy in English. The full page map with titles is in §2–§5 and `docs/page-map.md`.
 - Currency: EGP. Launch scope: one city, 3–5 service categories.
 - Requirement IDs (e.g. `CU-02`) refer to `srs.md`.
 
@@ -193,7 +193,7 @@ Exceptions: Cancelled · Disputed · Expired
 ## 8. Cross-cutting page rules
 
 1. **Contact masking (SY-04 / BR-02):** no phone/email shown to the other party in any page or chat message before booking confirmation.
-2. **Empty, loading, and error states** are required for every list/detail page (RTL, Arabic copy, weak-connection friendly: NF-08).
+2. **Empty, loading, and error states** are required for every list/detail page (English copy, weak-connection friendly: NF-08).
 3. **Providers are mostly non-technical:** keep provider screens minimal, large tap targets, few steps (NF-06).
 4. **Every private page** exports `robots: { index: false, follow: false }`; `/admin` returns 404 to non-admins.
 5. **Public pages** need `generateMetadata`, canonical, breadcrumbs + JSON-LD (`Service`, `BreadcrumbList`, `Organization`) and must appear in `sitemap.ts`. Private routes must not.
@@ -205,7 +205,7 @@ Exceptions: Cancelled · Disputed · Expired
 
 ## 9. Suggested build order
 
-1. **Foundation:** infra files, layers, providers, RTL root layout, auth + `/onboarding`, `proxy.ts` zone gates.
+1. **Foundation:** infra files, layers, providers, root layout, auth + `/onboarding`, `proxy.ts` zone gates.
 2. **Admin core:** categories CRUD → provider review queue. (Without categories and active providers there is nothing to browse.)
 3. **Provider:** onboarding → verification → services (fixed-price) → portfolio.
 4. **Public site:** home, categories, service detail, provider profile, static pages, sitemap/robots/SEO.

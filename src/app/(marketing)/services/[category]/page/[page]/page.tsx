@@ -9,12 +9,12 @@ export async function generateStaticParams() {
   return []
 }
 
-export const metadata: Metadata = { title: "خدمات التصنيف", description: "باقي خدمات التصنيف — صفحة مرقّمة." }
+export const metadata: Metadata = { title: "Category services", description: "More services in this category — Paginated page." }
 
 export default function ServicesCategoryPagePagePage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-20">
-      <PagePlaceholder title={"خدمات التصنيف"} description={"باقي خدمات التصنيف — صفحة مرقّمة."} route="/services/[category]/page/[page]" reqs={["MK-02"]} />
+      <PagePlaceholder title={"Category services"} description={"More services in this category — Paginated page."} route="/services/[category]/page/[page]" reqs={["MK-02"]} />
     </div>
   )
 }

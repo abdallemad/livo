@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect } from "react"
 
-const MESSAGE = "في تعديلات ما اتحفظتش. متأكد إنك عايز تخرج؟"
+const MESSAGE = "You have unsaved changes. Are you sure you want to leave?"
 
 /**
  * Warns before losing unsaved form edits (CLAUDE.md §9): the browser's own

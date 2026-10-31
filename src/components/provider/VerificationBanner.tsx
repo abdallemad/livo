@@ -3,9 +3,9 @@ import { VERIFICATION_STATUS, type VerificationStatus } from "@/constants/status
 import { cn } from "@/lib/utils"
 
 const COPY: Record<Exclude<VerificationStatus, "ACTIVE">, string> = {
-  PENDING: "حسابك قيد المراجعة. هتقدر تستقبل طلبات بعد ما نوثّق بياناتك.",
-  REJECTED: "طلب التوثيق اترفض. شوف السبب وارفع المستندات تاني.",
-  SUSPENDED: "حسابك موقوف مؤقتًا. تواصل مع الدعم لمعرفة السبب.",
+  PENDING: "Your account is under review. You'll be able to receive requests once we verify your details.",
+  REJECTED: "Your verification request was rejected. See the reason and upload your documents again.",
+  SUSPENDED: "Your account is temporarily suspended. Contact support to find out why.",
 }
 
 const TONE = {
@@ -24,7 +24,7 @@ export function VerificationBanner({ status }: { status: VerificationStatus }) {
       <Icon className="size-5 shrink-0" aria-hidden />
       <p className="flex-1 font-medium">{COPY[status]}</p>
       <Link href="/provider/verification" className="font-semibold underline underline-offset-4">
-        صفحة التوثيق
+        Verification page
       </Link>
     </div>
   )

@@ -60,7 +60,7 @@ export function BookingTimeline({ current, events = [], className }: BookingTime
             <div className="min-w-0 pt-1">
               <p className={cn("font-medium", !done && !active && "text-muted-foreground")}>
                 {meta.label}
-                {active ? <span className="sr-only"> (الحالة الحالية)</span> : null}
+                {active ? <span className="sr-only"> (current status)</span> : null}
               </p>
               {event?.at ? <p className="text-sm text-muted-foreground tabular-nums">{event.at}</p> : null}
               {event?.note ? <p className="text-sm text-muted-foreground">{event.note}</p> : null}

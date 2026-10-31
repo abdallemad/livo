@@ -10,6 +10,6 @@ export async function PUT(request: Request) {
     const values = await parseBody(request, addressStepSchema) // 2. validate
     return ok(await saveAddress(user.id, values)) // 3. delegate
   } catch (error) {
-    return toErrorResponse(error, "تعذّر حفظ العنوان.")
+    return toErrorResponse(error, "Couldn't save the address.")
   }
 }

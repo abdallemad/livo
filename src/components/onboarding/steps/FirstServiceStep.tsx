@@ -26,10 +26,10 @@ export function FirstServiceStep({ state, onBack, onAdvance, onDirtyChange }: St
     <Card className="gap-6 px-4 py-6 md:px-8 md:py-8">
       <div className="space-y-1">
         <h1 ref={headingRef} tabIndex={-1} className="text-2xl font-semibold outline-none md:text-3xl">
-          أول خدمة ليك
+          Your first service
         </h1>
         <p className="text-muted-foreground">
-          خدمة بسعر ثابت يقدر العميل يحجزها على طول. هتظهر للعملاء بعد ما نراجع ملفك.
+          A fixed-price service customers can book right away. It will be visible to customers after we review your profile.
         </p>
       </div>
       {canOfferFixed ? (
@@ -38,10 +38,10 @@ export function FirstServiceStep({ state, onBack, onAdvance, onDirtyChange }: St
         <>
           <p className="flex items-start gap-2 rounded-md bg-info/10 px-4 py-3 text-info">
             <Info className="mt-1 size-5 shrink-0" aria-hidden />
-            تخصصاتك بتشتغل بعروض أسعار، فمش محتاج تضيف خدمة بسعر ثابت دلوقتي. هتوصلك طلبات العملاء وتقدّم عليها عروض.
+            Your specialties work with quotes, so you don’t need to add a fixed-price service now. You’ll get customer requests and can send quotes on them.
           </p>
           <div className="border-t pt-5">
-            <StepActions onBack={onBack} onPrimary={() => onAdvance("next")} primaryLabel="التالي" />
+            <StepActions onBack={onBack} onPrimary={() => onAdvance("next")} primaryLabel="Next" />
           </div>
         </>
       )}

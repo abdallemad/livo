@@ -117,7 +117,7 @@ export function ImageUploader({
                 size="icon"
                 variant="secondary"
                 className="absolute end-2 top-2 shadow-md"
-                aria-label="امسح الملف"
+                aria-label="Remove file"
                 loading={removing === file.id}
                 disabled={disabled}
                 onClick={() => void handleRemove(file)}
@@ -132,16 +132,16 @@ export function ImageUploader({
               <div className="absolute inset-x-2 bottom-2 flex flex-col gap-1 rounded-md bg-card/95 p-2 shadow-md">
                 {item.failed ? (
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-sm text-destructive">الرفع ما كملش</span>
+                    <span className="text-sm text-destructive">Upload failed</span>
                     <div className="flex gap-1">
-                      <Button type="button" size="icon-sm" variant="outline" aria-label="جرّب تاني" onClick={() => void start(item)}>
+                      <Button type="button" size="icon-sm" variant="outline" aria-label="Try again" onClick={() => void start(item)}>
                         <RotateCcw />
                       </Button>
                       <Button
                         type="button"
                         size="icon-sm"
                         variant="ghost"
-                        aria-label="الغِ"
+                        aria-label="Cancel"
                         onClick={() => setPending((list) => list.filter((p) => p.key !== item.key))}
                       >
                         <Trash2 />
@@ -151,9 +151,9 @@ export function ImageUploader({
                 ) : (
                   <>
                     <span className="text-xs text-muted-foreground tabular-nums">
-                      جارٍ الرفع… <bdi dir="ltr">{Math.round(item.progress * 100)}%</bdi>
+                      Uploading… <bdi dir="ltr">{Math.round(item.progress * 100)}%</bdi>
                     </span>
-                    <Progress value={Math.round(item.progress * 100)} aria-label="نسبة الرفع" />
+                    <Progress value={Math.round(item.progress * 100)} aria-label="Upload progress" />
                   </>
                 )}
               </div>
@@ -175,7 +175,7 @@ export function ImageUploader({
         >
           <input {...getInputProps({ id, capture, "aria-describedby": `${id}-msg` } as React.InputHTMLAttributes<HTMLInputElement>)} />
           <UploadCloud className="size-8 text-muted-foreground" aria-hidden />
-          <p className="text-muted-foreground">{isDragActive ? "سيب الملف هنا" : allowPdf ? "صورة أو PDF" : "صور JPG أو PNG أو WebP"}</p>
+          <p className="text-muted-foreground">{isDragActive ? "Drop the file here" : allowPdf ? "Photo or PDF" : "JPG, PNG, or WebP photos"}</p>
           <Button type="button" variant="outline" onClick={open} disabled={disabled}>
             <ImagePlus data-icon="inline-start" aria-hidden />
             {label}
@@ -190,7 +190,7 @@ function Thumb({ src, pdf, dimmed }: { src: string | null; pdf?: boolean; dimmed
   return (
     <div className={cn("flex aspect-[4/3] items-center justify-center", dimmed && "opacity-70")}>
       {pdf || !src ? (
-        <FileText className="size-10 text-muted-foreground" aria-label="ملف PDF" />
+        <FileText className="size-10 text-muted-foreground" aria-label="PDF file" />
       ) : (
         // eslint-disable-next-line @next/next/no-img-element -- owner-only signed preview / local blob URL, not optimisable by next/image
         <img src={src} alt="" className="size-full object-cover" loading="lazy" />

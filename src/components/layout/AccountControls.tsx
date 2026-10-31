@@ -9,9 +9,9 @@ import type { Role } from "@prisma/client"
 
 /** Where each role's dashboard lives (docs/SITEMAP.md §1). */
 const DASHBOARD_BY_ROLE: Record<Role, { href: string; label: string }> = {
-  CUSTOMER: { href: "/account", label: "حسابي" },
-  PROVIDER: { href: "/provider", label: "لوحة المزود" },
-  ADMIN: { href: "/admin", label: "لوحة الإدارة" },
+  CUSTOMER: { href: "/account", label: "My account" },
+  PROVIDER: { href: "/provider", label: "Provider dashboard" },
+  ADMIN: { href: "/admin", label: "Admin dashboard" },
 }
 
 /**
@@ -30,7 +30,7 @@ export function AccountControls() {
     return (
       <div className="flex h-11 w-28 items-center justify-end">
         <SignInButton mode="modal">
-          <Button variant="outline">تسجيل الدخول</Button>
+          <Button variant="outline">Sign in</Button>
         </SignInButton>
       </div>
     )
@@ -40,7 +40,7 @@ export function AccountControls() {
   const dashboard = viewer
     ? viewer.onboardingCompleted
       ? DASHBOARD_BY_ROLE[viewer.role]
-      : { href: "/onboarding", label: "كمّل تسجيلك" }
+      : { href: "/onboarding", label: "Finish signing up" }
     : null
 
   return (

@@ -13,9 +13,9 @@ import { StepActions, StepCard } from "../StepCard"
 import type { StepProps } from "./types"
 
 const SLOTS: { type: DocumentType; label: string; helper: string; max: number; pdf?: boolean; capture?: "user" | "environment" }[] = [
-  { type: "NATIONAL_ID", label: "صورة البطاقة", helper: "الوش، واضحة ومن غير فلاش.", max: 1, capture: "environment" },
-  { type: "SELFIE", label: "صورة شخصية", helper: "صورة لوشّك في إضاءة كويسة.", max: 1, capture: "user" },
-  { type: "CERTIFICATE", label: "الشهادات", helper: `اختياري، لحد ${MAX_CERTIFICATES} (صورة أو PDF).`, max: MAX_CERTIFICATES, pdf: true },
+  { type: "NATIONAL_ID", label: "ID photo", helper: "The front side, clear and without flash.", max: 1, capture: "environment" },
+  { type: "SELFIE", label: "Selfie", helper: "A photo of your face in good lighting.", max: 1, capture: "user" },
+  { type: "CERTIFICATE", label: "Certificates", helper: `Optional, up to ${MAX_CERTIFICATES} (photo or PDF).`, max: MAX_CERTIFICATES, pdf: true },
 ]
 
 /**
@@ -32,7 +32,7 @@ export function DocumentsStep({ state, onBack, onAdvance, onDirtyChange }: StepP
 
   const next = (intent: "next" | "exit") => {
     if (intent === "next" && (!has("NATIONAL_ID") || !has("SELFIE"))) {
-      toast.error("ارفع صورة البطاقة وصورتك الشخصية عشان تكمّل.")
+      toast.error("Upload a photo of your ID and a selfie to continue.")
       return
     }
     onAdvance(intent)
@@ -40,15 +40,15 @@ export function DocumentsStep({ state, onBack, onAdvance, onDirtyChange }: StepP
 
   return (
     <StepCard
-      title="وثّق حسابك"
-      description="بنراجع البيانات دي بس عشان نتأكد من هويتك. العملاء ما بيشوفوهاش."
+      title="Verify your account"
+      description="We review these only to confirm your identity. Customers never see them."
       footer={
-        <StepActions onBack={onBack} onPrimary={() => next("next")} onSaveAndExit={() => next("exit")} primaryLabel="التالي" />
+        <StepActions onBack={onBack} onPrimary={() => next("next")} onSaveAndExit={() => next("exit")} primaryLabel="Next" />
       }
     >
       <p className="flex items-start gap-2 rounded-md bg-muted px-3 py-2 text-sm text-muted-foreground">
         <LockKeyhole className="mt-0.5 size-4 shrink-0" aria-hidden />
-        المستندات بتتحفظ في مكان خاص، وفريق المراجعة بس اللي يقدر يفتحها.
+        Documents are stored privately, and only the review team can open them.
       </p>
       <div className="grid gap-6">
         {SLOTS.map((slot) => {
@@ -57,7 +57,7 @@ export function DocumentsStep({ state, onBack, onAdvance, onDirtyChange }: StepP
             <FormField key={slot.type} id={`ob-doc-${slot.type}`} label={slot.label} optional={slot.type === "CERTIFICATE"} helper={slot.helper}>
               <ImageUploader
                 id={`ob-doc-${slot.type}`}
-                label="ارفع الملف"
+                label="Upload file"
                 files={files}
                 maxFiles={slot.max}
                 allowPdf={slot.pdf}

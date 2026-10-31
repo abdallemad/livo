@@ -17,7 +17,7 @@ import { DASHBOARD_NAV, type DashboardZone } from "@/constants/dashboard-nav"
  * Pathname-driven breadcrumb for dashboard top bars. Segment labels come from
  * the zone's nav; unknown segments (ids, "new", "edit") get generic labels.
  */
-const SEGMENT_LABELS: Record<string, string> = { new: "جديد", edit: "تعديل", review: "تقييم", dispute: "نزاع" }
+const SEGMENT_LABELS: Record<string, string> = { new: "New", edit: "Edit", review: "Review", dispute: "Dispute" }
 
 export function DashboardBreadcrumb({ zone }: { zone: DashboardZone }) {
   const { root: rootHref, label: rootLabel, nav: groups } = DASHBOARD_NAV[zone]
@@ -26,7 +26,7 @@ export function DashboardBreadcrumb({ zone }: { zone: DashboardZone }) {
   const parts = pathname.replace(rootHref, "").split("/").filter(Boolean)
   const crumbs = parts.map((seg, i) => {
     const href = `${rootHref}/${parts.slice(0, i + 1).join("/")}`
-    return { href, label: labels.get(href) ?? SEGMENT_LABELS[seg] ?? "التفاصيل" }
+    return { href, label: labels.get(href) ?? SEGMENT_LABELS[seg] ?? "Details" }
   })
 
   return (

@@ -47,7 +47,7 @@ const DOCUMENT_PREFIX = (userId: string) => `private/verification/${userId}/`
 
 class StorageUnavailableError extends AppError {
   constructor() {
-    super("رفع الملفات مش متاح دلوقتي. جرّب تاني بعد شوية.", "STORAGE_UNAVAILABLE", 503)
+    super("File uploads aren't available right now. Try again in a little while.", "STORAGE_UNAVAILABLE", 503)
   }
 }
 
@@ -82,8 +82,8 @@ function toSnapshot(user: OnboardingUserRow): OnboardingSnapshot {
 
 async function loadUser(userId: string) {
   const user = await repo.findUserSnapshot(userId)
-  if (!user) throw new NotFoundError("حسابك لسه ما اتسجّلش. ارجع لصفحة الدخول.")
-  if (user.status !== "ACTIVE") throw new ForbiddenError("حسابك موقوف. تواصل مع الدعم.")
+  if (!user) throw new NotFoundError("Your account isn't registered yet. Go back to the sign-in page.")
+  if (user.status !== "ACTIVE") throw new ForbiddenError("Your account is suspended. Contact support.")
   return user
 }
 
@@ -96,9 +96,9 @@ async function loadState(userId: string) {
 function guardStep(state: OnboardingState, step: OnboardingStep) {
   const check = assertStepEditable(state, step)
   if (check.ok) return
-  if (check.reason === "COMPLETED") throw new ConflictError("خلّصت التسجيل خلاص. تقدر تعدّل بياناتك من صفحة الإعدادات.")
-  if (check.reason === "WRONG_ROLE") throw new ForbiddenError("الخطوة دي مش لنوع حسابك.")
-  throw new ConflictError("كمّل الخطوات اللي قبلها الأول.")
+  if (check.reason === "COMPLETED") throw new ConflictError("You've already finished signing up. You can edit your details from the settings page.")
+  if (check.reason === "WRONG_ROLE") throw new ForbiddenError("This step isn't for your account type.")
+  throw new ConflictError("Complete the previous steps first.")
 }
 
 const filePreviewUrl = (fileId: string) => `/api/onboarding/files/${fileId}`
@@ -166,16 +166,16 @@ export async function getOnboardingState(userId: string): Promise<OnboardingStat
     options: {
       cities: cities.map((c) => ({
         id: c.id,
-        name: c.nameAr,
-        areas: c.areas.map((a) => ({ id: a.id, name: a.nameAr })),
+        name: c.nameEn ?? c.nameAr,
+        areas: c.areas.map((a) => ({ id: a.id, name: a.nameEn ?? a.nameAr })),
       })),
       // Children of an inactive parent are hidden too.
       categories: categories
         .filter((c) => !c.parent || c.parent.isActive)
         .map((c) => ({
           id: c.id,
-          name: c.nameAr,
-          parentName: c.parent?.nameAr ?? null,
+          name: c.nameEn ?? c.nameAr,
+          parentName: c.parent ? (c.parent.nameEn ?? c.parent.nameAr) : null,
           allowsFixedPrice: c.type !== "QUOTE",
         })),
     },
@@ -189,7 +189,7 @@ export async function getOnboardingState(userId: string): Promise<OnboardingStat
 /** Step 1. Allowed until onboarding is completed; ADMIN can't reach here (schema enum + this guard). */
 export async function saveRole(userId: string, values: RoleStepValues) {
   const { user, state } = await loadState(userId)
-  if (user.role === "ADMIN") throw new ForbiddenError("حساب الإدارة ما بيمرّش بالتسجيل.")
+  if (user.role === "ADMIN") throw new ForbiddenError("Admin accounts don't go through sign-up.")
   guardStep(state, "role")
   // Switching back from PROVIDER keeps the DRAFT profile: nothing of it is public, and
   // switching again restores it. It's never APPROVED without an admin.
@@ -208,12 +208,12 @@ export async function saveBasicInfo(userId: string, values: BasicInfoStepValues)
   guardStep(state, "basic")
 
   const city = await repo.findActiveCity(values.cityId)
-  if (!city) throw new ValidationError("راجع البيانات.", { cityId: ["اختار مدينة من القائمة."] })
+  if (!city) throw new ValidationError("Please check your details.", { cityId: ["Choose a city from the list."] })
   if (state.role === "PROVIDER" && !values.areaId) {
-    throw new ValidationError("راجع البيانات.", { areaId: ["اختار المنطقة اللي بتشتغل فيها أكتر."] })
+    throw new ValidationError("Please check your details.", { areaId: ["Choose the area you work in most."] })
   }
   if (values.areaId && !(await repo.findActiveArea(values.areaId, city.id))) {
-    throw new ValidationError("راجع البيانات.", { areaId: ["اختار منطقة من القائمة."] })
+    throw new ValidationError("Please check your details.", { areaId: ["Choose an area from the list."] })
   }
 
   const avatarUrl = await syncNameToClerk(userId, values.name)
@@ -238,9 +238,9 @@ export async function saveBasicInfo(userId: string, values: BasicInfoStepValues)
 export async function saveAddress(userId: string, values: AddressStepValues) {
   const { user, state } = await loadState(userId)
   guardStep(state, "address")
-  if (!user.cityId) throw new ConflictError("اختار مدينتك في الخطوة اللي فاتت الأول.")
+  if (!user.cityId) throw new ConflictError("Choose your city in the previous step first.")
   if (!(await repo.findActiveArea(values.areaId, user.cityId))) {
-    throw new ValidationError("راجع البيانات.", { areaId: ["اختار منطقة من القائمة."] })
+    throw new ValidationError("Please check your details.", { areaId: ["Choose an area from the list."] })
   }
   await repo.transaction((tx) =>
     repo.replaceDefaultAddress(userId, { cityId: user.cityId!, areaId: values.areaId, street: values.street, details: values.details }, tx)
@@ -255,10 +255,10 @@ export async function saveAddress(userId: string, values: AddressStepValues) {
 export async function finishCustomer(userId: string, values: InterestsStepValues): Promise<OnboardingFinishDto> {
   const { state } = await loadState(userId)
   guardStep(state, "interests")
-  if (!canFinish(state)) throw new ConflictError("كمّل بياناتك الأساسية الأول.")
+  if (!canFinish(state)) throw new ConflictError("Complete your basic details first.")
   const categoryIds = [...new Set(values.categoryIds)]
   if (categoryIds.length && (await repo.countActiveCategories(categoryIds)) !== categoryIds.length) {
-    throw new ValidationError("راجع اختياراتك.", { categoryIds: ["في تصنيف مش متاح. اختار من القائمة."] })
+    throw new ValidationError("Please check your choices.", { categoryIds: ["One of the categories isn't available. Choose from the list."] })
   }
 
   await withUniqueRetry(() =>
@@ -266,7 +266,7 @@ export async function finishCustomer(userId: string, values: InterestsStepValues
       await repo.replaceInterests(userId, categoryIds, tx)
       await repo.upsertCustomerProfile(userId, tx)
       if ((await repo.completeOnboarding(userId, new Date(), tx)) === 0) {
-        throw new ConflictError("خلّصت التسجيل خلاص.")
+        throw new ConflictError("You've already finished signing up.")
       }
     })
   )
@@ -277,18 +277,18 @@ export async function finishCustomer(userId: string, values: InterestsStepValues
 export async function saveProviderProfile(userId: string, values: ProviderProfileStepValues) {
   const { user, state } = await loadState(userId)
   guardStep(state, "profile")
-  if (!user.cityId || !user.providerProfile) throw new ConflictError("كمّل بياناتك الأساسية الأول.")
+  if (!user.cityId || !user.providerProfile) throw new ConflictError("Complete your basic details first.")
 
   const categoryIds = [...new Set(values.categoryIds)]
   const areaIds = [...new Set(values.areaIds)]
   const fieldErrors: Record<string, string[]> = {}
   if ((await repo.countActiveCategories(categoryIds)) !== categoryIds.length) {
-    fieldErrors.categoryIds = ["في تخصص مش متاح. اختار من القائمة."]
+    fieldErrors.categoryIds = ["One of the specialties isn't available. Choose from the list."]
   }
   if ((await repo.countActiveAreas(areaIds, user.cityId)) !== areaIds.length) {
-    fieldErrors.areaIds = ["في منطقة مش في مدينتك. اختار من القائمة."]
+    fieldErrors.areaIds = ["One of the areas isn't in your city. Choose from the list."]
   }
-  if (Object.keys(fieldErrors).length) throw new ValidationError("راجع البيانات.", fieldErrors)
+  if (Object.keys(fieldErrors).length) throw new ValidationError("Please check your details.", fieldErrors)
 
   await repo.transaction(async (tx) => {
     await repo.updateProviderProfile(userId, { bio: values.bio, yearsExperience: values.yearsExperience }, tx)
@@ -314,13 +314,13 @@ async function validateUpload(file: Blob, allowPdf: boolean): Promise<ValidatedU
   const type = detectFileType(bytes)
   const allowed: readonly string[] = allowPdf ? [...ALLOWED_IMAGE_TYPES, "application/pdf"] : ALLOWED_IMAGE_TYPES
   if (!type || !allowed.includes(type)) {
-    throw new ValidationError("نوع الملف مش مدعوم.", {
-      file: [allowPdf ? "ارفع صورة (JPG أو PNG أو WebP) أو ملف PDF." : "ارفع صورة JPG أو PNG أو WebP."],
+    throw new ValidationError("Unsupported file type.", {
+      file: [allowPdf ? "Upload a photo (JPG, PNG, or WebP) or a PDF." : "Upload a JPG, PNG, or WebP photo."],
     })
   }
   const max = type === "application/pdf" ? MAX_PDF_BYTES : MAX_IMAGE_BYTES
   if (bytes.byteLength > max) {
-    throw new ValidationError("الملف كبير.", { file: [`أقصى حجم ${Math.round(max / 1024 / 1024)} ميجا.`] })
+    throw new ValidationError("The file is too large.", { file: [`The maximum size is ${Math.round(max / 1024 / 1024)} MB.`] })
   }
   return { bytes, type, sha256: createHash("sha256").update(bytes).digest("hex") }
 }
@@ -352,7 +352,7 @@ export async function uploadDocument(userId: string, type: DocumentType, file: B
 
   const existing = await repo.findDocuments(userId, type)
   if (type === "CERTIFICATE" && existing.length >= MAX_CERTIFICATES) {
-    throw new ValidationError("وصلت للحد.", { file: [`تقدر ترفع ${MAX_CERTIFICATES} شهادات بالكتير.`] })
+    throw new ValidationError("Limit reached.", { file: [`You can upload at most ${MAX_CERTIFICATES} certificates.`] })
   }
 
   const key = `${DOCUMENT_PREFIX(userId)}${randomUUID()}.${EXTENSION_BY_TYPE[upload.type]}`
@@ -378,7 +378,7 @@ export async function deleteDocument(userId: string, documentId: string) {
   guardStep(state, "documents")
   const doc = await repo.findDocumentById(documentId)
   // Same answer for "not yours" and "doesn't exist": never confirm other users' ids.
-  if (!doc || doc.providerId !== userId) throw new NotFoundError("المستند مش موجود.")
+  if (!doc || doc.providerId !== userId) throw new NotFoundError("Document not found.")
   await repo.transaction((tx) => repo.deleteDocument(doc.id, doc.fileId, tx))
   await removeObject(doc.file.key)
 }
@@ -390,7 +390,7 @@ export async function uploadServiceImage(userId: string, file: Blob): Promise<On
   const upload = await validateUpload(file, false)
   // Count pending + attached so a user can't park unlimited files.
   if ((await repo.countUserFiles(userId, SERVICE_IMAGE_PREFIX(userId))) >= SERVICE_MAX_IMAGES * 2) {
-    throw new ValidationError("وصلت للحد.", { file: [`امسح صور قديمة الأول (${SERVICE_MAX_IMAGES} صور للخدمة).`] })
+    throw new ValidationError("Limit reached.", { file: [`Delete some old photos first (${SERVICE_MAX_IMAGES} photos per service).`] })
   }
   const key = `${SERVICE_IMAGE_PREFIX(userId)}${randomUUID()}.${EXTENSION_BY_TYPE[upload.type]}`
   await storePrivate(key, upload)
@@ -409,7 +409,7 @@ export async function deleteServiceImage(userId: string, fileId: string) {
   guardStep(state, "service")
   const file = await repo.findFileById(fileId)
   if (!file || file.uploadedById !== userId || !file.key.startsWith(SERVICE_IMAGE_PREFIX(userId))) {
-    throw new NotFoundError("الصورة مش موجودة.")
+    throw new NotFoundError("Photo not found.")
   }
   await repo.deleteFile(file.id)
   await removeObject(file.key)
@@ -423,7 +423,7 @@ export async function deleteServiceImage(userId: string, fileId: string) {
 export async function getFilePreviewUrl(userId: string, fileId: string): Promise<string> {
   const file = await repo.findFileById(fileId)
   const ownPrefix = file && (file.key.startsWith(DOCUMENT_PREFIX(userId)) || file.key.startsWith(SERVICE_IMAGE_PREFIX(userId)))
-  if (!file || file.uploadedById !== userId || !ownPrefix) throw new NotFoundError("الملف مش موجود.")
+  if (!file || file.uploadedById !== userId || !ownPrefix) throw new NotFoundError("File not found.")
   if (!isR2Configured()) throw new StorageUnavailableError()
   return presignInline(file.key, file.mimeType)
 }
@@ -441,14 +441,14 @@ export async function saveFirstService(userId: string, values: FirstServiceStepV
   const { user, state } = await loadState(userId)
   guardStep(state, "service")
   const profile = user.providerProfile
-  if (!profile) throw new ConflictError("كمّل ملفك المهني الأول.")
+  if (!profile) throw new ConflictError("Complete your professional profile first.")
 
   const chosen = profile.categories.find((c) => c.categoryId === values.categoryId)
   if (!chosen || !chosen.category.isActive) {
-    throw new ValidationError("راجع البيانات.", { categoryId: ["اختار تصنيف من تخصصاتك."] })
+    throw new ValidationError("Please check your details.", { categoryId: ["Choose a category from your specialties."] })
   }
   if (chosen.category.type === "QUOTE") {
-    throw new ValidationError("راجع البيانات.", { categoryId: ["التصنيف ده بعروض أسعار بس، اختار تصنيف تاني."] })
+    throw new ValidationError("Please check your details.", { categoryId: ["This category is quote-only. Choose another category."] })
   }
 
   const imageIds = [...new Set(values.imageIds)]
@@ -458,7 +458,7 @@ export async function saveFirstService(userId: string, values: FirstServiceStepV
     ...(existing?.images.map((f) => f.id) ?? []),
   ])
   if (imageIds.some((id) => !allowedImages.has(id))) {
-    throw new ValidationError("راجع الصور.", { imageIds: ["في صورة مش موجودة. ارفعها تاني."] })
+    throw new ValidationError("Please check the photos.", { imageIds: ["One of the photos is missing. Upload it again."] })
   }
 
   const data = {
@@ -491,12 +491,12 @@ export async function saveFirstService(userId: string, values: FirstServiceStepV
 export async function submitProvider(userId: string): Promise<OnboardingFinishDto> {
   const { user, state } = await loadState(userId)
   guardStep(state, "review")
-  if (!canFinish(state)) throw new ConflictError("في خطوات لسه ناقصة. راجعها الأول.")
+  if (!canFinish(state)) throw new ConflictError("Some steps are still incomplete. Review them first.")
   const submittedAt = new Date()
 
   await repo.transaction(async (tx) => {
     if ((await repo.submitProviderForReview(userId, tx)) === 0) {
-      throw new ConflictError("ملفك اتبعت للمراجعة خلاص.")
+      throw new ConflictError("Your profile has already been sent for review.")
     }
     await repo.completeOnboarding(userId, submittedAt, tx)
     const admins = await repo.findAdminIds(tx)
@@ -505,15 +505,15 @@ export async function submitProvider(userId: string): Promise<OnboardingFinishDt
         ...admins.map((a) => ({
           userId: a.id,
           type: "PROVIDER_DECISION" as const,
-          title: "مزود خدمة جديد مستني المراجعة",
+          title: "New provider waiting for review",
           body: user.name,
           payload: { providerId: userId },
         })),
         {
           userId,
           type: "PROVIDER_DECISION" as const,
-          title: "ملفك وصلنا",
-          body: "هنراجع بياناتك ومستنداتك ونبلغك بالنتيجة.",
+          title: "We've received your profile",
+          body: "We'll review your details and documents and let you know the result.",
         },
       ],
       tx

@@ -11,6 +11,6 @@ export async function DELETE(_request: Request, ctx: RouteContext<"/api/onboardi
     await deleteDocument(user.id, id)
     return noContent()
   } catch (error) {
-    return toErrorResponse(error, "تعذّر مسح المستند.")
+    return toErrorResponse(error, "Couldn't delete the document.")
   }
 }

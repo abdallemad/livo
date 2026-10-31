@@ -10,13 +10,13 @@ interface StepperProps {
 
 /**
  * Wizard progress (booking wizard, provider onboarding — max ~5 steps).
- * Flex order follows the document direction, so it runs right→left in RTL (§6.6).
+ * Flex order follows the document direction, so it runs left→right in LTR (§6.6).
  */
 export function Stepper({ steps, current, className }: StepperProps) {
   return (
-    <nav aria-label="خطوات" className={className}>
+    <nav aria-label="Steps" className={cn("w-full min-w-0", className)}>
       <p className="mb-3 text-sm text-muted-foreground md:hidden">
-        خطوة <span className="tabular-nums">{current + 1}</span> من <span className="tabular-nums">{steps.length}</span>:{" "}
+        Step <span className="tabular-nums">{current + 1}</span> of <span className="tabular-nums">{steps.length}</span>:{" "}
         <span className="font-medium text-foreground">{steps[current]}</span>
       </p>
       <ol className="flex items-center gap-2">
@@ -24,7 +24,7 @@ export function Stepper({ steps, current, className }: StepperProps) {
           const done = i < current
           const active = i === current
           return (
-            <li key={label} className="flex flex-1 items-center gap-2 last:flex-none" aria-current={active ? "step" : undefined}>
+            <li key={label} className="flex min-w-0 flex-1 items-center gap-2 last:flex-initial" aria-current={active ? "step" : undefined}>
               <span
                 className={cn(
                   "flex size-8 shrink-0 items-center justify-center rounded-full border-2 text-sm font-semibold tabular-nums",
@@ -35,7 +35,7 @@ export function Stepper({ steps, current, className }: StepperProps) {
               >
                 {done ? <Check className="size-4" aria-hidden /> : i + 1}
               </span>
-              <span className={cn("hidden text-sm whitespace-nowrap md:inline", active ? "font-medium" : "text-muted-foreground")}>
+              <span className={cn("hidden min-w-0 truncate text-sm md:inline", active ? "font-medium" : "text-muted-foreground")}>
                 {label}
               </span>
               {i < steps.length - 1 ? (

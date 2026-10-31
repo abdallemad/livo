@@ -196,8 +196,8 @@ function Sidebar({
           side={side}
         >
           <SheetHeader className="sr-only">
-            <SheetTitle>القائمة</SheetTitle>
-            <SheetDescription>قائمة التنقل</SheetDescription>
+            <SheetTitle>Menu</SheetTitle>
+            <SheetDescription>Navigation menu</SheetDescription>
           </SheetHeader>
           <div className="flex h-full w-full flex-col">{children}</div>
         </SheetContent>
@@ -272,7 +272,7 @@ function SidebarTrigger({
       {...props}
     >
       <PanelLeftIcon className="rtl:-scale-x-100" />
-      <span className="sr-only">إظهار أو إخفاء القائمة</span>
+      <span className="sr-only">Toggle sidebar</span>
     </Button>
   )
 }
@@ -284,10 +284,10 @@ function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
     <button
       data-sidebar="rail"
       data-slot="sidebar-rail"
-      aria-label="إظهار أو إخفاء القائمة"
+      aria-label="Toggle sidebar"
       tabIndex={-1}
       onClick={toggleSidebar}
-      title="إظهار أو إخفاء القائمة"
+      title="Toggle sidebar"
       className={cn(
         "hover:after:bg-sidebar-border absolute inset-y-0 z-20 hidden w-4 transition-all ease-linear group-data-[side=left]:-end-4 group-data-[side=right]:start-0 after:absolute after:inset-y-0 after:start-1/2 after:w-[2px] sm:flex ltr:-translate-x-1/2 rtl:translate-x-1/2",
         "in-data-[side=left]:cursor-w-resize in-data-[side=right]:cursor-e-resize",

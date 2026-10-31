@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card"
 import { useFocusOnMount } from "@/hooks/use-focus-on-mount"
 import type { OnboardingFinishDto } from "@/types/onboarding"
 
-/** Final screen. Providers see what "قيد المراجعة" means and what happens next (PR-03). */
+/** Final screen. Providers see what "Under review" means and what happens next (PR-03). */
 export function SuccessScreen({ result }: { result: OnboardingFinishDto }) {
   const headingRef = useFocusOnMount<HTMLHeadingElement>()
   const provider = result.role === "PROVIDER"
@@ -24,23 +24,23 @@ export function SuccessScreen({ result }: { result: OnboardingFinishDto }) {
       </span>
       <div className="space-y-2">
         <h1 ref={headingRef} tabIndex={-1} className="text-2xl font-semibold outline-none md:text-3xl">
-          {provider ? "ملفك قيد المراجعة" : "حسابك جاهز!"}
+          {provider ? "Your profile is under review" : "Your account is ready!"}
         </h1>
         <p className="max-w-prose text-muted-foreground">
           {provider
-            ? "استلمنا بياناتك ومستنداتك. فريقنا هيراجعها، وعادةً بناخد يومين شغل."
-            : "تقدر دلوقتي تحجز خدمة بسعر ثابت أو تطلب عروض أسعار وتقارن بينها."}
+            ? "We've received your details and documents. Our team will review them, usually within two working days."
+            : "You can now book a fixed-price service, or request quotes and compare them."}
         </p>
       </div>
       {provider ? (
         <ol className="grid w-full max-w-md gap-3 text-start">
-          <NextStep icon={ShieldCheck} text="بنراجع هويتك ومستنداتك." />
-          <NextStep icon={Bell} text="هيوصلك إشعار بالنتيجة أول ما نخلّص." />
-          <NextStep icon={Eye} text="خدماتك هتظهر للعملاء بعد الموافقة بس." />
+          <NextStep icon={ShieldCheck} text="We're reviewing your identity and documents." />
+          <NextStep icon={Bell} text="You'll get a notification with the result as soon as we're done." />
+          <NextStep icon={Eye} text="Your services will be visible to customers only after approval." />
         </ol>
       ) : null}
       <Button size="lg" render={<Link href={result.redirectTo} />}>
-        {provider ? "روح للوحة المزود" : "روح لحسابك"}
+        {provider ? "Go to the provider dashboard" : "Go to your account"}
       </Button>
     </Card>
   )

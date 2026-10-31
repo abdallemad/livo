@@ -8,6 +8,6 @@ export async function GET() {
     const user = await requireUser()
     return ok(await getOnboardingState(user.id), { headers: { "cache-control": "private, no-store" } })
   } catch (error) {
-    return toErrorResponse(error, "تعذّر تحميل خطوات التسجيل.")
+    return toErrorResponse(error, "Couldn't load the sign-up steps.")
   }
 }

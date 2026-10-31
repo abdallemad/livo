@@ -84,7 +84,7 @@ export function apiUpload<T>(path: string, form: FormData, onProgress?: (fractio
     xhr.upload.onprogress = (event) => {
       if (event.lengthComputable) onProgress?.(event.loaded / event.total)
     }
-    xhr.onerror = () => reject(new ApiError("الاتصال ضعيف. جرّب تاني.", 0, "NETWORK"))
+    xhr.onerror = () => reject(new ApiError("Weak connection. Try again.", 0, "NETWORK"))
     xhr.onload = () => {
       let payload: ApiResponse<T> | undefined
       try {

@@ -17,6 +17,6 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/onboarding/
     const url = await getFilePreviewUrl(user.id, id)
     return NextResponse.redirect(url, { status: 307, headers: { "cache-control": "private, no-store" } })
   } catch (error) {
-    return toErrorResponse(error, "تعذّر عرض الملف.")
+    return toErrorResponse(error, "Couldn't show the file.")
   }
 }

@@ -40,22 +40,22 @@ export function InterestsStep({ state, onBack, onDirtyChange, onFinished }: Inte
 
   return (
     <StepCard
-      title="إيه أكتر حاجات ممكن تحتاجها؟"
-      description="هنرتّب لك الخدمات على حسب اختيارك. تقدر تتخطّى الخطوة دي."
+      title="What are you most likely to need?"
+      description="We'll order services based on your choices. You can skip this step."
       footer={
         <StepActions
           onBack={onBack}
           onSkip={() => submit([])}
           onPrimary={() => submit(selected)}
-          primaryLabel="خلّص التسجيل"
+          primaryLabel="Finish signing up"
           pending={finish.isPending}
         />
       }
     >
-      <FormField id="ob-interests" label="اختار اللي يناسبك" optional error={error} helper={`لحد ${MAX_CUSTOMER_INTERESTS} اختيارات.`}>
+      <FormField id="ob-interests" label="Choose what suits you" optional error={error} helper={`Up to ${MAX_CUSTOMER_INTERESTS} choices.`}>
         <CheckboxChips
           id="ob-interests"
-          legend="الاهتمامات"
+          legend="Interests"
           options={options}
           value={selected}
           onChange={(v) => {

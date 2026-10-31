@@ -27,7 +27,7 @@ export function PagePlaceholder({ title, description, route, reqs = [], actions 
         <span className="flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
           <Construction className="size-6" aria-hidden />
         </span>
-        <p className="font-heading text-lg font-semibold">الصفحة دي لسه تحت الإنشاء</p>
+        <p className="font-heading text-lg font-semibold">This page is still under construction</p>
         <div className="flex flex-wrap items-center justify-center gap-2">
           <Badge variant="outline" className="font-mono" dir="ltr">
             {route}

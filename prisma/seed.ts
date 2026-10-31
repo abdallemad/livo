@@ -757,8 +757,8 @@ async function seedMockData(tx: Tx) {
         scheduledAt: scheduled,
         addressSnapshot: {
           label: "البيت",
-          city: cairo.nameAr,
-          area: a.nameAr,
+          city: cairo.nameEn,
+          area: a.nameEn,
           street: customer.street,
           details: customer.details,
         },

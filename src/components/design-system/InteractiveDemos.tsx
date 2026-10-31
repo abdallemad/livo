@@ -50,10 +50,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { Demo } from "./Section"
 
 const CATEGORIES = [
-  { value: "plumbing", label: "سباكة" },
-  { value: "electrical", label: "كهرباء" },
-  { value: "cleaning", label: "تنظيف" },
-  { value: "painting", label: "نقاشة وتشطيبات" },
+  { value: "plumbing", label: "Plumbing" },
+  { value: "electrical", label: "Electrical" },
+  { value: "cleaning", label: "Cleaning" },
+  { value: "painting", label: "Painting and finishing" },
 ]
 
 export function LoadingButtonDemo() {
@@ -65,11 +65,11 @@ export function LoadingButtonDemo() {
         setLoading(true)
         setTimeout(() => {
           setLoading(false)
-          toast.success("تم الحفظ")
+          toast.success("Saved")
         }, 1500)
       }}
     >
-      احفظ التغييرات
+      Save changes
     </Button>
   )
 }
@@ -79,49 +79,49 @@ export function FormDemos() {
   const [otp, setOtp] = useState("")
   const [otpError, setOtpError] = useState<string>()
   const [rating, setRating] = useState(0)
-  const phoneError = phone.length > 0 && !/^01\d{9}$/.test(phone) ? "رقم الموبايل غير صحيح. اكتب 11 رقم يبدأ بـ 01." : undefined
+  const phoneError = phone.length > 0 && !/^01\d{9}$/.test(phone) ? "Invalid mobile number. Enter 11 digits starting with 01." : undefined
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <Demo title="حقل نصي — العنوان فوق، المساعدة تحت، الخطأ مكانها" className="flex-col items-stretch">
+      <Demo title="Text field — Label on top, help below, error in its place" className="flex-col items-stretch">
         <div className="flex flex-col gap-2">
-          <Label htmlFor="ds-name">الاسم</Label>
-          <Input id="ds-name" placeholder="مثال: أحمد محمود" />
-          <p className="text-sm text-muted-foreground">الاسم اللي هيظهر لمزود الخدمة.</p>
+          <Label htmlFor="ds-name">Name</Label>
+          <Input id="ds-name" placeholder="e.g. Ahmed Mahmoud" />
+          <p className="text-sm text-muted-foreground">The name the provider will see.</p>
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="ds-desc">وصف الشغلانة</Label>
-          <Textarea id="ds-desc" placeholder="مثال: تسريب مية تحت حوض المطبخ من امبارح." />
+          <Label htmlFor="ds-desc">Job description</Label>
+          <Textarea id="ds-desc" placeholder="e.g. Water leaking under the kitchen sink since yesterday." />
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="ds-disabled">حقل غير متاح</Label>
-          <Input id="ds-disabled" disabled defaultValue="القاهرة" />
+          <Label htmlFor="ds-disabled">Disabled field</Label>
+          <Input id="ds-disabled" disabled defaultValue="Cairo" />
         </div>
       </Demo>
 
-      <Demo title="رقم الموبايل (LTR، +20)" className="flex-col items-stretch">
+      <Demo title="Mobile number (+20)" className="flex-col items-stretch">
         <PhoneField value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))} error={phoneError} />
       </Demo>
 
-      <Demo title="كود التحقق — 6 خانات، إرسال تلقائي" className="flex-col">
+      <Demo title="Verification code — 6 Boxes, auto-submit" className="flex-col">
         <OtpField
           value={otp}
           onChange={(v) => {
             setOtp(v)
             setOtpError(undefined)
           }}
-          onComplete={(v) => setOtpError(v === "123456" ? undefined : "الكود غلط. جرّب تاني أو اطلب كود جديد.")}
+          onComplete={(v) => setOtpError(v === "123456" ? undefined : "Wrong code. Try again or request a new code.")}
           resendAfter={30}
           error={otpError}
         />
         <p className="text-xs text-muted-foreground">
-          جرّب <bdi dir="ltr">123456</bdi>
+          Try <bdi dir="ltr">123456</bdi>
         </p>
       </Demo>
 
-      <Demo title="اختيارات" className="flex-col items-stretch gap-5">
+      <Demo title="Choices" className="flex-col items-stretch gap-5">
         <div className="flex flex-col gap-2">
-          <Label>التصنيف</Label>
+          <Label>Category</Label>
           <Select items={CATEGORIES} defaultValue="plumbing">
             <SelectTrigger className="w-full">
               <SelectValue />
@@ -137,28 +137,28 @@ export function FormDemos() {
         </div>
         <RadioGroup defaultValue="fixed" className="gap-3">
           <Label className="flex items-center gap-3 font-normal">
-            <RadioGroupItem value="fixed" /> خدمة بسعر ثابت
+            <RadioGroupItem value="fixed" /> Fixed-price service
           </Label>
           <Label className="flex items-center gap-3 font-normal">
-            <RadioGroupItem value="quote" /> اطلب عرض سعر
+            <RadioGroupItem value="quote" /> Request a quote
           </Label>
         </RadioGroup>
         <Label className="flex items-center gap-3 font-normal">
-          <Checkbox defaultChecked /> أوافق على شروط الاستخدام
+          <Checkbox defaultChecked /> I agree to the terms of use
         </Label>
         <Label className="flex items-center justify-between gap-3 font-normal">
-          استقبل إشعارات الطلبات الجديدة
+          Get notified about new requests
           <Switch defaultChecked />
         </Label>
       </Demo>
 
-      <Demo title="إدخال التقييم" className="flex-col items-start">
+      <Demo title="Rating input" className="flex-col items-start">
         <RatingInput value={rating} onChange={setRating} />
       </Demo>
 
-      <Demo title="معالج الخطوات (يمين ← شمال)" className="flex-col items-stretch">
-        <Stepper steps={["الميعاد", "العنوان", "ملاحظات", "الدفع", "التأكيد"]} current={2} />
-        <Progress value={60} aria-label="التقدم" />
+      <Demo title="Step wizard (left → right)" className="flex-col items-stretch">
+        <Stepper steps={["Date & time", "Address", "Notes", "Payment", "Confirm"]} current={2} />
+        <Progress value={60} aria-label="Progress" />
       </Demo>
     </div>
   )
@@ -167,53 +167,53 @@ export function FormDemos() {
 export function OverlayDemos() {
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <Demo title="Dialog — تأكيد ونماذج قصيرة">
+      <Demo title="Dialog — Confirmations and short forms">
         <Dialog>
-          <DialogTrigger render={<Button variant="outline" />}>عدّل العنوان</DialogTrigger>
+          <DialogTrigger render={<Button variant="outline" />}>Edit address</DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>عدّل العنوان</DialogTitle>
-              <DialogDescription>العنوان ده هيوصل لمزود الخدمة بعد تأكيد الحجز.</DialogDescription>
+              <DialogTitle>Edit address</DialogTitle>
+              <DialogDescription>The provider will get this address after the booking is confirmed.</DialogDescription>
             </DialogHeader>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="ds-address">العنوان</Label>
-              <Input id="ds-address" defaultValue="مدينة نصر، شارع عباس العقاد" />
+              <Label htmlFor="ds-address">Address</Label>
+              <Input id="ds-address" defaultValue="Nasr City, Abbas El Akkad St." />
             </div>
             <DialogFooter>
-              <DialogClose render={<Button variant="outline" />}>تراجع</DialogClose>
-              <DialogClose render={<Button />} onClick={() => toast.success("تم حفظ العنوان")}>
-                احفظ العنوان
+              <DialogClose render={<Button variant="outline" />}>Undo</DialogClose>
+              <DialogClose render={<Button />} onClick={() => toast.success("Address saved")}>
+                Save address
               </DialogClose>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       </Demo>
 
-      <Demo title="ConfirmDialog — العواقب في العنوان">
+      <Demo title="ConfirmDialog — Consequences in the title">
         <ConfirmDialog
           trigger={<Button variant="destructive" />}
-          title="إلغاء الحجز؟ هيرجع لك المبلغ المحجوز خلال 3 أيام"
-          description="مزود الخدمة هيتبلغ بالإلغاء، ومش هتقدر ترجع الحجز تاني."
-          confirmLabel="ألغِ الحجز"
-          onConfirm={() => toast("تم إلغاء الحجز")}
+          title="Cancel the booking? The held amount will be refunded within 3 days"
+          description="The provider will be notified of the cancellation, and you won't be able to restore the booking."
+          confirmLabel="Cancel booking"
+          onConfirm={() => toast("Booking cancelled")}
         />
       </Demo>
 
-      <Demo title="Sheet — قوائم وفلاتر الموبايل">
+      <Demo title="Sheet — Mobile menus and filters">
         <Sheet>
-          <SheetTrigger render={<Button variant="outline" />}>الفلاتر</SheetTrigger>
+          <SheetTrigger render={<Button variant="outline" />}>Filters</SheetTrigger>
           <SheetContent side="left">
             <SheetHeader>
-              <SheetTitle>الفلاتر</SheetTitle>
-              <SheetDescription>بتفتح من بداية السطر (اليمين في العربي).</SheetDescription>
+              <SheetTitle>Filters</SheetTitle>
+              <SheetDescription>Opens from the start of the line (the left in English).</SheetDescription>
             </SheetHeader>
           </SheetContent>
         </Sheet>
         <Sheet>
-          <SheetTrigger render={<Button variant="outline" />}>من تحت</SheetTrigger>
+          <SheetTrigger render={<Button variant="outline" />}>From the bottom</SheetTrigger>
           <SheetContent side="bottom">
             <SheetHeader>
-              <SheetTitle>اختار الميعاد</SheetTitle>
+              <SheetTitle>Choose a time</SheetTitle>
             </SheetHeader>
           </SheetContent>
         </Sheet>
@@ -223,44 +223,44 @@ export function OverlayDemos() {
         <Popover>
           <PopoverTrigger render={<Button variant="outline" />}>
             <Info data-icon="inline-start" aria-hidden />
-            يعني إيه مبلغ محجوز؟
+            What is a held payment?
           </PopoverTrigger>
           <PopoverContent>
             <PopoverHeader>
-              <PopoverTitle>مبلغ محجوز</PopoverTitle>
-              <PopoverDescription>بندفع لمزود الخدمة بعد ما تأكد إن الشغل خلص.</PopoverDescription>
+              <PopoverTitle>Held payment</PopoverTitle>
+              <PopoverDescription>We pay the provider after you confirm the job is done.</PopoverDescription>
             </PopoverHeader>
           </PopoverContent>
         </Popover>
         <Tooltip>
-          <TooltipTrigger render={<Button size="icon" variant="ghost" aria-label="الإعدادات" />}>
+          <TooltipTrigger render={<Button size="icon" variant="ghost" aria-label="Settings" />}>
             <Settings />
           </TooltipTrigger>
-          <TooltipContent>الإعدادات</TooltipContent>
+          <TooltipContent>Settings</TooltipContent>
         </Tooltip>
         <DropdownMenu>
           <DropdownMenuTrigger render={<Button variant="outline" />}>
-            إجراءات
+            Actions
             <ChevronDown data-icon="inline-end" aria-hidden />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuGroup>
-              <DropdownMenuLabel>الخدمة</DropdownMenuLabel>
+              <DropdownMenuLabel>Service</DropdownMenuLabel>
               <DropdownMenuItem>
-                <Pencil aria-hidden /> عدّل الخدمة
+                <Pencil aria-hidden /> Edit service
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <MoreHorizontal aria-hidden /> انسخ الرابط
+                <MoreHorizontal aria-hidden /> Copy link
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem variant="destructive">
-              <Trash2 aria-hidden /> احذف الخدمة
+              <Trash2 aria-hidden /> Delete service
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Button variant="secondary" onClick={() => toast.success("تم الحجز", { description: "هنبعت لك تفاصيل الميعاد في رسالة." })}>
-          اعرض Toast
+        <Button variant="secondary" onClick={() => toast.success("Booked", { description: "We'll send you the appointment details in a message." })}>
+          Show Toast
         </Button>
       </Demo>
     </div>
@@ -274,23 +274,23 @@ export function NavigationDemos() {
       <Demo title="Tabs" className="flex-col items-stretch">
         <Tabs defaultValue="customers">
           <TabsList>
-            <TabsTrigger value="customers">للعملاء</TabsTrigger>
-            <TabsTrigger value="providers">لمزودي الخدمة</TabsTrigger>
+            <TabsTrigger value="customers">For customers</TabsTrigger>
+            <TabsTrigger value="providers">For providers</TabsTrigger>
           </TabsList>
           <TabsContent value="customers" className="pt-3 text-muted-foreground">
-            اختار الخدمة، احجز الميعاد، وادفع بأمان.
+            Choose a service, book a time, and pay safely.
           </TabsContent>
           <TabsContent value="providers" className="pt-3 text-muted-foreground">
-            استقبل طلبات في منطقتك وقدّم عروض أسعار.
+            Get requests in your area and send quotes.
           </TabsContent>
         </Tabs>
       </Demo>
-      <Demo title="Command — بحث سريع" className="items-stretch">
+      <Demo title="Command — Quick search" className="items-stretch">
         <Command className="rounded-lg border">
-          <CommandInput placeholder="ابحث عن خدمة…" />
+          <CommandInput placeholder="Search for a service…" />
           <CommandList>
-            <CommandEmpty>ما لقيناش نتائج.</CommandEmpty>
-            <CommandGroup heading="التصنيفات">
+            <CommandEmpty>No results found.</CommandEmpty>
+            <CommandGroup heading="Categories">
               {CATEGORIES.map((c) => (
                 <CommandItem key={c.value}>{c.label}</CommandItem>
               ))}

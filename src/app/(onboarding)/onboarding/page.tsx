@@ -7,7 +7,7 @@ import { OnboardingWizard } from "@/components/onboarding/OnboardingWizard"
  * GET /api/onboarding. The proxy sends signed-out users to sign-in and
  * finished users to their dashboard.
  */
-export const metadata: Metadata = { title: "كمّل تسجيلك", robots: { index: false, follow: false } }
+export const metadata: Metadata = { title: "Finish signing up", robots: { index: false, follow: false } }
 
 export default function OnboardingPage() {
   return <OnboardingWizard />

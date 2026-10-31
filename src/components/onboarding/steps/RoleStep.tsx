@@ -18,7 +18,7 @@ export function RoleStep({ state, onAdvance, onDirtyChange }: StepProps) {
 
   const submit = () => {
     if (!role) {
-      toast.error("اختار نوع الحساب الأول.")
+      toast.error("Choose an account type first.")
       return
     }
     if (!dirty) return onAdvance("next")
@@ -27,17 +27,17 @@ export function RoleStep({ state, onAdvance, onDirtyChange }: StepProps) {
 
   return (
     <StepCard
-      title="أهلًا بيك! هتستخدم المنصة إزاي؟"
-      description="تقدر تغيّر اختيارك لحد ما تخلّص التسجيل."
-      footer={<StepActions onPrimary={submit} primaryLabel="التالي" pending={save.isPending} />}
+      title="Welcome! How will you use the platform?"
+      description="You can change your choice until you finish signing up."
+      footer={<StepActions onPrimary={submit} primaryLabel="Next" pending={save.isPending} />}
     >
-      <div role="radiogroup" aria-label="نوع الحساب" className="grid gap-4 md:grid-cols-2">
+      <div role="radiogroup" aria-label="Account type" className="grid gap-4 md:grid-cols-2">
         <RoleCard
           name="role"
           value="CUSTOMER"
           icon={ClipboardList}
-          title="عايز أطلب خدمة"
-          description="احجز خدمات صيانة وتشطيب بسعر ثابت، أو اطلب عروض أسعار وقارن بينها."
+          title="I want to hire"
+          description="Book fixed-price maintenance and finishing services, or request quotes and compare them."
           checked={role === "CUSTOMER"}
           onSelect={() => setRole("CUSTOMER")}
         />
@@ -45,8 +45,8 @@ export function RoleStep({ state, onAdvance, onDirtyChange }: StepProps) {
           name="role"
           value="PROVIDER"
           icon={Wrench}
-          title="أنا مقدم خدمة"
-          description="اعرض خدماتك، استقبل طلبات في منطقتك، واستلم فلوسك بأمان."
+          title="I offer services"
+          description="Offer your services, get requests in your area, and get paid safely."
           checked={role === "PROVIDER"}
           onSelect={() => setRole("PROVIDER")}
         />

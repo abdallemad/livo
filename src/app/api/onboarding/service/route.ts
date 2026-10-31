@@ -10,6 +10,6 @@ export async function PUT(request: Request) {
     const values = await parseBody(request, firstServiceStepSchema) // 2. validate
     return ok(await saveFirstService(user.id, values)) // 3. delegate
   } catch (error) {
-    return toErrorResponse(error, "تعذّر حفظ الخدمة.")
+    return toErrorResponse(error, "Couldn't save the service.")
   }
 }

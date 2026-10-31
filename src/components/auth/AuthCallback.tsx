@@ -6,6 +6,10 @@ import { useAuth } from "@clerk/nextjs"
 import { Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useSyncUser } from "@/hooks/use-viewer"
+import type { Role } from "@prisma/client"
+
+/** After sign-in, each role lands on its own dashboard (docs/SITEMAP.md §1). */
+const HOME_BY_ROLE: Record<Role, string> = { CUSTOMER: "/account", PROVIDER: "/provider", ADMIN: "/admin" }
 
 export function AuthCallback() {
   const router = useRouter()
@@ -21,7 +25,7 @@ export function AuthCallback() {
     }
     if (started.current) return
     started.current = true
-    mutate({}, { onSuccess: (viewer) => router.replace(viewer.role === "ADMIN" ? "/admin" : "/") })
+    mutate({}, { onSuccess: (viewer) => router.replace(HOME_BY_ROLE[viewer.role]) })
   }, [isLoaded, isSignedIn, mutate, router])
 
   if (isError) {
@@ -30,7 +34,7 @@ export function AuthCallback() {
         <p className="text-sm text-destructive">{error.message}</p>
         <Button
           variant="outline"
-          onClick={() => mutate({}, { onSuccess: () => router.replace("/") })}
+          onClick={() => mutate({}, { onSuccess: (viewer) => router.replace(HOME_BY_ROLE[viewer.role]) })}
         >
           حاول مرة أخرى
         </Button>

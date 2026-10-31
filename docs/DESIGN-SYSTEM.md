@@ -356,10 +356,10 @@ src/
 │   ├── status.ts                      # state machine → label/variant/icon (§8)
 │   └── *-nav.ts
 ├── utils/format.ts                    # formatPrice, formatDate, formatPhone (Arabic locale, Latin digits)
-└── (admin)/admin/design-system/page.tsx   # living style guide (below)
+└── app/design-system-preview/page.tsx   # living style guide (below)
 ```
 
-**Living style guide:** `/admin/design-system` (inside the admin gate, `noindex`) renders every token, type style, button/badge variant, form field, each domain component in each state (empty / loading / error / long Arabic text), in light and dark. Add it to `SITEMAP.md` under Admin. It is the visual regression reference: **when you change a token or component, check this page.** It must not exist as a public route.
+**Living style guide:** `/design-system-preview` (`noindex`; open in development, admin-only 404 gate in production via `src/proxy.ts` + a check in the page) renders every token, type style, button/badge variant, form field, each domain component in each state (empty / loading / error / long Arabic text), in light and dark. Listed in `SITEMAP.md` (Internal). It is the visual regression reference: **when you change a token or component, check this page.** It must not exist as a public route in production.
 
 ---
 
@@ -375,7 +375,7 @@ src/
 - [ ] Status shown with icon + label via `StatusBadge`, not colour alone.
 - [ ] Prices via `formatPrice()`; numbers LTR inside RTL text.
 - [ ] No hard-coded Arabic copy that contradicts the glossary (§9).
-- [ ] New/changed component appears in `/admin/design-system`.
+- [ ] New/changed component appears in `/design-system-preview`.
 - [ ] `npm run lint` and `npm run build` pass.
 
 ---
@@ -387,10 +387,10 @@ src/
 2. Write tokens into `globals.css` (§2); add `commit/success/warning/info` to `@theme inline`.
 3. Load fonts, set `dir="rtl"`, add `DirectionProvider`, set `next-themes` default to `light`.
 4. Add `commit` Button variant, Button sizes, Badge variants.
-5. Convert all installed `ui/` components to logical utilities; add the RTL grep test.
+5. Convert all installed `ui/` components to logical utilities; add the RTL grep test (`tests/ui/rtl-classes.test.ts`).
 6. Add `utils/format.ts` and `constants/status.ts`.
 
-**Phase B: Shared & domain components** (§8), shells (§7), then the `/admin/design-system` page showing them all.
+**Phase B: Shared & domain components** (§8), shells (§7), then the `/design-system-preview` page showing them all.
 
 **Phase C: Pages** follow `SITEMAP.md` build order, composing only Phase A/B pieces. If a screen needs a pattern that does not exist, add it to Phase B first (and to the style-guide page), then use it.
 

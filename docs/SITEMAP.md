@@ -153,6 +153,11 @@ All `noindex`. Do **not** list `/admin` in `robots.ts`. CRUD routes follow `/adm
 | `/admin/content` | Static page content (FAQ, terms…) | SHOULD | AD-10 |
 | `/admin/audit-log` | Audit log | All financial ops and admin decisions | AD-11, NF-12 |
 
+### Internal — `src/app/design-system-preview/`
+| Route | Page | Access |
+|---|---|---|
+| `/design-system-preview` | Living style guide (DESIGN-SYSTEM.md §12): every token, component and state, light + dark | Open in development; **admin-only (404) in production** (proxy + page check). `noindex`, never in `sitemap.ts` |
+
 ---
 
 ## 6. API routes — `src/app/api/` (exceptions only)

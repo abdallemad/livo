@@ -3,6 +3,7 @@ import { NextResponse } from "next/server"
 import { isCrossSiteApiWrite } from "@/lib/api-guard"
 import { getRoleById } from "@/services/auth.service"
 import { apiFailure } from "@/types/api"
+import { getZoneRedirect, zoneFromPath } from "@/utils/zone-access"
 
 /**
  * Next 16 Proxy (formerly middleware), Node runtime, so it can query Prisma.
@@ -11,9 +12,17 @@ import { apiFailure } from "@/types/api"
  * 2. `/admin*` and `/api/admin/*`: non-admins get a 404 — never confirm the
  *    dashboard exists. Route handlers still call `requireAdmin()`; this is
  *    one of three independent layers (CLAUDE.md §5).
- * 3. `?page=1` on public listings → 301 to the clean URL.
+ * 3. `/account*` and `/provider*`: redirect by role (docs/SITEMAP.md §1,
+ *    rule shared with the zone layouts in `utils/zone-access.ts`).
+ * 4. `?page=1` on public listings → 301 to the clean URL.
+ * 5. `/search?…` → `X-Robots-Tag: noindex, follow` (CLAUDE.md §4.1 rule 7).
+ *
+ * `/design-system-preview` is open in development and admin-only (404) in
+ * production — it is a style guide, not a public page.
  */
-const isAdminPage = createRouteMatcher(["/admin(.*)"])
+const isAdminPage = createRouteMatcher(
+  process.env.NODE_ENV === "production" ? ["/admin(.*)", "/design-system-preview(.*)"] : ["/admin(.*)"]
+)
 const isAdminApi = createRouteMatcher(["/api/admin(.*)"])
 
 export default clerkMiddleware(async (auth, request) => {
@@ -42,13 +51,23 @@ export default clerkMiddleware(async (auth, request) => {
     }
   }
 
+  const zone = zoneFromPath(pathname)
+  if (zone) {
+    const { userId } = await auth()
+    const role = userId ? await getRoleById(userId) : null
+    const target = getZoneRedirect(zone, { signedIn: !!userId, role }, pathname)
+    if (target) return NextResponse.redirect(new URL(target, request.url))
+  }
+
   if (searchParams.get("page") === "1" && !pathname.startsWith("/api/")) {
     const url = request.nextUrl.clone()
     url.searchParams.delete("page")
     return NextResponse.redirect(url, 301)
   }
 
-  return NextResponse.next()
+  const response = NextResponse.next()
+  if (pathname === "/search" && request.nextUrl.search) response.headers.set("X-Robots-Tag", "noindex, follow")
+  return response
 })
 
 export const config = {

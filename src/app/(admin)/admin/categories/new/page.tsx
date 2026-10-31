@@ -1,9 +1,10 @@
 import type { Metadata } from "next"
-import { PagePlaceholder } from "@/components/shared"
+import { CategoryForm } from "@/components/admin/catalog/CategoryForm"
+import { getParentOptions } from "@/services/category.service"
 
-/** /admin/categories/new — docs/SITEMAP.md (AD-02). Private: `noindex` comes from the zone layout. */
+/** /admin/categories/new — create a category (AD-02). Saves through `POST /api/admin/categories`. */
 export const metadata: Metadata = { title: "New category" }
 
-export default function AdminCategoriesNewPage() {
-  return <PagePlaceholder title={"New category"} description={"Type, parent category, and status."} route="/admin/categories/new" reqs={["AD-02"]} />
+export default async function AdminNewCategoryPage() {
+  return <CategoryForm parents={await getParentOptions()} />
 }

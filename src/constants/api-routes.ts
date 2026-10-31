@@ -23,7 +23,19 @@ export const API_ROUTES = {
   },
   admin: {
     dashboard: "/api/admin/dashboard",
+    providers: "/api/admin/providers",
+    provider: (id: string) => `/api/admin/providers/${encodeURIComponent(id)}`,
     providerStatus: (id: string) => `/api/admin/providers/${encodeURIComponent(id)}/status`,
     disputeStatus: (id: string) => `/api/admin/disputes/${encodeURIComponent(id)}/status`,
+    users: "/api/admin/users",
+    user: (id: string) => `/api/admin/users/${encodeURIComponent(id)}`,
+    userStatus: (id: string) => `/api/admin/users/${encodeURIComponent(id)}/status`,
+    categories: "/api/admin/categories",
+    category: (id: string) => `/api/admin/categories/${encodeURIComponent(id)}`,
+    categoryStatus: (id: string) => `/api/admin/categories/${encodeURIComponent(id)}/status`,
+    services: "/api/admin/services",
+    serviceStatus: (id: string) => `/api/admin/services/${encodeURIComponent(id)}/status`,
+    /** Admin-only preview of a provider verification document (307 to a signed link). */
+    file: (id: string) => `/api/admin/files/${encodeURIComponent(id)}`,
   },
 } as const

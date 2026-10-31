@@ -13,7 +13,11 @@ const fs = require("node:fs")
 
 // Order matters. Append new files; never edit or remove applied ones.
 // (2026-10-31-init.sql was replaced by the baseline pre-launch; it never reached a real database.)
-const migrationFiles = ["2026-11-01-schema-baseline.sql", "2026-11-01-onboarding.sql"]
+const migrationFiles = [
+  "2026-11-01-schema-baseline.sql",
+  "2026-11-01-onboarding.sql",
+  "2026-11-02-service-moderation.sql",
+]
 
 // Neon names the pooled endpoint `ep-xxx-pooler.<region>…` and the direct one `ep-xxx.<region>…`.
 function dbIdentity(raw) {

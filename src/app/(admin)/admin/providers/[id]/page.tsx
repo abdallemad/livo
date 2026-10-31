@@ -1,9 +1,24 @@
+import { cache } from "react"
 import type { Metadata } from "next"
-import { PagePlaceholder } from "@/components/shared"
+import { notFound } from "next/navigation"
+import { ProviderReview } from "@/components/admin/providers/ProviderReview"
+import { getProviderDetail } from "@/services/provider-review.service"
 
-/** /admin/providers/[id] — docs/SITEMAP.md (AD-01). Private: `noindex` comes from the zone layout. */
-export const metadata: Metadata = { title: "Review provider" }
+/**
+ * /admin/providers/[id] — review one provider (docs/SITEMAP.md §5, AD-01). The first
+ * snapshot is read on the server (service called directly — CLAUDE.md §2 exception; the
+ * admin layout already enforced the role) and handed to the client as `initialData`;
+ * decisions go through `PATCH /api/admin/providers/[id]/status` and refetch it.
+ */
+const load = cache(getProviderDetail)
 
-export default function AdminProvidersIdPage() {
-  return <PagePlaceholder title={"Review provider"} description={"Documents, approve or reject with a reason."} route="/admin/providers/[id]" reqs={["AD-01"]} />
+export async function generateMetadata({ params }: PageProps<"/admin/providers/[id]">): Promise<Metadata> {
+  const provider = await load((await params).id)
+  return { title: provider ? `Review ${provider.name}` : "Provider not found" }
+}
+
+export default async function AdminProviderReviewPage({ params }: PageProps<"/admin/providers/[id]">) {
+  const provider = await load((await params).id)
+  if (!provider) notFound()
+  return <ProviderReview initialData={provider} />
 }

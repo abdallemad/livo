@@ -1,9 +1,20 @@
+import { cache } from "react"
 import type { Metadata } from "next"
-import { PagePlaceholder } from "@/components/shared"
+import { notFound } from "next/navigation"
+import { CategoryForm } from "@/components/admin/catalog/CategoryForm"
+import { getCategoryForAdmin, getParentOptions } from "@/services/category.service"
 
-/** /admin/categories/[id]/edit — docs/SITEMAP.md (AD-02). Private: `noindex` comes from the zone layout. */
-export const metadata: Metadata = { title: "Edit category" }
+/** /admin/categories/[id]/edit — edit a category (AD-02). Saves through `PATCH /api/admin/categories/[id]`. */
+const load = cache(getCategoryForAdmin)
 
-export default function AdminCategoriesIdEditPage() {
-  return <PagePlaceholder title={"Edit category"} description={"Type, parent category, and status."} route="/admin/categories/[id]/edit" reqs={["AD-02"]} />
+export async function generateMetadata({ params }: PageProps<"/admin/categories/[id]/edit">): Promise<Metadata> {
+  const category = await load((await params).id)
+  return { title: category ? `Edit ${category.nameEn || category.nameAr}` : "Category not found" }
+}
+
+export default async function AdminEditCategoryPage({ params }: PageProps<"/admin/categories/[id]/edit">) {
+  const { id } = await params
+  const [category, parents] = await Promise.all([load(id), getParentOptions(id)])
+  if (!category) notFound()
+  return <CategoryForm category={category} parents={parents} />
 }

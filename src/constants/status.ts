@@ -6,6 +6,8 @@ import {
   Clock,
   CreditCard,
   Eye,
+  Ban,
+  Trash2,
   Hourglass,
   FileEdit,
   Handshake,
@@ -16,7 +18,7 @@ import {
   XCircle,
   type LucideIcon,
 } from "lucide-react"
-import type { BookingStatus, DisputeStatus } from "@prisma/client"
+import type { BookingStatus, DisputeStatus, Role, UserStatus, VerificationStatus as DbVerificationStatus } from "@prisma/client"
 
 /**
  * Request / booking state machine → label, badge variant and icon
@@ -95,3 +97,21 @@ export const DISPUTE_STATUS: Record<DisputeStatus, StatusMeta> = {
   UNDER_REVIEW: { label: "Under review", variant: "warning", icon: Eye },
   RESOLVED: { label: "Resolved", variant: "success", icon: CheckCircle2 },
 }
+
+/** Raw `ProviderProfile.verificationStatus` (DB enum) for admin screens; DRAFT = still in the wizard. */
+export const PROVIDER_STATUS: Record<DbVerificationStatus, StatusMeta> = {
+  DRAFT: { label: "Incomplete", variant: "neutral", icon: FileEdit },
+  PENDING: { label: "Under review", variant: "warning", icon: Clock },
+  APPROVED: { label: "Active", variant: "success", icon: CheckCircle2 },
+  REJECTED: { label: "Rejected", variant: "destructive", icon: XCircle },
+  SUSPENDED: { label: "Suspended", variant: "destructive", icon: AlertTriangle },
+}
+
+/** `User.status` (AD-03). */
+export const USER_STATUS: Record<UserStatus, StatusMeta> = {
+  ACTIVE: { label: "Active", variant: "success", icon: CheckCircle2 },
+  SUSPENDED: { label: "Suspended", variant: "destructive", icon: Ban },
+  DELETED: { label: "Deleted", variant: "neutral", icon: Trash2 },
+}
+
+export const ROLE_LABEL: Record<Role, string> = { CUSTOMER: "Customer", PROVIDER: "Provider", ADMIN: "Admin" }

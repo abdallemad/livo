@@ -17,6 +17,7 @@ export async function requireZone(zone: PrivateZone): Promise<void> {
     signedIn: !!userId,
     role: gate?.role ?? null,
     onboardingCompleted: gate?.onboardingCompleted ?? false,
+    suspended: gate?.suspended ?? false,
   })
   if (target) redirect(target)
 }

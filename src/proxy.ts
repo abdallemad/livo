@@ -58,7 +58,12 @@ export default clerkMiddleware(async (auth, request) => {
     const gate = userId ? await getGateById(userId) : null
     const target = getZoneRedirect(
       zone,
-      { signedIn: !!userId, role: gate?.role ?? null, onboardingCompleted: gate?.onboardingCompleted ?? false },
+      {
+        signedIn: !!userId,
+        role: gate?.role ?? null,
+        onboardingCompleted: gate?.onboardingCompleted ?? false,
+        suspended: gate?.suspended ?? false,
+      },
       pathname
     )
     if (target) return NextResponse.redirect(new URL(target, request.url))

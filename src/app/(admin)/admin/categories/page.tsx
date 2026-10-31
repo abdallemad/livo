@@ -1,9 +1,15 @@
 import type { Metadata } from "next"
-import { PagePlaceholder } from "@/components/shared"
+import { CategoriesTable } from "@/components/admin/catalog/CategoriesTable"
+import { listCategoriesForAdmin } from "@/services/category.service"
 
-/** /admin/categories — docs/SITEMAP.md (AD-02). Private: `noindex` comes from the zone layout. */
+/**
+ * /admin/categories — the category tree (docs/SITEMAP.md §5, AD-02, docs/admin-catalog-feature.md).
+ * First snapshot read on the server (service called directly — CLAUDE.md §2 exception; the admin
+ * layout enforced the role) and handed to the client as `initialData`; on/off and delete go through
+ * `/api/admin/categories/*` and refetch. Private: `noindex` from the admin layout.
+ */
 export const metadata: Metadata = { title: "Categories" }
 
-export default function AdminCategoriesPage() {
-  return <PagePlaceholder title={"Categories"} description={"Service categories: fixed price, quote, or both."} route="/admin/categories" reqs={["AD-02"]} />
+export default async function AdminCategoriesPage() {
+  return <CategoriesTable initialData={await listCategoriesForAdmin()} />
 }

@@ -25,7 +25,7 @@ import { useAdminDashboard, useStartDisputeReview } from "@/hooks/use-admin-dash
 import { cn } from "@/lib/utils"
 import type { AdminDashboardDto } from "@/types/admin"
 import { formatDate, formatNumber, formatPrice } from "@/utils/format"
-import { ProviderDecisionActions } from "./ProviderDecisionActions"
+import { ProviderDecisionActions } from "@/components/admin/providers/ProviderDecisionActions"
 
 /**
  * `/admin` body (AD-09, docs/admin-dashboard-feature.md). The server page
@@ -201,7 +201,7 @@ function PendingProvidersCard({ data, className }: { data: AdminDashboardDto; cl
                     <VerificationBadge status="PENDING" />
                   </TableCell>
                   <TableCell>
-                    <ProviderDecisionActions id={p.id} name={p.name} />
+                    <ProviderDecisionActions id={p.id} name={p.name} status="PENDING" size="sm" />
                   </TableCell>
                 </TableRow>
               ))

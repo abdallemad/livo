@@ -1,8 +1,9 @@
 "use client"
 
 import Link from "next/link"
-import { AlertTriangle, Ban, Lock, LockOpen, MessageSquare, ShieldAlert, Star } from "lucide-react"
+import { AlertTriangle, Ban, Lock, LockOpen, Star } from "lucide-react"
 import { toast } from "sonner"
+import { ChatTranscript } from "@/components/admin/shared/ChatTranscript"
 import { DetailField } from "@/components/admin/shared/DetailField"
 import { HistoryCard } from "@/components/admin/shared/HistoryCard"
 import { ReasonDialog } from "@/components/admin/shared/ReasonDialog"
@@ -213,50 +214,7 @@ export function BookingDetail({ initialData }: { initialData: AdminBookingDetail
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Chat</CardTitle>
-              <CardDescription>Read-only. Shown so the team can settle disputes.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {b.messages.length === 0 ? (
-                <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <MessageSquare className="size-4" aria-hidden />
-                  No messages.
-                </p>
-              ) : (
-                <ol className="space-y-3">
-                  {b.messages.map((m) => (
-                    <li key={m.id} className={cn("flex", m.senderSide === "PROVIDER" ? "justify-end" : "justify-start")}>
-                      <div
-                        className={cn(
-                          "max-w-[85%] rounded-xl border px-3 py-2",
-                          m.senderSide === "PROVIDER" ? "bg-primary/5" : "bg-card",
-                          m.contactBlocked && "border-warning/50",
-                        )}
-                      >
-                        <p className="text-xs font-medium text-muted-foreground">
-                          {m.senderName} · {m.senderSide === "CUSTOMER" ? "customer" : m.senderSide === "PROVIDER" ? "provider" : "other"}
-                        </p>
-                        <p className="whitespace-pre-wrap" dir="auto">
-                          {m.body}
-                        </p>
-                        <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
-                          <span className="tabular-nums">{formatDateTime(m.createdAt)}</span>
-                          {m.contactBlocked ? (
-                            <span className="flex items-center gap-1 text-warning">
-                              <ShieldAlert className="size-3.5" aria-hidden />
-                              Contact details blocked
-                            </span>
-                          ) : null}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-              )}
-            </CardContent>
-          </Card>
+          <ChatTranscript messages={b.messages} />
         </div>
 
         <div className="space-y-6">

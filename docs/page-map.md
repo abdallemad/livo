@@ -108,12 +108,12 @@ Dashboard shell, dynamic, `noindex`; non-admins get a 404 (proxy + layout + ever
 | `/admin/requests/[id]` | Request details | Request, every quote, its booking, history, close request | built | AD-04 |
 | `/admin/bookings` | Bookings | Status (with counts) + type filters, search; amount, commission, payment/escrow | built | AD-04 |
 | `/admin/bookings/[id]` | Booking details | Money snapshot, payments/escrow, milestones, timeline, read-only chat, reviews, history, cancel while unpaid | built | AD-04 |
-| `/admin/disputes` | Disputes | Open disputes | placeholder | AD-05 |
-| `/admin/disputes/[id]` | Resolve dispute | Evidence, decision, full or partial refund | placeholder | AD-05 |
+| `/admin/disputes` | Disputes | Status tabs + counts, search, money held ([admin-disputes-reviews-feature.md](admin-disputes-reviews-feature.md)) | built | AD-05 |
+| `/admin/disputes/[id]` | Resolve dispute | Evidence, chat, money, start review, decision with live money preview (release / partial / full refund / no action) | built | AD-05 |
 | `/admin/payments` | Payments | Review all payments | placeholder | AD-07 |
 | `/admin/payouts` | Payout requests | Approve, reject, mark as paid | placeholder | AD-07 |
 | `/admin/settings/commission` | Commission | Platform-wide commission rate | placeholder | AD-06 |
-| `/admin/reviews` | Reviews | Hide abusive reviews | placeholder | AD-08 |
+| `/admin/reviews` | Reviews | Both directions, filters, hide / show (rating recomputed, BR-04 flag) | built | AD-08 |
 | `/admin/content` | Page content | FAQ, terms, static pages | placeholder | AD-10 |
 | `/admin/audit-log` | Audit log | Financial operations and admin decisions | placeholder | AD-11, NF-12 |
 

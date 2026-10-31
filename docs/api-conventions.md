@@ -24,8 +24,10 @@ Admin endpoints today: `GET /api/admin/dashboard`, `GET /api/admin/providers`, `
 `GET|PATCH|DELETE /api/admin/categories/[id]`, `PATCH /api/admin/categories/[id]/status`, `GET /api/admin/services`,
 `PATCH /api/admin/services/[id]/status`, `GET /api/admin/requests`, `GET /api/admin/requests/[id]`,
 `PATCH /api/admin/requests/[id]/status`, `GET /api/admin/bookings`, `GET /api/admin/bookings/[id]`,
-`PATCH /api/admin/bookings/[id]/status` (see `docs/admin-dashboard-feature.md`, `docs/admin-providers-users-feature.md`,
-`docs/admin-catalog-feature.md`, `docs/admin-requests-bookings-feature.md`).
+`PATCH /api/admin/bookings/[id]/status`, `GET /api/admin/disputes`, `GET /api/admin/disputes/[id]`,
+`GET /api/admin/reviews`, `PATCH /api/admin/reviews/[id]/status` (see `docs/admin-dashboard-feature.md`,
+`docs/admin-providers-users-feature.md`, `docs/admin-catalog-feature.md`, `docs/admin-requests-bookings-feature.md`,
+`docs/admin-disputes-reviews-feature.md`). `PATCH /api/admin/disputes/[id]/status` takes `UNDER_REVIEW` or `RESOLVED` + a decision.
 
 `requireUser()` (and so `requireRole`/`requireProvider`/`requireAdmin`) also rejects accounts whose
 `User.status` isn't `ACTIVE` with **403** (AD-03 suspension).

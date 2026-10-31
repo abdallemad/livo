@@ -2,6 +2,7 @@ import type {
   BookingSource,
   BookingStatus,
   CategoryType,
+  DisputeResolution,
   DisputeStatus,
   DocumentType,
   EscrowState,
@@ -14,6 +15,7 @@ import type {
   UserStatus,
   VerificationStatus,
 } from "@prisma/client"
+import type { SettlementPayment } from "@/utils/dispute-settlement"
 import type { ServiceVisibilityState } from "@/utils/service-visibility"
 import type { Paginated } from "./api"
 
@@ -378,4 +380,77 @@ export interface AdminRequestList extends Paginated<AdminRequestListItem> {
 
 export interface AdminBookingList extends Paginated<AdminBookingListItem> {
   counts: Record<BookingStatus, number>
+}
+
+// ---------------------------------------------------------------------------
+// Disputes (`/admin/disputes`, AD-05) and reviews (`/admin/reviews`, AD-08)
+// ---------------------------------------------------------------------------
+
+export type AdminMessageDto = AdminBookingDetail["messages"][number]
+
+export interface AdminDisputeListItem {
+  id: string
+  bookingId: string
+  bookingNumber: string
+  reason: string
+  status: DisputeStatus
+  resolution: DisputeResolution | null
+  openedBySide: "CUSTOMER" | "PROVIDER" | "OTHER"
+  openedByName: string
+  customerId: string
+  customerName: string
+  providerId: string
+  providerName: string
+  amount: number
+  /** Online money Livo still holds for the booking. */
+  held: number
+  evidenceCount: number
+  createdAt: string
+  resolvedAt: string | null
+}
+
+export interface AdminDisputeList extends Paginated<AdminDisputeListItem> {
+  counts: Record<DisputeStatus, number>
+}
+
+export interface AdminDisputeDetail extends AdminDisputeListItem {
+  resolutionNote: string | null
+  refundAmount: number | null
+  resolvedBy: string | null
+  booking: {
+    status: BookingStatus
+    source: BookingSource
+    title: string
+    commissionRate: number
+    scheduledAt: string | null
+    completedAt: string | null
+  }
+  payments: (SettlementPayment & { method: PaymentMethod; milestone: string | null })[]
+  /** EARNING + REFUND_CLAWBACK already credited for this booking — feeds the settlement preview. */
+  walletCreditedSoFar: number
+  availableResolutions: DisputeResolution[]
+  evidence: { id: string; mimeType: string; sizeBytes: number; createdAt: string; url: string }[]
+  messages: AdminMessageDto[]
+  history: AuditEntryDto[]
+}
+
+export interface AdminReviewListItem {
+  id: string
+  rating: number
+  comment: string | null
+  providerReply: string | null
+  isHidden: boolean
+  /** True when the reviewee is the booking's provider (customer → provider). */
+  ofProvider: boolean
+  reviewerId: string
+  reviewerName: string
+  revieweeId: string
+  revieweeName: string
+  bookingId: string
+  bookingNumber: string
+  createdAt: string
+}
+
+export interface AdminReviewList extends Paginated<AdminReviewListItem> {
+  hiddenCount: number
 }

@@ -1,8 +1,7 @@
 import "server-only"
 import type { Prisma, VerificationStatus } from "@prisma/client"
 import { API_ROUTES } from "@/constants/api-routes"
-import { ConflictError, NotFoundError, ServiceUnavailableError } from "@/lib/errors"
-import { isR2Configured, presignInline } from "@/lib/r2.provider"
+import { ConflictError, NotFoundError } from "@/lib/errors"
 import { auditRepository } from "@/repositories/audit.repository"
 import { providerRepository as repo, type ProviderListRow } from "@/repositories/provider.repository"
 import type { ProviderDecision, ProviderDecisionValues, ProviderListQuery } from "@/schemas/admin.schema"
@@ -130,18 +129,6 @@ export async function getProviderDetail(providerId: string): Promise<AdminProvid
     })),
     history,
   }
-}
-
-/**
- * Verification documents are private (PR-02): an admin sees them through a
- * 5-minute signed inline link. Only files attached to a ProviderDocument are
- * reachable here, so this route can't be used to read any other upload.
- */
-export async function getProviderDocumentUrl(fileId: string): Promise<string> {
-  const doc = await repo.findDocumentFile(fileId)
-  if (!doc) throw new NotFoundError("Document not found.")
-  if (!isR2Configured()) throw new ServiceUnavailableError("Document previews aren't available right now.")
-  return presignInline(doc.file.key, doc.file.mimeType)
 }
 
 /**

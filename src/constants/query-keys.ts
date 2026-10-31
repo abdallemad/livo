@@ -31,4 +31,9 @@ export const adminKeys = {
   bookings: () => [...adminKeys.all, "bookings"] as const,
   bookingList: (query: object) => [...adminKeys.bookings(), "list", query] as const,
   booking: (id: string) => [...adminKeys.bookings(), "detail", id] as const,
+  disputes: () => [...adminKeys.all, "disputes"] as const,
+  disputeList: (query: object) => [...adminKeys.disputes(), "list", query] as const,
+  dispute: (id: string) => [...adminKeys.disputes(), "detail", id] as const,
+  reviews: () => [...adminKeys.all, "reviews"] as const,
+  reviewList: (query: object) => [...adminKeys.reviews(), "list", query] as const,
 }

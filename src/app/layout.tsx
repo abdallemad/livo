@@ -1,9 +1,11 @@
 import type { Metadata } from "next"
 import { ClerkProvider } from "@clerk/nextjs"
 import { GoogleAnalytics } from "@next/third-parties/google"
-import { Geist_Mono, IBM_Plex_Sans_Arabic } from "next/font/google"
+import { IBM_Plex_Sans_Arabic, Readex_Pro } from "next/font/google"
 import { QueryProvider } from "@/components/providers/query-provider"
 import { ThemeProvider } from "@/components/providers/theme-provider"
+import { DirectionProvider } from "@/components/ui/direction"
+import { TooltipProvider } from "@/components/ui/tooltip"
 import { Toaster } from "@/components/ui/sonner"
 import { getSiteUrl } from "@/lib/site-url"
 import {
@@ -22,16 +24,19 @@ import "./globals.css"
  * (no auth(), cookies(), headers()) — that would make every page dynamic.
  * `<ClerkProvider>` stays static: never pass it the `dynamic` prop.
  */
-const fontSans = IBM_Plex_Sans_Arabic({
-  variable: "--font-sans",
+/** Body / UI text (docs/DESIGN-SYSTEM.md §3). */
+const fontBody = IBM_Plex_Sans_Arabic({
+  variable: "--font-body",
   subsets: ["arabic", "latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600"],
   display: "swap",
 })
 
-const fontMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+/** Headings / display. */
+const fontDisplay = Readex_Pro({
+  variable: "--font-display",
+  subsets: ["arabic", "latin"],
+  weight: ["500", "600", "700"],
   display: "swap",
 })
 
@@ -51,16 +56,21 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <html
         lang={SITE_LANG}
         dir={SITE_DIR}
-        className={`${fontSans.variable} ${fontMono.variable} antialiased`}
+        className={`${fontBody.variable} ${fontDisplay.variable} antialiased`}
         suppressHydrationWarning
       >
         <body className="flex min-h-dvh flex-col bg-background text-foreground">
-          <ThemeProvider>
-            <QueryProvider>
-              {children}
-              <Toaster />
-            </QueryProvider>
-          </ThemeProvider>
+          {/* Base UI reads direction from here: menus, tabs, sliders and arrow keys follow RTL. */}
+          <DirectionProvider direction={SITE_DIR}>
+            <ThemeProvider>
+              <QueryProvider>
+                <TooltipProvider>
+                  {children}
+                  <Toaster />
+                </TooltipProvider>
+              </QueryProvider>
+            </ThemeProvider>
+          </DirectionProvider>
         </body>
         {process.env.NODE_ENV === "production" && gaId ? <GoogleAnalytics gaId={gaId} /> : null}
       </html>

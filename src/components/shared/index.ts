@@ -1,1 +1,13 @@
+/** Domain-neutral building blocks (docs/DESIGN-SYSTEM.md §8). Presentational only — no data fetching. */
+export { BookingTimeline, type TimelineEvent } from "./booking-timeline"
+export { ConfirmDialog } from "./confirm-dialog"
 export { EmptyState } from "./empty-state"
+export { Ltr } from "./ltr"
+export { PageHeader } from "./page-header"
+export { PagePlaceholder } from "./page-placeholder"
+export { PriceTag } from "./price-tag"
+export { RatingInput, RatingStars } from "./rating-stars"
+export { StatCard } from "./stat-card"
+export { StatusBadge, VerificationBadge } from "./status-badge"
+export { Stepper } from "./stepper"
+export { VerifiedBadge } from "./verified-badge"

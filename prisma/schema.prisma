@@ -1,53 +1,795 @@
-// Livo — Prisma schema. Conventions: CLAUDE.md §6.
-// Schema changes ship as additive, idempotent SQL in prisma/sql/ (applied by
-// scripts/prebuild-db.cjs), never as destructive `prisma db push`.
+// =============================================================================
+// Livo MVP: Prisma schema (PostgreSQL, Prisma 6)
+// Source: SRS v0.1 + Business Analysis v0.1 + CLAUDE.md conventions.
+//
+// Conventions (CLAUDE.md §6):
+//  - cuid ids, except User (= Clerk user id) and the 1:1 profile tables (id = userId)
+//  - slug @unique on public entities, isActive visibility flags
+//  - Decimal for all money; enums for every status machine
+//  - File table = source of truth for stored R2 objects
+//  - DATABASE_URL = pooled, DIRECT_URL = Prisma CLI only
+//  - Visibility (isActive / APPROVED provider) is enforced in the SERVICE layer
+//
+// Request lifecycle (SRS 2.3) is split across three tables so each stays simple:
+//   ServiceRequest: DRAFT > OPEN > ACCEPTED | CANCELLED | EXPIRED
+//   Quote:          PENDING > ACCEPTED | REJECTED | WITHDRAWN | EXPIRED
+//   Booking:        PENDING_PAYMENT > PENDING_PROVIDER > CONFIRMED > IN_PROGRESS
+//                   > AWAITING_CONFIRMATION > COMPLETED > CLOSED  (+ CANCELLED/REJECTED/DISPUTED)
+// =============================================================================
 
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"] // node:22-alpine image
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL") // pooled (transaction pooler) — runtime + build
-  directUrl = env("DIRECT_URL")   // session/direct — Prisma CLI only
+  url       = env("DATABASE_URL")
 }
 
-/// Customer requests work, Provider delivers it, Admin runs the platform (SRS §2.1).
+// ============================ ENUMS ==========================================
+
 enum Role {
   CUSTOMER
   PROVIDER
   ADMIN
 }
 
-/// `id` IS the Clerk user id. Name/email/phone are a first-sign-in snapshot;
-/// the UI reads live identity from Clerk.
-model User {
-  id        String   @id
-  role      Role     @default(CUSTOMER)
-  email     String?
-  phone     String?
-  name      String?
-  imageUrl  String?
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  DELETED // soft delete (AU-07); PII is scrubbed by the service
+}
+
+enum CategoryType {
+  FIXED // fixed-price catalog services only
+  QUOTE // quote-based projects only
+  BOTH
+}
+
+enum VerificationStatus {
+  DRAFT // profile being completed
+  PENDING // under review (PR-03)
+  APPROVED // active
+  REJECTED
+  SUSPENDED
+}
+
+enum DocumentType {
+  NATIONAL_ID
+  SELFIE
+  CERTIFICATE
+  OTHER
+}
+
+enum RequestStatus {
+  DRAFT
+  OPEN
+  ACCEPTED
+  CANCELLED
+  EXPIRED // BR-05
+}
+
+enum QuoteStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+  EXPIRED
+}
+
+enum BookingSource {
+  SERVICE // fixed-price service
+  QUOTE // accepted quote
+}
+
+enum BookingStatus {
+  PENDING_PAYMENT
+  PENDING_PROVIDER // paid/placed, waiting for provider accept (PR-08)
+  CONFIRMED // contact details unlock here (BR-02)
+  IN_PROGRESS
+  AWAITING_CONFIRMATION // provider marked done, customer must confirm (CU-09)
+  COMPLETED
+  CLOSED // reviewed / objection window passed
+  CANCELLED
+  REJECTED // provider declined
+  DISPUTED
+}
+
+enum PaymentMethod {
+  ONLINE
+  CASH
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum EscrowState {
+  NONE // cash or not yet paid
+  HELD
+  RELEASED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum MilestoneStatus {
+  PENDING
+  FUNDED
+  RELEASED
+  REFUNDED
+}
+
+enum WalletTxType {
+  EARNING // net amount credited after release
+  COMMISSION_DEBT // cash job: commission the provider owes the platform
+  PAYOUT // withdrawal paid out
+  REFUND_CLAWBACK // dispute refund taken back from provider
+  ADJUSTMENT // manual admin correction (audited)
+}
+
+enum PayoutStatus {
+  REQUESTED
+  APPROVED
+  PAID
+  REJECTED
+}
+
+enum DisputeStatus {
+  OPEN
+  UNDER_REVIEW
+  RESOLVED
+}
+
+enum DisputeResolution {
+  FULL_REFUND
+  PARTIAL_REFUND
+  RELEASE_TO_PROVIDER
+  NO_ACTION
+}
+
+enum NotificationType {
+  NEW_REQUEST_MATCH
+  QUOTE_RECEIVED
+  QUOTE_ACCEPTED
+  BOOKING_CREATED
+  BOOKING_CONFIRMED
+  BOOKING_STATUS_CHANGED
+  PAYMENT_UPDATE
+  NEW_MESSAGE
+  REVIEW_RECEIVED
+  PROVIDER_DECISION // AD-01 approve / reject
+  DISPUTE_UPDATE
+  PAYOUT_UPDATE
+  SYSTEM
+}
+
+// ============================ GEOGRAPHY (NF-09) ==============================
+// Cities/areas are data, not code, so adding a city needs no deploy.
+
+model City {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  nameAr    String
+  nameEn    String?
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  files File[]
-
-  @@index([role])
+  areas             Area[]
+  addresses         Address[]
+  requests          ServiceRequest[]
+  providerProfiles  ProviderProfile[]
 }
 
-/// Source of truth for every object stored in R2.
+model Area {
+  id        String   @id @default(cuid())
+  cityId    String
+  slug      String
+  nameAr    String
+  nameEn    String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  city      City               @relation(fields: [cityId], references: [id], onDelete: Restrict)
+  addresses Address[]
+  requests  ServiceRequest[]
+  providers ProviderArea[]
+
+  @@unique([cityId, slug])
+  @@index([cityId, isActive])
+}
+
+// ============================ USERS ==========================================
+
+model User {
+  id        String     @id // Clerk user id (CLAUDE.md §5)
+  phone     String?    @unique // E.164, from Clerk OTP sign-up (AU-01)
+  name      String
+  email     String?
+  avatarUrl String?
+  role      Role       @default(CUSTOMER)
+  status    UserStatus @default(ACTIVE)
+  deletedAt DateTime?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  customerProfile CustomerProfile?
+  providerProfile ProviderProfile?
+
+  requests         ServiceRequest[]
+  bookingsAsCustomer Booking[]       @relation("BookingCustomer")
+  messagesSent     Message[]
+  reviewsWritten   Review[]          @relation("ReviewReviewer")
+  reviewsReceived  Review[]          @relation("ReviewReviewee")
+  disputesOpened   Dispute[]         @relation("DisputeOpenedBy")
+  disputesResolved Dispute[]         @relation("DisputeResolvedBy")
+  notifications    Notification[]
+  addresses        Address[]
+  uploadedFiles    File[]
+  auditLogs        AuditLog[]
+
+  @@index([role, status])
+}
+
+model CustomerProfile {
+  userId    String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Address {
+  id        String   @id @default(cuid())
+  userId    String
+  label     String? // "Home", "Office"
+  cityId    String
+  areaId    String?
+  street    String
+  details   String? // building, floor, landmark
+  latitude  Decimal? @db.Decimal(9, 6)
+  longitude Decimal? @db.Decimal(9, 6)
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  city     City             @relation(fields: [cityId], references: [id], onDelete: Restrict)
+  area     Area?            @relation(fields: [areaId], references: [id], onDelete: SetNull)
+  requests ServiceRequest[]
+
+  @@index([userId])
+}
+
+// ============================ PROVIDERS ======================================
+
+model ProviderProfile {
+  userId             String             @id
+  cityId             String
+  bio                String?
+  yearsExperience    Int?
+  verificationStatus VerificationStatus @default(DRAFT)
+  rejectionReason    String? // AD-01: reason shown to provider
+  reviewedById       String? // admin user id (audited in AuditLog)
+  reviewedAt         DateTime?
+
+  // Denormalised counters, updated in the same transaction as the source row.
+  ratingAvg      Decimal @default(0) @db.Decimal(3, 2)
+  ratingCount    Int     @default(0)
+  completedCount Int     @default(0)
+  underReview    Boolean @default(false) // BR-04: low rating after N bookings
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user       User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  city       City                @relation(fields: [cityId], references: [id], onDelete: Restrict)
+  categories ProviderCategory[]
+  areas      ProviderArea[]
+  documents  ProviderDocument[]
+  portfolio  PortfolioItem[]
+  services   Service[]
+  quotes     Quote[]
+  bookings   Booking[]
+  availability Availability[]
+  wallet     WalletTransaction[]
+  payouts    Payout[]
+
+  @@index([verificationStatus, cityId])
+}
+
+model ProviderCategory {
+  providerId String
+  categoryId String
+
+  provider ProviderProfile @relation(fields: [providerId], references: [userId], onDelete: Cascade)
+  category Category        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([providerId, categoryId])
+  @@index([categoryId])
+}
+
+model ProviderArea {
+  providerId String
+  areaId     String
+
+  provider ProviderProfile @relation(fields: [providerId], references: [userId], onDelete: Cascade)
+  area     Area            @relation(fields: [areaId], references: [id], onDelete: Cascade)
+
+  @@id([providerId, areaId])
+  @@index([areaId])
+}
+
+// PR-02: private verification documents (never publicly streamed)
+model ProviderDocument {
+  id         String       @id @default(cuid())
+  providerId String
+  type       DocumentType
+  fileId     String       @unique
+  createdAt  DateTime     @default(now())
+
+  provider ProviderProfile @relation(fields: [providerId], references: [userId], onDelete: Cascade)
+  file     File            @relation(fields: [fileId], references: [id], onDelete: Restrict)
+
+  @@index([providerId])
+}
+
+// PR-04: portfolio; images are File rows pointing back here
+model PortfolioItem {
+  id          String   @id @default(cuid())
+  providerId  String
+  title       String
+  description String?
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  provider ProviderProfile @relation(fields: [providerId], references: [userId], onDelete: Cascade)
+  images   File[]
+
+  @@index([providerId])
+}
+
+// PR-10 (Should): weekly working hours
+model Availability {
+  id         String @id @default(cuid())
+  providerId String
+  weekday    Int // 0 = Sunday .. 6 = Saturday
+  startTime  String // "09:00" (local time)
+  endTime    String // "17:00"
+
+  provider ProviderProfile @relation(fields: [providerId], references: [userId], onDelete: Cascade)
+
+  @@index([providerId, weekday])
+}
+
+// ============================ CATALOG ========================================
+
+model Category {
+  id          String       @id @default(cuid())
+  slug        String       @unique
+  parentId    String?
+  nameAr      String
+  nameEn      String?
+  description String? // SEO copy (MK-02)
+  iconKey     String?
+  type        CategoryType @default(BOTH)
+  isActive    Boolean      @default(true)
+  sortOrder   Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  parent     Category?          @relation("CategoryTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children   Category[]         @relation("CategoryTree")
+  services   Service[]
+  requests   ServiceRequest[]
+  providers  ProviderCategory[]
+  commission CommissionSetting?
+
+  @@index([parentId, isActive])
+}
+
+// Type A: Fixed-price service (SRS 2.2)
+model Service {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  providerId      String
+  categoryId      String
+  title           String
+  description     String
+  price           Decimal  @db.Decimal(12, 2) // EGP
+  durationMinutes Int?
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  provider ProviderProfile @relation(fields: [providerId], references: [userId], onDelete: Cascade)
+  category Category        @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  images   File[]
+  bookings Booking[]
+
+  @@index([categoryId, isActive])
+  @@index([providerId])
+}
+
+// ============================ REQUESTS & QUOTES (Type B) =====================
+
+model ServiceRequest {
+  id            String        @id @default(cuid())
+  customerId    String
+  categoryId    String
+  cityId        String
+  areaId        String?
+  addressId     String?
+  title         String
+  description   String
+  budget        Decimal?      @db.Decimal(12, 2) // optional (CU-03)
+  preferredDate DateTime?
+  status        RequestStatus @default(DRAFT)
+  expiresAt     DateTime? // BR-05, duration configurable via SiteSetting
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  customer User      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  category Category  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  city     City      @relation(fields: [cityId], references: [id], onDelete: Restrict)
+  area     Area?     @relation(fields: [areaId], references: [id], onDelete: SetNull)
+  address  Address?  @relation(fields: [addressId], references: [id], onDelete: SetNull)
+  media    File[]
+  quotes   Quote[]
+  bookings Booking[]
+
+  // Matching engine (SY-01): OPEN requests by category + area
+  @@index([status, categoryId, areaId])
+  @@index([customerId, status])
+  @@index([expiresAt])
+}
+
+model Quote {
+  id           String      @id @default(cuid())
+  requestId    String
+  providerId   String
+  price        Decimal     @db.Decimal(12, 2)
+  durationDays Int?
+  message      String?
+  status       QuoteStatus @default(PENDING)
+  validUntil   DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  request  ServiceRequest   @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  provider ProviderProfile  @relation(fields: [providerId], references: [userId], onDelete: Cascade)
+  booking  Booking?
+
+  @@unique([requestId, providerId]) // one quote per provider per request
+  @@index([providerId, status])
+}
+
+// ============================ BOOKINGS =======================================
+
+model Booking {
+  id         String        @id @default(cuid())
+  number     String        @unique // human-friendly, e.g. LV-2026-000123
+  source     BookingSource
+  customerId String
+  providerId String
+  serviceId  String? // when source = SERVICE
+  requestId  String? // when source = QUOTE
+  quoteId    String?       @unique // when source = QUOTE
+
+  // Money snapshot: frozen at confirmation so later commission edits never rewrite history (BR-01)
+  amount           Decimal @db.Decimal(12, 2)
+  commissionRate   Decimal @db.Decimal(5, 2) // percent
+  commissionAmount Decimal @db.Decimal(12, 2)
+  providerNet      Decimal @db.Decimal(12, 2)
+
+  status        BookingStatus @default(PENDING_PAYMENT)
+  scheduledAt   DateTime?
+  addressSnapshot Json // frozen copy of the address used
+  notes         String?
+
+  contactUnlockedAt   DateTime? // BR-02 / SY-04: null = phone/email must stay hidden
+  startedAt           DateTime?
+  providerCompletedAt DateTime? // provider tapped "done"
+  completedAt         DateTime? // customer confirmed (CU-09)
+  autoReleaseAt       DateTime? // BR-08: objection window deadline
+
+  cancelledById String?
+  cancelReason  String?
+  cancelledAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  customer User            @relation("BookingCustomer", fields: [customerId], references: [id], onDelete: Restrict)
+  provider ProviderProfile @relation(fields: [providerId], references: [userId], onDelete: Restrict)
+  service  Service?        @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  request  ServiceRequest? @relation(fields: [requestId], references: [id], onDelete: SetNull)
+  quote    Quote?          @relation(fields: [quoteId], references: [id], onDelete: SetNull)
+
+  payments   Payment[]
+  milestones Milestone[]
+  messages   Message[]
+  reviews    Review[]
+  dispute    Dispute?
+  invoice    Invoice?
+  walletTx   WalletTransaction[]
+
+  @@index([customerId, status])
+  @@index([providerId, status])
+  @@index([status, autoReleaseAt]) // job: auto-release after objection window
+  @@index([scheduledAt])
+}
+
+// CU-17 (Should): staged payments for big projects
+model Milestone {
+  id        String          @id @default(cuid())
+  bookingId String
+  title     String
+  amount    Decimal         @db.Decimal(12, 2)
+  sortOrder Int             @default(0)
+  status    MilestoneStatus @default(PENDING)
+  dueAt     DateTime?
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  booking  Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  payments Payment[]
+
+  @@index([bookingId])
+}
+
+// ============================ PAYMENTS =======================================
+// Card data never touches our DB (NF-05). The gateway webhook is the source of truth.
+
+model Payment {
+  id          String        @id @default(cuid())
+  bookingId   String
+  milestoneId String?
+  method      PaymentMethod
+  amount      Decimal       @db.Decimal(12, 2)
+  status      PaymentStatus @default(PENDING)
+  escrowState EscrowState   @default(NONE)
+
+  gatewayRef     String? @unique // gateway transaction / session id
+  gatewayPayload Json? // last verified webhook body, for audit
+  refundedAmount Decimal @default(0) @db.Decimal(12, 2)
+
+  paidAt     DateTime?
+  releasedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  booking   Booking    @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  milestone Milestone? @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
+
+  @@index([bookingId])
+  @@index([status, escrowState])
+}
+
+// Commission rate: one global row (categoryId null) + optional per-category overrides (AD-06)
+model CommissionSetting {
+  id          String   @id @default(cuid())
+  categoryId  String?  @unique
+  ratePercent Decimal  @db.Decimal(5, 2)
+  isActive    Boolean  @default(true)
+  updatedById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}
+
+// Provider wallet ledger (PR-11): append-only; balance = SUM(amount).
+// Positive = provider is owed, negative = provider owes platform (e.g. cash-job commission).
+model WalletTransaction {
+  id         String       @id @default(cuid())
+  providerId String
+  bookingId  String?
+  payoutId   String?
+  type       WalletTxType
+  amount     Decimal      @db.Decimal(12, 2)
+  note       String?
+  createdAt  DateTime     @default(now())
+
+  provider ProviderProfile @relation(fields: [providerId], references: [userId], onDelete: Restrict)
+  booking  Booking?        @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  payout   Payout?         @relation(fields: [payoutId], references: [id], onDelete: SetNull)
+
+  @@index([providerId, createdAt])
+}
+
+// PR-12 / AD-07
+model Payout {
+  id              String       @id @default(cuid())
+  providerId      String
+  amount          Decimal      @db.Decimal(12, 2)
+  status          PayoutStatus @default(REQUESTED)
+  destinationType String // e.g. "WALLET", "BANK" (store a token/masked ref, encrypt at rest)
+  destinationRef  String
+  processedById   String?
+  processedAt     DateTime?
+  rejectionReason String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  provider ProviderProfile      @relation(fields: [providerId], references: [userId], onDelete: Restrict)
+  walletTx WalletTransaction[]
+
+  @@index([providerId, status])
+  @@index([status])
+}
+
+// SY-07 (Should)
+model Invoice {
+  id        String   @id @default(cuid())
+  bookingId String   @unique
+  number    String   @unique
+  total     Decimal  @db.Decimal(12, 2)
+  fileId    String?  @unique // generated PDF in R2
+  issuedAt  DateTime @default(now())
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  file    File?   @relation(fields: [fileId], references: [id], onDelete: SetNull)
+}
+
+// ============================ CHAT ===========================================
+
+model Message {
+  id        String   @id @default(cuid())
+  bookingId String
+  senderId  String
+  body      String
+  // SY-04: set when the body contained a phone/email pattern before contactUnlockedAt.
+  // The service blocks or masks the body; the flag feeds admin review.
+  contactBlocked Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  booking     Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  sender      User    @relation(fields: [senderId], references: [id], onDelete: Restrict)
+  attachments File[]
+
+  @@index([bookingId, createdAt])
+}
+
+// ============================ REVIEWS ========================================
+
+model Review {
+  id            String   @id @default(cuid())
+  bookingId     String
+  reviewerId    String
+  revieweeId    String
+  rating        Int // 1..5, enforced by Zod + DB check in the SQL migration
+  comment       String?
+  providerReply String? // PR-13
+  isHidden      Boolean  @default(false) // AD-08
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  booking  Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  reviewer User    @relation("ReviewReviewer", fields: [reviewerId], references: [id], onDelete: Restrict)
+  reviewee User    @relation("ReviewReviewee", fields: [revieweeId], references: [id], onDelete: Restrict)
+
+  @@unique([bookingId, reviewerId]) // one review per side per booking (SY-05)
+  @@index([revieweeId, isHidden])
+}
+
+// ============================ DISPUTES =======================================
+
+model Dispute {
+  id             String             @id @default(cuid())
+  bookingId      String             @unique
+  openedById     String
+  reason         String
+  status         DisputeStatus      @default(OPEN)
+  resolution     DisputeResolution?
+  refundAmount   Decimal?           @db.Decimal(12, 2)
+  resolutionNote String?
+  resolvedById   String?
+  resolvedAt     DateTime?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  booking    Booking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  openedBy   User    @relation("DisputeOpenedBy", fields: [openedById], references: [id], onDelete: Restrict)
+  resolvedBy User?   @relation("DisputeResolvedBy", fields: [resolvedById], references: [id], onDelete: SetNull)
+  evidence   File[]
+
+  @@index([status])
+}
+
+// ============================ NOTIFICATIONS ==================================
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  body      String?
+  payload   Json? // deep-link data (bookingId, requestId...)
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt, createdAt])
+}
+
+// ============================ FILES (R2) =====================================
+// Source of truth for stored objects. Exactly one owner FK is normally set,
+// depending on what the file is attached to (enforce in the service).
+
 model File {
   id         String   @id @default(cuid())
-  key        String   @unique
+  key        String   @unique // R2 object key
   mimeType   String
-  size       Int
-  sha256     String
-  uploadedBy String?
+  sizeBytes  Int
+  sha256     String?
+  uploadedById String?
   createdAt  DateTime @default(now())
 
-  uploader User? @relation(fields: [uploadedBy], references: [id], onDelete: SetNull)
+  // Owners (all nullable)
+  serviceId       String?
+  requestId       String?
+  portfolioItemId String?
+  messageId       String?
+  disputeId       String?
 
-  @@index([uploadedBy])
+  uploadedBy    User?            @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  service       Service?         @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  request       ServiceRequest?  @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  portfolioItem PortfolioItem?   @relation(fields: [portfolioItemId], references: [id], onDelete: Cascade)
+  message       Message?         @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  dispute       Dispute?         @relation(fields: [disputeId], references: [id], onDelete: Cascade)
+
+  providerDocument ProviderDocument?
+  invoice          Invoice?
+
+  @@index([serviceId])
+  @@index([requestId])
+  @@index([portfolioItemId])
+  @@index([messageId])
+  @@index([disputeId])
+}
+
+// ============================ ADMIN / CMS ====================================
+
+// AD-10: editable static pages (about, terms, privacy, FAQ)
+model StaticPage {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  body        String // sanitised HTML (sanitize-html)
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Tunables that must change without a deploy: request expiry (BR-05),
+// objection window (BR-08), review threshold (BR-04), cancellation policy (BR-06)
+model SiteSetting {
+  key       String   @id // e.g. "request.expiryDays"
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+// SY-NF-12 / AD-11: every financial op and admin decision
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  action     String // e.g. "provider.approve", "dispute.resolve", "commission.update"
+  entityType String
+  entityId   String
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId])
+  @@index([actorId, createdAt])
+  @@index([createdAt])
 }

@@ -54,7 +54,8 @@ the provider with the reason, `revalidateStorefront()`.
 | `LIVE` | public |
 
 **The public catalog must read services through `VISIBLE_SERVICE`** (= `SERVICE_VISIBILITY_WHERE.LIVE`)
-so a hidden / suspended / category-off service 404s everywhere (CLAUDE.md §6).
+so a hidden / suspended / category-off service 404s everywhere (CLAUDE.md §6). It does: `/services`, the category
+pages, `GET /api/services` and the public image route all use it ([catalog-feature.md](catalog-feature.md)).
 
 ## API
 
@@ -87,5 +88,5 @@ All call `requireAdmin()` and are 404-gated by the proxy.
 
 - Per-category commission is on `/admin/settings/commission` (AD-06), not on the category form.
 - No category image upload (icons only) and no drag-to-reorder (the `Order` number sets it).
-- The public catalog pages are still placeholders; when built they must use `VISIBLE_SERVICE` and filter
-  categories by `isActive` (and the parent's).
+- The service detail and provider profile pages are still placeholders; when built they must use `VISIBLE_SERVICE`
+  like the catalog pages do.

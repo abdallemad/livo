@@ -16,9 +16,9 @@ Header-only shell, no request reads, `noindex` only on `/search?…` (via the pr
 | Route | Page | What it shows | Status | Rendering | Req |
 |---|---|---|---|---|---|
 | `/` | Home | Hero, categories, how it works, trust points, provider CTA | built | ◐ | MK-01 |
-| `/services` | All services | Browse service categories | placeholder | ◐ | MK-02 |
-| `/services/[category]` | Category services | Fixed-price services in a category, or request a quote | placeholder | ● | MK-02 |
-| `/services/[category]/page/[page]` | Category services | Paginated listing of the same | placeholder | ● | MK-02 |
+| `/services` | All services | Categories + all fixed-price services with advanced filters (filtered views noindex) ([catalog-feature.md](catalog-feature.md)) | built | ◐ | MK-02, MK-06 |
+| `/services/[category]` | Category services | Description, sub-categories, providers count, quote CTA, services, pagination, JSON-LD | built | ● | MK-02 |
+| `/services/[category]/page/[page]` | Category services | Page N (page 1 → 308, past the end → 404) | built | ● | MK-02 |
 | `/services/[category]/[service]` | Service details | Description, fixed price, duration, provider, book | placeholder | ● | MK-02 |
 | `/providers/[id]` | Provider profile | Bio, portfolio, reviews, services; no contact details | placeholder | ● | PR-04, SY-04 |
 | `/search` | Search | Find a service in your area | placeholder | ◐ | MK-06 |

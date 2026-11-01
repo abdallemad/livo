@@ -16,7 +16,7 @@ import { getZoneRedirect, zoneFromPath } from "@/utils/zone-access"
  *    onboarding status (docs/SITEMAP.md §1, docs/onboarding-feature.md; rule
  *    shared with the zone layouts in `utils/zone-access.ts`).
  * 4. `?page=1` on public listings → 301 to the clean URL.
- * 5. `/search?…` → `X-Robots-Tag: noindex, follow` (CLAUDE.md §4.1 rule 7).
+ * 5. `/search?…` and `/services?…` → `X-Robots-Tag: noindex, follow` (CLAUDE.md §4.1 rule 7).
  *
  * `/design-system-preview` is open in development and admin-only (404) in
  * production — it is a style guide, not a public page.
@@ -76,7 +76,9 @@ export default clerkMiddleware(async (auth, request) => {
   }
 
   const response = NextResponse.next()
-  if (pathname === "/search" && request.nextUrl.search) response.headers.set("X-Robots-Tag", "noindex, follow")
+  // Query views are noindex: `/search?…`, and filtered `/services?…` (the static page is the same HTML; the
+  // island reads the filters — docs/catalog-feature.md). The canonical listings are `/services` and the category pages.
+  if ((pathname === "/search" || pathname === "/services") && request.nextUrl.search) response.headers.set("X-Robots-Tag", "noindex, follow")
   return response
 })
 

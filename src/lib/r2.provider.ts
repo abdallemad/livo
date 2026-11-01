@@ -79,3 +79,18 @@ export function presignInline(key: string, contentType: string, expiresIn = 300)
     { expiresIn },
   )
 }
+
+/**
+ * Read an object's bytes for an app route that streams PUBLIC artwork (service photos on catalog pages,
+ * CLAUDE.md §7). The route decides what may be public; this just reads. `null` when the key is missing.
+ */
+export async function getPrivateObject(key: string): Promise<{ body: Uint8Array; contentType: string | null } | null> {
+  try {
+    const res = await getR2Client().send(new GetObjectCommand({ Bucket: getR2Bucket(), Key: key }))
+    if (!res.Body) return null
+    return { body: await res.Body.transformToByteArray(), contentType: res.ContentType ?? null }
+  } catch (error) {
+    if (error && typeof error === "object" && "name" in error && error.name === "NoSuchKey") return null
+    throw error
+  }
+}

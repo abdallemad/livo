@@ -5,6 +5,8 @@
 export const API_ROUTES = {
   health: "/api/health",
   me: "/api/me",
+  /** Public catalog (MK-02): filtered LIVE services. */
+  services: "/api/services",
   customer: {
     dashboard: "/api/me/dashboard",
     requests: "/api/me/requests",

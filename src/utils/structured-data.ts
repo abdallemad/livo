@@ -24,3 +24,33 @@ export function breadcrumbJsonLd(crumbs: { name: string; path: string }[]) {
     })),
   }
 }
+
+/** A listing page's items (category page): each fixed-price service with its URL and price (MK-02). */
+export function serviceListJsonLd(name: string, items: { title: string; href: string; price: number }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name,
+    itemListElement: items.map((s, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: absoluteUrl(s.href),
+      item: {
+        "@type": "Service",
+        name: s.title,
+        url: absoluteUrl(s.href),
+        offers: { "@type": "Offer", price: s.price.toFixed(2), priceCurrency: "EGP" },
+      },
+    })),
+  }
+}
+
+/** `/services`: the categories as a list of links. */
+export function categoryListJsonLd(items: { name: string; path: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Service categories",
+    itemListElement: items.map((c, index) => ({ "@type": "ListItem", position: index + 1, name: c.name, url: absoluteUrl(c.path) })),
+  }
+}

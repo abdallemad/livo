@@ -66,4 +66,5 @@ Feature docs: `docs/api-conventions.md`, `docs/onboarding-feature.md`, `docs/adm
 `docs/provider-earnings-payouts-feature.md`,
 `docs/provider-verification-settings-feature.md`,
 `docs/customer-dashboard-requests-feature.md`,
-`docs/customer-account-feature.md`. Page map: `docs/page-map.md`.
+`docs/customer-account-feature.md`,
+`docs/catalog-feature.md`. Page map: `docs/page-map.md`.

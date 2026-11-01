@@ -12,6 +12,7 @@ Component → hook (TanStack Query) → api-client → /api/... route.ts → ser
 | Path | Who | Guard |
 |---|---|---|
 | `/api/health` | anyone | none (no DB) |
+| `GET /api/services`, `GET /api/images/services/[id]` | anyone — the public catalog and live services' photos (`docs/catalog-feature.md`) | none; only `VISIBLE_SERVICE` data |
 | `/api/me`, `/api/me/*` | the signed-in user's own data — today also `GET /api/me/dashboard`, `GET /api/me/requests`, `PATCH /api/me/requests/[id]/status` (`docs/customer-dashboard-requests-feature.md`), `/api/me/{bookings,payments,addresses,settings}*` (`docs/customer-account-feature.md`) | `requireUser()` / `getViewer()` |
 | `/api/auth/sync` | first sign-in | Clerk session |
 | `/api/<feature>` | public reads / customer writes | per route |

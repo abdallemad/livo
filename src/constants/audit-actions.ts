@@ -26,6 +26,7 @@ export const AUDIT_ACTION_LABEL: Record<string, string> = {
   "commission.update_global": "Changed the platform commission rate",
   "commission.set_category": "Set a category commission rate",
   "commission.clear_category": "Removed a category commission rate",
+  "payout.request": "Provider requested a payout",
   "payout.approve": "Approved the payout",
   "payout.reject": "Rejected the payout",
   "payout.mark_paid": "Marked the payout as paid",

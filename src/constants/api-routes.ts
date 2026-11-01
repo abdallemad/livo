@@ -40,6 +40,8 @@ export const API_ROUTES = {
     portfolioImages: "/api/provider/portfolio/images",
     portfolioImage: (id: string) => `/api/provider/portfolio/images/${encodeURIComponent(id)}`,
     schedule: "/api/provider/schedule",
+    earnings: "/api/provider/earnings",
+    payouts: "/api/provider/payouts",
     reviews: "/api/provider/reviews",
     reviewReply: (id: string) => `/api/provider/reviews/${encodeURIComponent(id)}/reply`,
     /** Owner-only preview of a service / portfolio photo (307 to a 5-minute signed link). */

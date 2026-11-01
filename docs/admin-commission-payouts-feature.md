@@ -79,6 +79,9 @@ with **409** and the same sentence.
 5. Audit `payout.approve` / `payout.reject` / `payout.mark_paid` (`from`, `amount`, `balanceBefore`,
    `reason` / `reference`); a `PAYOUT_UPDATE` notification to the provider.
 
+Providers create the `REQUESTED` rows themselves at `/provider/payouts` (one waiting request at a time, minimum 100 EGP,
+under the same lock) — [provider-earnings-payouts-feature.md](provider-earnings-payouts-feature.md).
+
 > **No transfer is made by Livo.** The admin sends the money (bank / Vodafone Cash / InstaPay) and records it
 > with "Mark paid" and an optional transfer reference. `processedById/At` hold the latest decision; the
 > audit log keeps every step.

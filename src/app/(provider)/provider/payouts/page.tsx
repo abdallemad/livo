@@ -1,9 +1,19 @@
+import { Suspense } from "react"
 import type { Metadata } from "next"
-import { PagePlaceholder } from "@/components/shared"
+import { PayoutsBoard } from "@/components/provider/wallet/PayoutsBoard"
+import { Skeleton } from "@/components/ui/skeleton"
 
-/** /provider/payouts — docs/SITEMAP.md (PR-12). Private: `noindex` comes from the zone layout. */
+/**
+ * /provider/payouts — request a payout + history (docs/SITEMAP.md §4, PR-12,
+ * docs/provider-earnings-payouts-feature.md). Page number in the URL (`useSearchParams` → Suspense);
+ * data from `GET /api/provider/payouts`, requests via `POST`. Private: `noindex` from the layout.
+ */
 export const metadata: Metadata = { title: "Payouts" }
 
 export default function ProviderPayoutsPage() {
-  return <PagePlaceholder title={"Payouts"} description={"Request a payout and track past requests."} route="/provider/payouts" reqs={["PR-12"]} />
+  return (
+    <Suspense fallback={<Skeleton className="h-96 w-full" />}>
+      <PayoutsBoard />
+    </Suspense>
+  )
 }

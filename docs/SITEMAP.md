@@ -80,16 +80,16 @@ All `noindex`. Per-visitor UI is a client island (`AccountControls`), layouts st
 | `/account/requests` | My requests | List with status; cancel a draft / open request | CU-13, CU-11 |
 | `/account/requests/new` | **New quote request** | description, photos, category, address, optional budget, preferred time | CU-03 |
 | `/account/requests/[id]` | Request details | Timeline, received quotes, compare, accept one | CU-04, CU-05, CU-08 |
-| `/account/bookings` | My bookings | List | CU-13 |
+| `/account/bookings` | My bookings | List with next step ([customer-account-feature.md](customer-account-feature.md)) | CU-13 |
 | `/account/bookings/[id]` | Booking details | Status timeline, pay, confirm completion, review, cancel, open dispute | CU-09…CU-12 |
 | `/account/bookings/[id]/review` | Leave review (stars + comment) | Only when `Completed` (BR-03) | CU-10 |
 | `/account/bookings/[id]/dispute` | Open dispute with reason + evidence | | CU-12 |
 | `/account/messages` | Conversations list | Only for confirmed bookings | CU-06 |
 | `/account/messages/[bookingId]` | Chat thread | Block phone/email patterns (SY-04) | CU-06, SY-04 |
-| `/account/payments` | Payments & invoices | PDF invoices (SHOULD) | CU-13, SY-07 |
+| `/account/payments` | Payments & invoices | PDF invoices (SHOULD) — not generated yet | CU-13, SY-07 |
 | `/account/addresses` | Saved addresses | SHOULD | CU-14 |
 | `/account/notifications` | Notification center | | SY-02 |
-| `/account/settings` | Profile (name, photo), delete account | | AU-06, AU-07 |
+| `/account/settings` | Profile (name, photo), delete account | Deletion via support for now | AU-06, AU-07 |
 
 Browsing services reuses the **public** pages (`/services/*`). Do not duplicate them under `/account`.
 Later (not MVP): `/account/favorites` (CU-15), coupons (CU-16), milestone payments (CU-17).

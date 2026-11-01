@@ -51,16 +51,16 @@ Sidebar shell, dynamic, `noindex`. Signed-in `CUSTOMER` with onboarding finished
 | `/account/requests` | My requests | Active / Booked / Closed, quotes + lowest price, booking link, cancel (draft / open) | built | CU-13, CU-11 |
 | `/account/requests/new` | New quote request | Job description, photos, category, address, budget | placeholder | CU-03 |
 | `/account/requests/[id]` | Request details | Request stages, quotes received, accept one | placeholder | CU-04, CU-05, CU-08 |
-| `/account/bookings` | My bookings | Upcoming and past bookings | placeholder | CU-13 |
+| `/account/bookings` | My bookings | Current / Finished / Cancelled, next step, provider phone once confirmed, review link ([customer-account-feature.md](customer-account-feature.md)) | built | CU-13 |
 | `/account/bookings/[id]` | Booking details | Stages, payment, confirm completion, cancel, dispute | placeholder | CU-09…CU-12 |
 | `/account/bookings/[id]/review` | Rate the service | Stars and a comment, after completion | placeholder | CU-10 |
 | `/account/bookings/[id]/dispute` | Open a dispute | Reason plus photos or documents | placeholder | CU-12 |
 | `/account/messages` | Messages | Chats for confirmed bookings | placeholder | CU-06 |
 | `/account/messages/[bookingId]` | Chat | Thread; contact details blocked before confirmation | placeholder | CU-06, SY-04 |
-| `/account/payments` | Payments and invoices | Payments and invoices | placeholder | CU-13, SY-07 |
-| `/account/addresses` | Addresses | Saved addresses | placeholder | CU-14 |
+| `/account/payments` | Payments and invoices | Paid / held / refunded totals, payment history, invoices (PDF to come) | built | CU-13, SY-07 |
+| `/account/addresses` | Addresses | Add, edit, delete, one default, up to 10 | built | CU-14 |
 | `/account/notifications` | Notifications | Updates on requests and bookings | placeholder | SY-02 |
-| `/account/settings` | Settings | Name, photo, account deletion | placeholder | AU-06, AU-07 |
+| `/account/settings` | Settings | Personal details (Clerk-synced), interests, sign-in & security; deletion via support | built | AU-06 |
 
 ## Provider: `(provider)/provider`
 

@@ -81,7 +81,7 @@ All call `requireProvider()`; reads answer `private, no-store`. An admin (no pro
 | Utils + tests | `src/utils/verification.ts`, `tests/utils/verification.test.ts` |
 | Hook | `src/hooks/use-provider-account.ts` (`providerKeys.verification/settings`) |
 | Constants | `API_ROUTES.provider.{verification*,settings*}`; audit labels `provider.resubmit`, `provider.document_upload`, `provider.document_delete`; ops-alert kind |
-| UI | `components/provider/account/{VerificationCenter,ProviderSettingsForm}.tsx`; reuses `forms/ImageUploader`, `forms/CheckboxChips`, `admin/shared/HistoryCard` |
+| UI | `components/provider/account/{VerificationCenter,ProviderSettingsForm}.tsx` (personal details + account actions now shared from `components/account/`, see [customer-account-feature.md](customer-account-feature.md)); reuses `forms/ImageUploader`, `forms/CheckboxChips`, `admin/shared/HistoryCard` |
 | Pages | `(provider)/provider/verification/page.tsx`, `(provider)/provider/settings/page.tsx`, `(provider)/layout.tsx` (banner) |
 
 No schema change and no migration.

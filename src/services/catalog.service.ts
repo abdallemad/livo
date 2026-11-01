@@ -3,8 +3,10 @@ import type { Prisma } from "@prisma/client"
 import { catalogRepository as repo, type CatalogServiceRow } from "@/repositories/catalog.repository"
 import type { CatalogQuery } from "@/schemas/catalog.schema"
 import { VISIBLE_SERVICE } from "@/services/admin-catalog.service"
-import type { CatalogCategory, CatalogFilterOptions, CatalogIndex, CatalogServicePage, CategoryPageData } from "@/types/catalog"
-import { CATALOG_PAGE_SIZE, type CatalogSort, normalizePriceRange } from "@/utils/catalog"
+import type { CatalogCategory, CatalogFilterOptions, CatalogIndex, CatalogServicePage, CategoryDirectory, CategoryPageData, ServiceLookup } from "@/types/catalog"
+import { CATALOG_PAGE_SIZE, type CatalogSort, normalizePriceRange, serviceHref } from "@/utils/catalog"
+import { maskContactDetails } from "@/utils/contact-mask"
+import { firstName } from "@/utils/provider-booking"
 
 /**
  * The public catalog (MK-02, MK-06; docs/catalog-feature.md): categories with live-service counts, the
@@ -28,7 +30,7 @@ const toCard = (s: CatalogServiceRow) => ({
   id: s.id,
   slug: s.slug,
   title: s.title,
-  href: `/services/${s.category.slug}/${s.slug}`,
+  href: serviceHref(s.category.slug, s.slug),
   categoryName: label(s.category),
   providerId: s.providerId,
   providerName: s.provider.user.name || "Livo provider",
@@ -99,11 +101,11 @@ export async function listCatalogServices(query: CatalogQuery): Promise<CatalogS
   return servicePage({ AND: and }, query.sort, query.page)
 }
 
-/** `/services` at build / regeneration: categories, filter options and the default listing. */
+/** `/services` at build / regeneration: filter options and the default listing. */
 export async function getCatalogIndex(): Promise<CatalogIndex> {
   const categories = await loadCategories()
   const [options, initial] = await Promise.all([loadOptions(categories), servicePage({}, "recommended", 1)])
-  return { categories: categories.filter((c) => !c.parentSlug), options, initial }
+  return { options, initial }
 }
 
 /** A category page (`null` → 404). `page` beyond the last page is the caller's 404. */
@@ -126,4 +128,72 @@ export async function getCategoryPaths(): Promise<{ slug: string; pageCount: num
 /** The public image route: only photos of LIVE services. */
 export function findPublicServiceImage(fileId: string) {
   return repo.findPublicServiceImage(fileId, VISIBLE_SERVICE)
+}
+
+/** `/category`: every top-level category with its sub-categories and live-service counts. */
+export async function getCategoryDirectory(): Promise<CategoryDirectory> {
+  return { categories: (await loadCategories()).filter((c) => !c.parentSlug) }
+}
+
+const RELATED = 3
+const REVIEWS = 5
+
+/**
+ * `/services/[category]/[service]` (MK-02). Only a LIVE service is found. If the URL's category isn't the
+ * service's own (it moved), answer "moved" so the page can 308 to the right URL — old links never 404
+ * (CLAUDE.md §4.1 rule 11). Provider-written text is passed through the contact masker (SY-04): a phone
+ * number in a public description or bio would take the deal off-platform (business analysis R1).
+ */
+export async function getServiceDetail(categorySlug: string, serviceSlug: string): Promise<ServiceLookup> {
+  const s = await repo.findServiceBySlug(serviceSlug, VISIBLE_SERVICE)
+  if (!s) return { kind: "missing" }
+  const href = serviceHref(s.category.slug, s.slug)
+  if (s.category.slug !== categorySlug) return { kind: "moved", href }
+
+  const p = s.provider
+  const [reviews, more, similar] = await Promise.all([
+    repo.findProviderReviews(p.userId, REVIEWS),
+    repo.findServices({ AND: [VISIBLE_SERVICE, { providerId: p.userId, id: { not: s.id } }] }, ORDER.recommended, RELATED),
+    repo.findServices({ AND: [VISIBLE_SERVICE, { categoryId: s.categoryId, providerId: { not: p.userId } }] }, ORDER.recommended, RELATED),
+  ])
+
+  return {
+    kind: "found",
+    service: {
+      id: s.id,
+      slug: s.slug,
+      title: s.title,
+      description: maskContactDetails(s.description).text,
+      price: num(s.price),
+      durationMinutes: s.durationMinutes,
+      images: s.images.map((i) => `/api/images/services/${i.id}`),
+      href,
+      category: { slug: s.category.slug, name: label(s.category), type: s.category.type },
+      parent: s.category.parent ? { slug: s.category.parent.slug, name: label(s.category.parent) } : null,
+      provider: {
+        id: p.userId,
+        name: p.user.name || "Livo provider",
+        avatarUrl: p.user.avatarUrl,
+        bio: p.bio ? maskContactDetails(p.bio).text : null,
+        yearsExperience: p.yearsExperience,
+        rating: num(p.ratingAvg),
+        reviewsCount: p.ratingCount,
+        completedJobs: p.completedCount,
+        areas: p.areas.map((a) => label(a.area)),
+        city: label(p.city),
+        memberSince: p.createdAt.toISOString(),
+      },
+      reviews: reviews.map((r) => ({
+        id: r.id,
+        rating: r.rating,
+        comment: r.comment ? maskContactDetails(r.comment).text : null,
+        reply: r.providerReply,
+        customerFirstName: firstName(r.reviewer.name),
+        createdAt: r.createdAt.toISOString(),
+      })),
+      moreFromProvider: more.map(toCard),
+      similar: similar.map(toCard),
+      updatedAt: s.updatedAt.toISOString(),
+    },
+  }
 }

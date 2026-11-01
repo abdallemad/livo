@@ -7,6 +7,7 @@ import { SITE_NAME } from "@/constants/site"
  */
 export const MARKETING_NAV = [
   { href: "/services", label: "Services" },
+  { href: "/category", label: "Categories" },
   { href: "/how-it-works", label: "How it works" },
   { href: "/become-provider", label: "Become a provider" },
 ] as const
@@ -16,6 +17,7 @@ export const FOOTER_NAV = [
     label: "Platform",
     items: [
       { href: "/services", label: "Services" },
+      { href: "/category", label: "Categories" },
       { href: "/how-it-works", label: "How it works" },
       { href: "/become-provider", label: "Become a provider" },
     ],

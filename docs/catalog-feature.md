@@ -1,4 +1,4 @@
-# Public catalog — `/services`, category pages, advanced filters (MK-02, MK-06)
+# Public catalog — `/category`, `/services`, category pages, service pages, advanced filters (MK-02, MK-06)
 
 The public service catalog: every category, every fixed-price service with **advanced filters**, and one SEO page
 per category. Built to the static / ISR rules in CLAUDE.md §4 and the SEO rules in §11.
@@ -7,9 +7,14 @@ per category. Built to the static / ISR rules in CLAUDE.md §4 and the SEO rules
 
 | Route | Rendering | What it shows |
 |---|---|---|
-| `/services` | **static, ISR hourly** (never reads `searchParams`) | Breadcrumb; **Browse by category** — every top-level category as a real link (icon, live-service count or "Request quotes", sub-category names); **Fixed-price services** with the filter island; "Can't find what you need? → Request a quote". JSON-LD: `BreadcrumbList` + `ItemList` of categories. |
-| `/services/[category]` | **SSG** — every active slug in `generateStaticParams`; new categories render on first visit (`dynamicParams`) | Breadcrumb (Home › Services › *parent* › Category), H1, the category's description, "*N* fixed-price services · *M* verified providers", sub-category links, a **Request a quote** card when the category takes quotes (`QUOTE` / `BOTH`, SRS 2.2), the services (12 per page, real links to `/services/<category>/<service>`), real pagination links, "Filter by price, area, rating" → `/services?category=…`. JSON-LD: `BreadcrumbList` + `ItemList` of `Service` + `Offer` (EGP). |
+| `/category` | **static, ISR hourly** | Breadcrumb (Home › Categories); every top-level category as a real link (icon, live-service count or "Request quotes") with its sub-categories as links underneath; "Search all services"; a quote CTA. JSON-LD: `BreadcrumbList` + `ItemList` of categories. In the header and footer nav ("Categories") and the sitemap. |
+| `/services` | **static, ISR hourly** (never reads `searchParams`) | Breadcrumb; "Browse categories" → `/category`; **all fixed-price services** with the filter island; "Can't find what you need? → Request a quote". JSON-LD: `BreadcrumbList`. (The category grid moved to `/category`.) |
+| `/services/[category]` | **SSG** — every active slug in `generateStaticParams`; new categories render on first visit (`dynamicParams`) | Breadcrumb (Home › Categories › *parent* › Category), H1, the category's description, "*N* fixed-price services · *M* verified providers", sub-category links, a **Request a quote** card when the category takes quotes (`QUOTE` / `BOTH`, SRS 2.2), the services (12 per page, real links to `/services/<category>/<service>`), real pagination links, "Filter by price, area, rating" → `/services?category=…`. JSON-LD: `BreadcrumbList` + `ItemList` of `Service` + `Offer` (EGP). |
 | `/services/[category]/page/[page]` | SSG for every existing page | Same view, page N. `/page/1` → **308** to the clean URL; malformed, > 1000 or past the last page → **404**; title "… — Page N", self-canonical. |
+
+| `/services/[category]/[service]` | **ISR** — `generateStaticParams → []`, rendered on first visit, cached hourly (CLAUDE.md §4.1 rule 5) | Breadcrumb (Home › Categories › *parent* › Category › Service); photo gallery; category, title, description; three trust points (held payment, verified provider, pick the time); a sticky box with the **fixed price**, duration, one amber **Book now** → `/account/book/[serviceId]`, and "Request a quote" for categories that take quotes; **Your provider** (photo, name, verified mark, rating, jobs done, years, areas or "All of *city*", bio, member since → `/providers/[id]`); the provider's 5 latest **visible** customer reviews with replies; **More from** the provider; **Similar** services from other providers (3 each). JSON-LD: `BreadcrumbList` + `Service` with `Offer` (EGP), `areaServed`, provider by name — no `aggregateRating` (the rating is the provider's, not the service's). |
+
+A service page only renders a **live** service. If the service's category changed, the old URL answers **308** to the new one (CLAUDE.md §4.1 rule 11); anything else is a 404. Provider-written text (description, bio, review comments) passes through `utils/contact-mask.ts` so a phone number or email never reaches a public page (SY-04, business analysis R1); the provider's phone and email are never selected.
 
 A parent category lists its sub-categories' services too; a quote-only category shows the quote path instead of an empty grid.
 
@@ -68,15 +73,15 @@ configured, cards fall back to the placeholder icon only if the service has no p
 | Routes | `api/services/route.ts` (public), `api/images/services/[id]/route.ts` (public) |
 | Utils + tests | `utils/catalog.ts` (URLs, page segment, filters, durations), JSON-LD in `utils/structured-data.ts`; `tests/utils/catalog.test.ts`, `catalog-schema.test.ts` |
 | Hook | `src/hooks/use-catalog.ts` (`catalogKeys`) |
-| UI | `components/catalog/{ServiceBrowser,FilterPanel,ServiceGrid,CategoryTile,CategoryView,Crumbs}.tsx`; reuses `components/service/ServiceCard.tsx` |
-| Pages | `(marketing)/services/page.tsx`, `(marketing)/services/[category]/{page.tsx,load.ts}`, `(marketing)/services/[category]/page/[page]/page.tsx` |
+| UI | `components/catalog/{ServiceBrowser,FilterPanel,ServiceGrid,CategoryTile,CategoryView,ServiceDetailView,Crumbs}.tsx`; reuses `components/service/ServiceCard.tsx` |
+| Pages | `(marketing)/category/page.tsx`, `(marketing)/services/page.tsx`, `(marketing)/services/[category]/{page.tsx,load.ts}`, `(marketing)/services/[category]/page/[page]/page.tsx`, `(marketing)/services/[category]/[service]/page.tsx` |
 | Infra | `lib/r2.provider.ts` (`getPrivateObject`), `proxy.ts` (noindex `/services?…`), `app/sitemap.ts` |
 
 No schema change and no migration.
 
 ## Not done / follow-ups
 
-- **Service detail** `/services/[category]/[service]` and **provider profile** `/providers/[id]` are still placeholders (cards link there).
+- **Provider profile** `/providers/[id]` and the booking wizard `/account/book/[serviceId]` (where **Book now** leads) are still placeholders.
 - The home page's category tiles are still hard-coded and link to `/services`; switch them to the real categories.
 - `/search` (MK-06) is still a placeholder — `/services` filters cover search for now; it could redirect there.
 - A service whose slug is literally `page` would be shadowed by `/services/<category>/page/…`; slugs come from titles, so it's unlikely.

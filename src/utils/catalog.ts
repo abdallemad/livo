@@ -85,3 +85,18 @@ export function durationLabel(minutes: number) {
   const h = minutes / 60
   return Number.isInteger(h) ? `${h} ${h === 1 ? "hour" : "hours"}` : `${h.toFixed(1)} hours`
 }
+
+/** The categories directory (moved out of `/services`). */
+export const CATEGORIES_PATH = "/category"
+
+/** `/services/<category>/<service>` — the service page; the category in the URL must be the service's own (else 308). */
+export const serviceHref = (categorySlug: string, serviceSlug: string) => `/services/${categorySlug}/${serviceSlug}`
+
+/** A meta description from free text: one line, cut at a word boundary, ≤ `max` chars with an ellipsis. */
+export function metaExcerpt(text: string, max = 155) {
+  const flat = text.replace(/\s+/g, " ").trim()
+  if (flat.length <= max) return flat
+  const cut = flat.slice(0, max - 1)
+  const space = cut.lastIndexOf(" ")
+  return `${(space > max * 0.6 ? cut.slice(0, space) : cut).replace(/[\s,.;:–-]+$/, "")}…`
+}

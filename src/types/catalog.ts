@@ -46,8 +46,6 @@ export interface CatalogFilterOptions {
 export type CatalogServicePage = Paginated<CatalogServiceCard>
 
 export interface CatalogIndex {
-  /** Top-level categories with their sub-categories. */
-  categories: CatalogCategory[]
   options: CatalogFilterOptions
   /** The default view (recommended, page 1) — server-rendered and the island's initial data. */
   initial: CatalogServicePage
@@ -60,3 +58,56 @@ export interface CategoryPageData {
   /** Approved providers offering this category (or a sub-category) — "N verified providers". */
   providerCount: number
 }
+
+/** `/category` — the directory of every category (top-level, each with its sub-categories). */
+export interface CategoryDirectory {
+  categories: CatalogCategory[]
+}
+
+/** The public provider summary on a service page — name, rating, track record; never contact details (SY-04). */
+export interface PublicProviderSummary {
+  id: string
+  name: string
+  avatarUrl: string | null
+  /** Contact details masked (SY-04). */
+  bio: string | null
+  yearsExperience: number | null
+  rating: number
+  reviewsCount: number
+  completedJobs: number
+  /** Area names; empty = the whole city. */
+  areas: string[]
+  city: string
+  memberSince: string
+}
+
+export interface PublicReview {
+  id: string
+  rating: number
+  comment: string | null
+  reply: string | null
+  customerFirstName: string | null
+  createdAt: string
+}
+
+export interface ServiceDetail {
+  id: string
+  slug: string
+  title: string
+  /** Contact details masked (SY-04). */
+  description: string
+  price: number
+  durationMinutes: number | null
+  images: string[]
+  href: string
+  category: { slug: string; name: string; type: string }
+  parent: { slug: string; name: string } | null
+  provider: PublicProviderSummary
+  reviews: PublicReview[]
+  moreFromProvider: CatalogServiceCard[]
+  similar: CatalogServiceCard[]
+  updatedAt: string
+}
+
+/** A service lookup: found, moved to another category (308), or nothing (404). */
+export type ServiceLookup = { kind: "found"; service: ServiceDetail } | { kind: "moved"; href: string } | { kind: "missing" }

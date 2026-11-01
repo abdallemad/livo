@@ -55,6 +55,53 @@ class CatalogRepository {
     })
   }
 
+  /** A live service by slug, with everything its public page shows. */
+  findServiceBySlug(slug: string, visible: Prisma.ServiceWhereInput) {
+    return db.service.findFirst({
+      where: { AND: [visible, { slug }] },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        description: true,
+        price: true,
+        durationMinutes: true,
+        updatedAt: true,
+        categoryId: true,
+        images: { orderBy: { createdAt: "asc" }, select: { id: true } },
+        category: { select: { slug: true, nameEn: true, nameAr: true, type: true, parent: { select: { slug: true, nameEn: true, nameAr: true } } } },
+        provider: {
+          select: {
+            userId: true,
+            bio: true,
+            yearsExperience: true,
+            ratingAvg: true,
+            ratingCount: true,
+            completedCount: true,
+            createdAt: true,
+            city: name,
+            areas: { select: { area: name } },
+            user: { select: { name: true, avatarUrl: true } },
+          },
+        },
+      },
+    })
+  }
+
+  /** Visible reviews customers left for a provider, newest first (hidden ones never leave the admin area — AD-08). */
+  findProviderReviews(providerId: string, take: number) {
+    return db.review.findMany({
+      where: { revieweeId: providerId, isHidden: false, reviewer: { role: "CUSTOMER" } },
+      orderBy: { createdAt: "desc" },
+      take,
+      select: { id: true, rating: true, comment: true, providerReply: true, createdAt: true, reviewer: { select: { name: true } } },
+    })
+  }
+
+  findServices(where: Prisma.ServiceWhereInput, orderBy: Prisma.ServiceOrderByWithRelationInput[], take: number) {
+    return db.service.findMany({ where, orderBy, take, select: cardSelect })
+  }
+
   /** A photo of a LIVE service only — hidden / off / suspended services' photos are not served publicly. */
   findPublicServiceImage(fileId: string, visible: Prisma.ServiceWhereInput) {
     return db.file.findFirst({ where: { id: fileId, key: { startsWith: "uploads/services/" }, service: visible }, select: { key: true, mimeType: true } })

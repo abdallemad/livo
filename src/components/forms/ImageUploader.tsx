@@ -38,7 +38,7 @@ interface ImageUploaderProps {
 const IMAGE_ACCEPT: Accept = { "image/jpeg": [], "image/png": [], "image/webp": [] }
 
 /**
- * Drop zone + thumbnails for onboarding uploads (NF-08): compresses images
+ * Drop zone + thumbnails for uploads (onboarding, services, portfolio) (NF-08): compresses images
  * in the browser, shows per-file progress, keeps failed files with a retry
  * button instead of losing them on a weak connection. Thumbnails use the
  * owner-only preview route; nothing here is a public URL.

@@ -8,7 +8,7 @@ import { MAX_CERTIFICATES } from "@/constants/onboarding"
 import { useDeleteDocument, useUploadDocument } from "@/hooks/use-onboarding"
 import type { DocumentType } from "@/schemas/onboarding.schema"
 import type { OnboardingDocumentDto } from "@/types/onboarding"
-import { ImageUploader } from "../ImageUploader"
+import { ImageUploader } from "@/components/forms/ImageUploader"
 import { StepActions, StepCard } from "../StepCard"
 import type { StepProps } from "./types"
 

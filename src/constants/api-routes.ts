@@ -29,6 +29,18 @@ export const API_ROUTES = {
     bookings: "/api/provider/bookings",
     booking: (id: string) => `/api/provider/bookings/${encodeURIComponent(id)}`,
     bookingStatus: (id: string) => `/api/provider/bookings/${encodeURIComponent(id)}/status`,
+    services: "/api/provider/services",
+    service: (id: string) => `/api/provider/services/${encodeURIComponent(id)}`,
+    serviceStatus: (id: string) => `/api/provider/services/${encodeURIComponent(id)}/status`,
+    serviceImages: "/api/provider/services/images",
+    serviceImage: (id: string) => `/api/provider/services/images/${encodeURIComponent(id)}`,
+    portfolio: "/api/provider/portfolio",
+    portfolioItem: (id: string) => `/api/provider/portfolio/${encodeURIComponent(id)}`,
+    portfolioOrder: "/api/provider/portfolio/order",
+    portfolioImages: "/api/provider/portfolio/images",
+    portfolioImage: (id: string) => `/api/provider/portfolio/images/${encodeURIComponent(id)}`,
+    /** Owner-only preview of a service / portfolio photo (307 to a 5-minute signed link). */
+    file: (id: string) => `/api/provider/files/${encodeURIComponent(id)}`,
   },
   admin: {
     dashboard: "/api/admin/dashboard",

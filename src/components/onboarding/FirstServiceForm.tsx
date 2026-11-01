@@ -18,7 +18,7 @@ import { useDeleteServiceImage, useSaveFirstService, useUploadServiceImage } fro
 import { applyApiErrors } from "@/lib/form-errors"
 import { firstServiceStepSchema, type FirstServiceStepInput, type FirstServiceStepValues } from "@/schemas/onboarding.schema"
 import type { OnboardingFileDto, OnboardingStateDto } from "@/types/onboarding"
-import { ImageUploader } from "./ImageUploader"
+import { ImageUploader } from "@/components/forms/ImageUploader"
 import { formatDuration, ServicePreviewCard } from "./ServicePreviewCard"
 import { StepActions } from "./StepCard"
 

@@ -33,11 +33,11 @@ src/
     layout/          AppHeader, AppFooter, MobileMenu, DashboardShell (+ nav, breadcrumb, bottom tabs),
                      AccountControls (Sign in link / AccountMenu dropdown — dark mode lives here,
                      not as a header button), ThemeToggle (onboarding header + preview only)
-    onboarding/      wizard, steps, RoleCard, FirstServiceForm, ServicePreviewCard, ImageUploader, SuccessScreen
+    onboarding/      wizard, steps, RoleCard, FirstServiceForm, ServicePreviewCard, SuccessScreen
     service/ provider/ request/ chat/   domain components (ServiceCard, ProviderCard, QuoteCard, ChatBubble…)
     design-system/   style-guide sections
     providers/       query-provider, theme-provider
-    forms/           PhoneField, OtpField
+    forms/           PhoneField, OtpField, FormField, OptionSelect, ImageUploader (shared dropzone: onboarding, services, portfolio)
     admin/           dashboard/ (KPIs, queues), providers/ (list, review, decision actions), users/ (list, detail,
                      status actions), catalog/ (CategoriesTable, CategoryForm, ServicesTable),
                      orders/ (RequestsTable, RequestDetail, BookingsTable, BookingDetail),
@@ -60,4 +60,5 @@ Feature docs: `docs/api-conventions.md`, `docs/onboarding-feature.md`, `docs/adm
 `docs/admin-providers-users-feature.md`, `docs/admin-catalog-feature.md`, `docs/admin-requests-bookings-feature.md`,
 `docs/admin-disputes-reviews-feature.md`, `docs/admin-payments-feature.md`,
 `docs/admin-commission-payouts-feature.md`, `docs/provider-dashboard-requests-feature.md`,
-`docs/provider-quotes-bookings-feature.md`. Page map: `docs/page-map.md`.
+`docs/provider-quotes-bookings-feature.md`,
+`docs/provider-services-portfolio-feature.md`. Page map: `docs/page-map.md`.

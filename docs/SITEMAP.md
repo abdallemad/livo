@@ -107,7 +107,7 @@ All `noindex`. Gate by verification status (see §1).
 | `/provider` | Dashboard | Account status, new matching requests, today's bookings, month earnings, simple stats ([provider-dashboard-requests-feature.md](provider-dashboard-requests-feature.md)) | PR-14, PR-03 |
 | `/provider/services` | My fixed-price services | List | PR-05 |
 | `/provider/services/new` | Add service | title, description, price, category, duration | PR-05 |
-| `/provider/services/[id]/edit` | Edit / deactivate service | | PR-05 |
+| `/provider/services/[id]/edit` | Edit / deactivate service | Slug never changes; delete only without bookings ([provider-services-portfolio-feature.md](provider-services-portfolio-feature.md)) | PR-05 |
 | `/provider/requests` | **Available project requests** matching category + area | Approved providers only; no customer identity or address (BR-02) | PR-06, SY-01 |
 | `/provider/requests/[id]` | Request details + **submit quote** (price, duration, message) | Customer contact hidden | PR-07 |
 | `/provider/quotes` | My quotes | Status of each; withdraw a waiting quote ([provider-quotes-bookings-feature.md](provider-quotes-bookings-feature.md)) | PR-07 |
@@ -115,7 +115,7 @@ All `noindex`. Gate by verification status (see §1).
 | `/provider/bookings/[id]` | Booking details | Customer info only after confirmation (BR-02) | PR-08 |
 | `/provider/messages` | Conversations list | | PR-09 |
 | `/provider/messages/[bookingId]` | Chat thread | | PR-09 |
-| `/provider/portfolio` | Portfolio gallery (upload/delete photos) | | PR-04 |
+| `/provider/portfolio` | Portfolio gallery (upload/delete photos) | Items of 1–6 photos, reorderable ([provider-services-portfolio-feature.md](provider-services-portfolio-feature.md)) | PR-04 |
 | `/provider/schedule` | Availability / calendar | SHOULD | PR-10 |
 | `/provider/earnings` | Wallet: due, collected, commission deducted | | PR-11 |
 | `/provider/payouts` | Request payout + history | | PR-12 |

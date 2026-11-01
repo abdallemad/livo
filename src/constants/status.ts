@@ -21,6 +21,7 @@ import {
 } from "lucide-react"
 import type {
   BookingStatus,
+  DisputeResolution,
   DisputeStatus,
   EscrowState,
   PaymentMethod,
@@ -165,3 +166,19 @@ export const ESCROW_LABEL: Record<EscrowState, string> = {
 }
 
 export const PAYMENT_METHOD_LABEL: Record<PaymentMethod, string> = { ONLINE: "Online", CASH: "Cash" }
+
+/** `Dispute.resolution` (AD-05). */
+export const RESOLUTION_LABEL: Record<DisputeResolution, string> = {
+  RELEASE_TO_PROVIDER: "Released to provider",
+  PARTIAL_REFUND: "Partial refund",
+  FULL_REFUND: "Full refund",
+  NO_ACTION: "No action",
+}
+
+/** What each decision means, shown on the resolve form. */
+export const RESOLUTION_HELP: Record<DisputeResolution, string> = {
+  RELEASE_TO_PROVIDER: "The provider did the job: release the held payment to them.",
+  PARTIAL_REFUND: "Refund part of the payment to the customer; the rest goes to the provider.",
+  FULL_REFUND: "Refund everything to the customer. Anything already paid out is taken back from the provider's wallet.",
+  NO_ACTION: "Close the dispute without moving money (e.g. a cash job, or the complaint isn't upheld).",
+}

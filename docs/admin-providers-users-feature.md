@@ -54,8 +54,9 @@ can still use the app as a customer. To lock someone out entirely, suspend the *
 
 ## Document previews
 
-`GET /api/admin/files/[id]` (admin only) → **307** to a 5-minute signed inline R2 link, `no-store`. Only a
-`File` attached to a `ProviderDocument` resolves, so the route can't be used to read other uploads. If R2
+`GET /api/admin/files/[id]` (admin only) → **307** to a 5-minute signed inline R2 link, `no-store`. Only
+provider verification documents, dispute evidence and chat attachments resolve (`services/admin-file.service.ts`,
+since the disputes feature), so the route can't be used to read other uploads. If R2
 isn't configured it answers **503**.
 
 ## API

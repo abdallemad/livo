@@ -20,6 +20,9 @@ export const AUDIT_ACTION_LABEL: Record<string, string> = {
   "service.restore": "Restored the service",
   "request.cancel": "Closed the request",
   "booking.cancel": "Cancelled the booking",
+  "dispute.resolve": "Resolved the dispute",
+  "review.hide": "Hid the review",
+  "review.show": "Showed the review again",
 }
 
 export const auditActionLabel = (action: string) => AUDIT_ACTION_LABEL[action] ?? action

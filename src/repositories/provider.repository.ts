@@ -69,14 +69,6 @@ class ProviderRepository {
     return db.providerProfile.findUnique({ where: { userId: providerId }, include: detailInclude })
   }
 
-  /** A verification document's file, only if it belongs to that provider (admin preview). */
-  findDocumentFile(fileId: string) {
-    return db.providerDocument.findUnique({
-      where: { fileId },
-      select: { file: { select: { key: true, mimeType: true } } },
-    })
-  }
-
   findVerificationStatus(providerId: string, client: Client = db) {
     return client.providerProfile.findUnique({
       where: { userId: providerId },

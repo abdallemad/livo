@@ -63,6 +63,6 @@ session, never from the body.
 | Repositories | `src/repositories/admin-dashboard.repository.ts`, `provider.repository.ts`, `dispute.repository.ts`, `audit.repository.ts` |
 | Services | `src/services/admin-dashboard.service.ts`, `provider-review.service.ts`, `dispute.service.ts` |
 | API | `src/app/api/admin/dashboard/route.ts`, `…/providers/[id]/status/route.ts`, `…/disputes/[id]/status/route.ts` |
-| Hook | `src/hooks/use-admin-dashboard.ts`, `useProviderDecision` in `use-admin-providers.ts` (keys: `adminKeys` in `constants/query-keys.ts`) |
+| Hook | `src/hooks/use-admin-dashboard.ts`, `useProviderDecision` in `use-admin-providers.ts`, `useStartDisputeReview` in `use-admin-moderation.ts` (keys: `adminKeys` in `constants/query-keys.ts`) |
 | UI | `src/components/admin/dashboard/AdminDashboard.tsx`, `components/admin/providers/ProviderDecisionActions.tsx`; `BookingStatusBadge` / `DisputeStatusBadge` in `components/shared/status-badge.tsx` (labels in `constants/status.ts`) |
 | Page | `src/app/(admin)/admin/page.tsx` |

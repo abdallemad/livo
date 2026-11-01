@@ -9,6 +9,14 @@ import { paginationQuerySchema } from "./common.schema"
 export const REASON_MIN = 10
 export const REASON_MAX = 500
 
+/** Query-string text search: trimmed, empty → undefined. */
+const searchSchema = z
+  .string()
+  .trim()
+  .max(100)
+  .optional()
+  .transform((v) => v || undefined)
+
 /** A reason the affected user will see (rejection, suspension). */
 export const reasonSchema = z
   .string()
@@ -34,16 +42,57 @@ export const providerDecisionSchema = z.discriminatedUnion("decision", [
 /** Any "type a reason" dialog (reject provider, suspend provider, suspend user). */
 export const reasonFormSchema = z.object({ reason: reasonSchema })
 
-/** AD-05: the only transition the dashboard offers is OPEN → UNDER_REVIEW; resolving lives on the dispute page. */
-export const disputeStatusSchema = z.object({ status: z.literal("UNDER_REVIEW") })
+export const DISPUTE_RESOLUTIONS = ["RELEASE_TO_PROVIDER", "PARTIAL_REFUND", "FULL_REFUND", "NO_ACTION"] as const
+export const RESOLUTION_NOTE_MAX = 1000
 
-/** Query-string text search: trimmed, empty → undefined. */
-const searchSchema = z
-  .string()
-  .trim()
-  .max(100)
-  .optional()
-  .transform((v) => v || undefined)
+/**
+ * AD-05 dispute transitions on `PATCH /api/admin/disputes/[id]/status`:
+ * OPEN → UNDER_REVIEW ("I'm on it"), or OPEN/UNDER_REVIEW → RESOLVED with a
+ * decision. Which resolutions are allowed for the booking's money, and the
+ * refund limits, are checked by `utils/dispute-settlement.ts` in the service.
+ */
+export const disputeStatusSchema = z.discriminatedUnion("status", [
+  z.object({ status: z.literal("UNDER_REVIEW") }),
+  z.object({
+    status: z.literal("RESOLVED"),
+    resolution: z.enum(DISPUTE_RESOLUTIONS, { error: "Choose a decision." }),
+    refundAmount: z.coerce.number({ error: "Enter an amount." }).positive("Enter an amount above 0.").multipleOf(0.01).optional(),
+    note: z
+      .string()
+      .trim()
+      .min(REASON_MIN, `Explain the decision in at least ${REASON_MIN} characters.`)
+      .max(RESOLUTION_NOTE_MAX, `Keep the note under ${RESOLUTION_NOTE_MAX} characters.`),
+  }),
+])
+
+/** The resolve form (before the `status` literal is added by the hook). */
+export const resolveDisputeFormSchema = disputeStatusSchema.options[1].omit({ status: true }).superRefine((v, ctx) => {
+  if (v.resolution === "PARTIAL_REFUND" && v.refundAmount === undefined) {
+    ctx.addIssue({ code: "custom", path: ["refundAmount"], message: "Enter the amount to refund." })
+  }
+})
+
+export const ADMIN_DISPUTE_STATUSES = ["OPEN", "UNDER_REVIEW", "RESOLVED"] as const
+
+export const disputeListQuerySchema = paginationQuerySchema.extend({
+  status: z.enum(ADMIN_DISPUTE_STATUSES).optional(),
+  q: searchSchema,
+})
+
+/** `/admin/reviews` filters (AD-08). `direction`: who wrote it (SY-05 reviews go both ways). */
+export const reviewListQuerySchema = paginationQuerySchema.extend({
+  visibility: z.enum(["VISIBLE", "HIDDEN"]).optional(),
+  rating: z.coerce.number().int().min(1).max(5).optional(),
+  direction: z.enum(["OF_PROVIDER", "OF_CUSTOMER"]).optional(),
+  q: searchSchema,
+})
+
+/** AD-08: hide (with a reason the reviewer sees) or show a review again. */
+export const reviewModerationSchema = z.discriminatedUnion("action", [
+  z.object({ action: z.literal("HIDE"), reason: reasonSchema }),
+  z.object({ action: z.literal("SHOW") }),
+])
+
 
 export const ADMIN_PROVIDER_STATUSES = ["PENDING", "APPROVED", "REJECTED", "SUSPENDED", "DRAFT"] as const
 
@@ -71,7 +120,6 @@ export const userStatusSchema = z.discriminatedUnion("status", [
 
 export type ProviderDecisionValues = z.infer<typeof providerDecisionSchema>
 export type ReasonFormValues = z.infer<typeof reasonFormSchema>
-export type DisputeStatusValues = z.infer<typeof disputeStatusSchema>
 export type ProviderListQuery = z.infer<typeof providerListQuerySchema>
 export type ProviderListStatus = (typeof ADMIN_PROVIDER_STATUSES)[number]
 export type UserListQuery = z.infer<typeof userListQuerySchema>
@@ -149,3 +197,10 @@ export const adminCancelStatusSchema = z.object({ status: z.literal("CANCELLED")
 export type RequestListQuery = z.infer<typeof requestListQuerySchema>
 export type BookingListQuery = z.infer<typeof bookingListQuerySchema>
 export type AdminCancelValues = z.infer<typeof adminCancelStatusSchema>
+
+export type DisputeStatusValues = z.infer<typeof disputeStatusSchema>
+export type ResolveDisputeFormInput = z.input<typeof resolveDisputeFormSchema>
+export type ResolveDisputeFormValues = z.output<typeof resolveDisputeFormSchema>
+export type DisputeListQuery = z.infer<typeof disputeListQuerySchema>
+export type ReviewListQuery = z.infer<typeof reviewListQuerySchema>
+export type ReviewModerationValues = z.infer<typeof reviewModerationSchema>

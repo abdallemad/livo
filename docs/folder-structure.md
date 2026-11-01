@@ -23,7 +23,7 @@ src/
     (auth)/          /sign-in, /sign-up, /account-suspended: marketing header + footer around Clerk's embedded forms
     auth-callback/
     api/             me/, auth/sync/, onboarding/, admin/ (dashboard, providers, users, files, disputes, categories, services,
-                     requests, bookings),
+                     requests, bookings, reviews),
                      health/, webhooks/ — every server endpoint
     robots.ts sitemap.ts not-found.tsx
   components/
@@ -39,7 +39,8 @@ src/
     forms/           PhoneField, OtpField
     admin/           dashboard/ (KPIs, queues), providers/ (list, review, decision actions), users/ (list, detail,
                      status actions), catalog/ (CategoriesTable, CategoryForm, ServicesTable),
-                     orders/ (RequestsTable, RequestDetail, BookingsTable, BookingDetail), shared/ (ReasonDialog, SearchBox, ListPagination, HistoryCard, DetailField)
+                     orders/ (RequestsTable, RequestDetail, BookingsTable, BookingDetail),
+                     moderation/ (DisputesTable, DisputeDetail, ResolveDisputeForm, ReviewsTable), shared/ (ReasonDialog, SearchBox, ListPagination, HistoryCard, DetailField)
     auth/ seo/ marketing/ landing/ motion/
   hooks/             use-<feature>.ts (TanStack Query over the api-client)
   services/          <feature>.service.ts (business rules, auth guards)
@@ -55,4 +56,5 @@ src/
 ```
 
 Feature docs: `docs/api-conventions.md`, `docs/onboarding-feature.md`, `docs/admin-dashboard-feature.md`,
-`docs/admin-providers-users-feature.md`, `docs/admin-catalog-feature.md`, `docs/admin-requests-bookings-feature.md`. Page map: `docs/page-map.md`.
+`docs/admin-providers-users-feature.md`, `docs/admin-catalog-feature.md`, `docs/admin-requests-bookings-feature.md`,
+`docs/admin-disputes-reviews-feature.md`. Page map: `docs/page-map.md`.

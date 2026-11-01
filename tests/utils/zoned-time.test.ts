@@ -30,3 +30,9 @@ test("days between counts local calendar days", () => {
   assert.equal(zonedDaysBetween(now, new Date("2026-11-01T08:00:00Z")), 0)
   assert.equal(zonedDaysBetween(now, new Date("2026-10-29T08:00:00Z")), -3)
 })
+
+test("formatters print Cairo time whatever the server's zone", async () => {
+  const { formatZonedTime, formatZonedDay } = await import("@/utils/zoned-time")
+  assert.match(formatZonedTime("2026-11-01T21:30:00Z"), /11:30/)
+  assert.match(formatZonedDay("2026-11-01T22:30:00Z"), /Nov 2|2 Nov/) // 00:30 Cairo is already the 2nd
+})

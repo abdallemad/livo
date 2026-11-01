@@ -1,4 +1,5 @@
-import type { BookingStatus, QuoteStatus, RequestStatus, VerificationStatus } from "@prisma/client"
+import type { BookingSource, BookingStatus, PaymentMethod, QuoteStatus, RequestStatus, VerificationStatus } from "@prisma/client"
+import type { ProviderBookingAction } from "@/utils/provider-booking"
 import type { Paginated } from "./api"
 
 /**
@@ -92,4 +93,94 @@ export interface ProviderDashboardDto {
   todayBookings: ProviderTodayBooking[]
   /** Setup gaps that stop customers finding the provider. */
   setup: { hasServices: boolean; hasAreas: boolean; hasCategories: boolean }
+}
+
+// ---------------------------------------------------------------------------
+// Quotes (`/provider/quotes`) and bookings (`/provider/bookings`) — docs/provider-quotes-bookings-feature.md
+// ---------------------------------------------------------------------------
+
+export interface ProviderQuoteListItem {
+  id: string
+  price: number
+  durationDays: number | null
+  message: string | null
+  status: QuoteStatus
+  validUntil: string | null
+  createdAt: string
+  request: {
+    id: string
+    title: string
+    category: string
+    area: string | null
+    city: string
+    status: RequestStatus
+    budget: number | null
+    /** All quotes on the request, mine included — never other providers' prices. */
+    quoteCount: number
+  }
+  booking: { id: string; number: string; status: BookingStatus } | null
+  /** `null` = can be withdrawn (`utils/provider-quote.ts`). */
+  withdrawBlockedReason: string | null
+}
+
+export interface ProviderQuoteList extends Paginated<ProviderQuoteListItem> {
+  counts: Record<QuoteStatus, number>
+}
+
+/** Before the booking is confirmed the provider sees a first name and an area only (BR-02). */
+export interface ProviderBookingCustomer {
+  firstName: string | null
+  /** Only once contact is unlocked. */
+  fullName: string | null
+  phone: string | null
+  address: string | null
+}
+
+export interface ProviderBookingListItem {
+  id: string
+  number: string
+  source: BookingSource
+  title: string
+  status: BookingStatus
+  scheduledAt: string | null
+  createdAt: string
+  /** Area (locked) or full address (unlocked). */
+  place: string | null
+  customerFirstName: string | null
+  contactUnlocked: boolean
+  amount: number
+  providerNet: number
+  paymentMethod: PaymentMethod | null
+  paymentSummary: string
+  autoReleaseAt: string | null
+  actions: ProviderBookingAction[]
+  /** Set when the only action (accept) is blocked, e.g. the account isn't active. */
+  acceptBlockedReason: string | null
+}
+
+export interface ProviderBookingList extends Paginated<ProviderBookingListItem> {
+  counts: Record<"current" | "finished" | "cancelled", number>
+  toAccept: number
+}
+
+export interface ProviderBookingDetail extends ProviderBookingListItem {
+  customer: ProviderBookingCustomer
+  /** Customer's notes; contact details masked until confirmation (SY-04). */
+  notes: string | null
+  notesMasked: boolean
+  commissionRate: number
+  commissionAmount: number
+  serviceId: string | null
+  requestId: string | null
+  quote: { price: number; durationDays: number | null } | null
+  cancelReason: string | null
+  cancelledBySelf: boolean
+  events: { key: string; label: string; at: string; upcoming?: boolean }[]
+  dispute: { status: string; reason: string } | null
+  objectionWindowHours: number
+}
+
+export interface ProviderBookingStatusDto {
+  id: string
+  status: BookingStatus
 }

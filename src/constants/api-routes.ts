@@ -24,6 +24,11 @@ export const API_ROUTES = {
   provider: {
     dashboard: "/api/provider/dashboard",
     requests: "/api/provider/requests",
+    quotes: "/api/provider/quotes",
+    quoteStatus: (id: string) => `/api/provider/quotes/${encodeURIComponent(id)}/status`,
+    bookings: "/api/provider/bookings",
+    booking: (id: string) => `/api/provider/bookings/${encodeURIComponent(id)}`,
+    bookingStatus: (id: string) => `/api/provider/bookings/${encodeURIComponent(id)}/status`,
   },
   admin: {
     dashboard: "/api/admin/dashboard",

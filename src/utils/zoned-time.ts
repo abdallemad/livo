@@ -55,3 +55,17 @@ export function zonedDaysBetween(now: Date, date: Date, timeZone: string = APP_T
   const b = zonedDayRange(date, timeZone).start.getTime()
   return Math.round((b - a) / 86_400_000)
 }
+
+/**
+ * Formatters pinned to Livo's time zone: appointment times must read the same on the server render
+ * (UTC) and in any browser, and match the customer's clock.
+ */
+const zonedFormatters = {
+  time: new Intl.DateTimeFormat("en-EG", { numberingSystem: "latn", timeStyle: "short", timeZone: APP_TIME_ZONE }),
+  date: new Intl.DateTimeFormat("en-EG", { numberingSystem: "latn", weekday: "short", day: "numeric", month: "short", timeZone: APP_TIME_ZONE }),
+  dateTime: new Intl.DateTimeFormat("en-EG", { numberingSystem: "latn", dateStyle: "medium", timeStyle: "short", timeZone: APP_TIME_ZONE }),
+}
+export const formatZonedTime = (v: Date | string) => zonedFormatters.time.format(new Date(v))
+/** "Sun, 1 Nov" — for appointment days. */
+export const formatZonedDay = (v: Date | string) => zonedFormatters.date.format(new Date(v))
+export const formatZonedDateTime = (v: Date | string) => zonedFormatters.dateTime.format(new Date(v))

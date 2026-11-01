@@ -11,11 +11,8 @@ import { useProviderDashboard } from "@/hooks/use-provider-workspace"
 import { cn } from "@/lib/utils"
 import type { ProviderDashboardDto } from "@/types/provider"
 import { formatNumber, formatPrice } from "@/utils/format"
-import { APP_TIME_ZONE } from "@/utils/zoned-time"
+import { formatZonedTime } from "@/utils/zoned-time"
 import { RequestCard } from "../requests/RequestCard"
-
-/** Fixed zone so the server render and the browser print the same time (and it's Cairo time). */
-const timeFormat = new Intl.DateTimeFormat("en-EG", { numberingSystem: "latn", timeStyle: "short", timeZone: APP_TIME_ZONE })
 
 const VERIFICATION_COPY: Record<string, string> = {
   DRAFT: "Finish your profile and send your documents so we can review your account.",
@@ -235,7 +232,7 @@ export function ProviderDashboard({ initialData }: { initialData: ProviderDashbo
                     <Link href={`/provider/bookings/${b.id}`} className="flex min-h-16 items-start gap-3 py-3 hover:bg-accent/40">
                       <span className="flex w-20 shrink-0 items-center gap-1 pt-0.5 font-heading font-semibold tabular-nums">
                         <Clock className="size-4 text-muted-foreground" aria-hidden />
-                        <bdi dir="ltr">{timeFormat.format(new Date(b.scheduledAt))}</bdi>
+                        <bdi dir="ltr">{formatZonedTime(b.scheduledAt)}</bdi>
                       </span>
                       <span className="min-w-0 flex-1 space-y-1">
                         <span className="block font-medium">{b.title}</span>

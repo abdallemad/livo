@@ -18,6 +18,11 @@ export const providerKeys = {
   dashboard: () => [...providerKeys.all, "dashboard"] as const,
   requests: () => [...providerKeys.all, "requests"] as const,
   requestList: (query: object) => [...providerKeys.requests(), "list", query] as const,
+  quotes: () => [...providerKeys.all, "quotes"] as const,
+  quoteList: (query: object) => [...providerKeys.quotes(), "list", query] as const,
+  bookings: () => [...providerKeys.all, "bookings"] as const,
+  bookingList: (query: object) => [...providerKeys.bookings(), "list", query] as const,
+  booking: (id: string) => [...providerKeys.bookings(), "detail", id] as const,
 }
 
 export const adminKeys = {

@@ -3,7 +3,7 @@ import type { BookingStatus } from "@prisma/client"
 import { providerDashboardRepository as repo } from "@/repositories/provider-dashboard.repository"
 import { requestRepository } from "@/repositories/request.repository"
 import type { ProviderDashboardDto, ProviderTodayBooking } from "@/types/provider"
-import { formatAddressSnapshot } from "@/utils/booking-admin"
+import { bookingPlace, firstName } from "@/utils/provider-booking"
 import { zonedDayRange, zonedMonthRange } from "@/utils/zoned-time"
 import { loadProviderContext, newRequestsWhere, toProviderRequestCard } from "./provider-request.service"
 
@@ -19,17 +19,6 @@ const PREVIEW_SIZE = 5
 /** Bookings the provider still has to act on or carry out (PR-08). */
 const ACTIVE: BookingStatus[] = ["CONFIRMED", "IN_PROGRESS", "AWAITING_CONFIRMATION"]
 const NOT_TODAY: BookingStatus[] = ["CANCELLED", "REJECTED"]
-
-/** BR-02: until contact is unlocked the provider sees the area only, and the customer's first name. */
-function bookingPlace(snapshot: unknown, unlocked: boolean): string | null {
-  if (unlocked) return formatAddressSnapshot(snapshot)
-  if (!snapshot || typeof snapshot !== "object") return null
-  const s = snapshot as Record<string, unknown>
-  const parts = ["area", "city"].map((k) => s[k]).filter((v): v is string => typeof v === "string" && v.trim() !== "")
-  return parts.length ? parts.join(", ") : null
-}
-
-const firstName = (name: string | null) => (name ?? "").trim().split(/\s+/)[0] || null
 
 export async function getProviderDashboard(providerId: string, now = new Date()): Promise<ProviderDashboardDto> {
   const ctx = await loadProviderContext(providerId)

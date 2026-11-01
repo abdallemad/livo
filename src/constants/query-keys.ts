@@ -13,6 +13,13 @@ export const onboardingKeys = {
   state: () => [...onboardingKeys.all, "state"] as const,
 }
 
+export const customerKeys = {
+  all: ["customer"] as const,
+  dashboard: () => [...customerKeys.all, "dashboard"] as const,
+  requests: () => [...customerKeys.all, "requests"] as const,
+  requestList: (query: object) => [...customerKeys.requests(), "list", query] as const,
+}
+
 export const providerKeys = {
   all: ["provider"] as const,
   dashboard: () => [...providerKeys.all, "dashboard"] as const,

@@ -1,9 +1,19 @@
+import { Suspense } from "react"
 import type { Metadata } from "next"
-import { PagePlaceholder } from "@/components/shared"
+import { MyRequestsList } from "@/components/customer/requests/MyRequestsList"
+import { Skeleton } from "@/components/ui/skeleton"
 
-/** /account/requests — docs/SITEMAP.md (CU-13). Private: `noindex` comes from the zone layout. */
+/**
+ * /account/requests — the customer's quote requests and their status (docs/SITEMAP.md §3, CU-13, CU-11,
+ * docs/customer-dashboard-requests-feature.md). Filters in the URL, read by the client list
+ * (`useSearchParams` → Suspense); data from `GET /api/me/requests`. Private: `noindex` from the zone layout.
+ */
 export const metadata: Metadata = { title: "My requests" }
 
 export default function AccountRequestsPage() {
-  return <PagePlaceholder title={"My requests"} description={"All your quote requests and the status of each one."} route="/account/requests" reqs={["CU-13"]} />
+  return (
+    <Suspense fallback={<Skeleton className="h-96 w-full" />}>
+      <MyRequestsList />
+    </Suspense>
+  )
 }

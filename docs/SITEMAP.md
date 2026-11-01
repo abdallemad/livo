@@ -75,9 +75,9 @@ All `noindex`. Per-visitor UI is a client island (`AccountControls`), layouts st
 
 | Route | Page | Purpose | Req |
 |---|---|---|---|
-| `/account` | Dashboard | Upcoming bookings, open requests, new quotes | CU-08 |
+| `/account` | Dashboard | Upcoming bookings, open requests, new quotes, things to act on ([customer-dashboard-requests-feature.md](customer-dashboard-requests-feature.md)) | CU-08 |
 | `/account/book/[serviceId]` | **Book fixed-price service** (wizard, ≤ 5 steps) | date/time → address → notes → payment → confirm | CU-02, CU-07 |
-| `/account/requests` | My requests | List with status | CU-13 |
+| `/account/requests` | My requests | List with status; cancel a draft / open request | CU-13, CU-11 |
 | `/account/requests/new` | **New quote request** | description, photos, category, address, optional budget, preferred time | CU-03 |
 | `/account/requests/[id]` | Request details | Timeline, received quotes, compare, accept one | CU-04, CU-05, CU-08 |
 | `/account/bookings` | My bookings | List | CU-13 |

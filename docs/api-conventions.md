@@ -12,7 +12,7 @@ Component → hook (TanStack Query) → api-client → /api/... route.ts → ser
 | Path | Who | Guard |
 |---|---|---|
 | `/api/health` | anyone | none (no DB) |
-| `/api/me`, `/api/me/*` | the signed-in user's own data | `requireUser()` / `getViewer()` |
+| `/api/me`, `/api/me/*` | the signed-in user's own data — today also `GET /api/me/dashboard`, `GET /api/me/requests`, `PATCH /api/me/requests/[id]/status` (`docs/customer-dashboard-requests-feature.md`) | `requireUser()` / `getViewer()` |
 | `/api/auth/sync` | first sign-in | Clerk session |
 | `/api/<feature>` | public reads / customer writes | per route |
 | `/api/provider/<feature>` | providers (and admins) | `requireProvider()` — today `GET /api/provider/dashboard`, `GET /api/provider/requests` (`docs/provider-dashboard-requests-feature.md`); `GET /api/provider/quotes`, `PATCH /api/provider/quotes/[id]/status`, `GET /api/provider/bookings`, `GET /api/provider/bookings/[id]`, `PATCH /api/provider/bookings/[id]/status` (`docs/provider-quotes-bookings-feature.md`); `/api/provider/services*`, `/api/provider/portfolio*`, `GET /api/provider/files/[id]` (`docs/provider-services-portfolio-feature.md`); `GET|PUT /api/provider/schedule`, `GET /api/provider/reviews`, `PUT|DELETE /api/provider/reviews/[id]/reply` (`docs/provider-schedule-reviews-feature.md`); `GET /api/provider/earnings`, `GET|POST /api/provider/payouts` (`docs/provider-earnings-payouts-feature.md`); `/api/provider/verification*`, `/api/provider/settings*` (`docs/provider-verification-settings-feature.md`) |

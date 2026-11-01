@@ -9,6 +9,7 @@ import type {
   MilestoneStatus,
   PaymentMethod,
   PaymentStatus,
+  PayoutStatus,
   QuoteStatus,
   RequestStatus,
   Role,
@@ -17,6 +18,7 @@ import type {
 } from "@prisma/client"
 import type { SettlementPayment } from "@/utils/dispute-settlement"
 import type { PaymentSummary } from "@/utils/payment-summary"
+import type { CommissionSource } from "@/utils/commission"
 import type { ServiceVisibilityState } from "@/utils/service-visibility"
 import type { Paginated } from "./api"
 
@@ -490,4 +492,79 @@ export interface AdminPaymentList extends Paginated<AdminPaymentListItem> {
   counts: Record<PaymentStatus, number>
   /** Totals over ALL payments (not the filtered page) — `utils/payment-summary.ts`. */
   summary: PaymentSummary
+}
+
+// ---------------------------------------------------------------------------
+// Commission (`/admin/settings/commission`, AD-06) and payouts (`/admin/payouts`, AD-07)
+// docs/admin-commission-payouts-feature.md
+// ---------------------------------------------------------------------------
+
+export interface AdminCommissionCategory {
+  id: string
+  name: string
+  parentId: string | null
+  parentName: string | null
+  isActive: boolean
+  /** This category's own override, if any. */
+  overrideRate: number | null
+  /** What a booking confirmed now would be charged (`utils/commission.ts`). */
+  effectiveRate: number
+  source: CommissionSource
+}
+
+export interface AdminCommissionChange {
+  id: string
+  action: string
+  actor: string | null
+  categoryName: string | null
+  from: number | null
+  to: number | null
+  createdAt: string
+}
+
+export interface AdminCommissionSettings {
+  globalRate: number
+  globalUpdatedAt: string | null
+  /** Parents first, each followed by its sub-categories. */
+  categories: AdminCommissionCategory[]
+  history: AdminCommissionChange[]
+}
+
+export interface AdminPayoutWallet {
+  /** `SUM(WalletTransaction.amount)` — may be negative (cash-job commission owed). */
+  balance: number
+  /** Other APPROVED-but-unpaid payouts of this provider. */
+  reservedByOthers: number
+  available: number
+}
+
+export interface AdminPayoutListItem {
+  id: string
+  amount: number
+  status: PayoutStatus
+  destinationType: string
+  destinationRef: string
+  providerId: string
+  providerName: string
+  providerPhone: string | null
+  rejectionReason: string | null
+  processedBy: string | null
+  processedAt: string | null
+  createdAt: string
+  /** Only for REQUESTED / APPROVED payouts (final ones don't need it). */
+  wallet: AdminPayoutWallet | null
+  /** `null` = allowed; otherwise why the button is disabled (`utils/payout-rules.ts`). */
+  approveBlockedReason: string | null
+  markPaidBlockedReason: string | null
+  canReject: boolean
+}
+
+export interface AdminPayoutList extends Paginated<AdminPayoutListItem> {
+  counts: Record<PayoutStatus, number>
+  amounts: Record<PayoutStatus, number>
+}
+
+export interface PayoutStatusDto {
+  id: string
+  status: PayoutStatus
 }

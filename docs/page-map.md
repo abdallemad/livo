@@ -111,8 +111,8 @@ Dashboard shell, dynamic, `noindex`; non-admins get a 404 (proxy + layout + ever
 | `/admin/disputes` | Disputes | Status tabs + counts, search, money held ([admin-disputes-reviews-feature.md](admin-disputes-reviews-feature.md)) | built | AD-05 |
 | `/admin/disputes/[id]` | Resolve dispute | Evidence, chat, money, start review, decision with live money preview (release / partial / full refund / no action) | built | AD-05 |
 | `/admin/payments` | Payments | Totals (collected, held, released, refunded, cash), every payment with status / method / escrow filters + search; read-only ([admin-payments-feature.md](admin-payments-feature.md)) | built | AD-07 |
-| `/admin/payouts` | Payout requests | Approve, reject, mark as paid | placeholder | AD-07 |
-| `/admin/settings/commission` | Commission | Platform-wide commission rate | placeholder | AD-06 |
+| `/admin/payouts` | Payout requests | Totals, status filter + search, provider wallet (available / reserved); approve, reject, mark paid ([admin-commission-payouts-feature.md](admin-commission-payouts-feature.md)) | built | AD-07 |
+| `/admin/settings/commission` | Commission | Platform rate, per-category rates (inherit from parent), change history | built | AD-06 |
 | `/admin/reviews` | Reviews | Both directions, filters, hide / show (rating recomputed, BR-04 flag) | built | AD-08 |
 | `/admin/content` | Page content | FAQ, terms, static pages | placeholder | AD-10 |
 | `/admin/audit-log` | Audit log | Financial operations and admin decisions | placeholder | AD-11, NF-12 |

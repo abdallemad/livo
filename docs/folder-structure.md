@@ -58,4 +58,5 @@ src/
 
 Feature docs: `docs/api-conventions.md`, `docs/onboarding-feature.md`, `docs/admin-dashboard-feature.md`,
 `docs/admin-providers-users-feature.md`, `docs/admin-catalog-feature.md`, `docs/admin-requests-bookings-feature.md`,
-`docs/admin-disputes-reviews-feature.md`, `docs/admin-payments-feature.md`. Page map: `docs/page-map.md`.
+`docs/admin-disputes-reviews-feature.md`, `docs/admin-payments-feature.md`,
+`docs/admin-commission-payouts-feature.md`. Page map: `docs/page-map.md`.

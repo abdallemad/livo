@@ -39,6 +39,9 @@ export const API_ROUTES = {
     portfolioOrder: "/api/provider/portfolio/order",
     portfolioImages: "/api/provider/portfolio/images",
     portfolioImage: (id: string) => `/api/provider/portfolio/images/${encodeURIComponent(id)}`,
+    schedule: "/api/provider/schedule",
+    reviews: "/api/provider/reviews",
+    reviewReply: (id: string) => `/api/provider/reviews/${encodeURIComponent(id)}/reply`,
     /** Owner-only preview of a service / portfolio photo (307 to a 5-minute signed link). */
     file: (id: string) => `/api/provider/files/${encodeURIComponent(id)}`,
   },

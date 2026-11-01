@@ -116,10 +116,10 @@ All `noindex`. Gate by verification status (see §1).
 | `/provider/messages` | Conversations list | | PR-09 |
 | `/provider/messages/[bookingId]` | Chat thread | | PR-09 |
 | `/provider/portfolio` | Portfolio gallery (upload/delete photos) | Items of 1–6 photos, reorderable ([provider-services-portfolio-feature.md](provider-services-portfolio-feature.md)) | PR-04 |
-| `/provider/schedule` | Availability / calendar | SHOULD | PR-10 |
+| `/provider/schedule` | Availability / calendar | SHOULD; weekly hours + next 14 days ([provider-schedule-reviews-feature.md](provider-schedule-reviews-feature.md)) | PR-10 |
 | `/provider/earnings` | Wallet: due, collected, commission deducted | | PR-11 |
 | `/provider/payouts` | Request payout + history | | PR-12 |
-| `/provider/reviews` | Reviews received, reply | SHOULD | PR-13 |
+| `/provider/reviews` | Reviews received, reply | SHOULD; replies are public, contact details refused ([provider-schedule-reviews-feature.md](provider-schedule-reviews-feature.md)) | PR-13 |
 | `/provider/notifications` | Notification center | | SY-02 |
 | `/provider/settings` | Profile, areas, account | | AU-06 |
 

@@ -30,8 +30,9 @@ interface DashboardShellProps {
 /**
  * Sidebar shell for `/account`, `/provider` and `/admin` (docs/DESIGN-SYSTEM.md §7).
  * `h-dvh overflow-hidden`; only the content column scrolls. Sidebar sits at the
- * inline START (left in LTR); on mobile it becomes a sheet and the bottom tab
- * bar carries the main destinations. Static: reads nothing from the request —
+ * inline START (left in LTR). On desktop the header button (and the rail) collapse
+ * it to **icons only** in every zone — labels become tooltips — instead of hiding it;
+ * on mobile it becomes a sheet and the bottom tab bar carries the main destinations. Static: reads nothing from the request —
  * active state, breadcrumb and account controls are client islands. Dark mode
  * is toggled from the account dropdown (`AccountMenu`), not a header button.
  */
@@ -39,7 +40,7 @@ export function DashboardShell({ zone, density = "touch", banner, children }: Da
   const { root: rootHref, label: zoneLabel, tabs } = DASHBOARD_NAV[zone]
   return (
     <SidebarProvider className="h-dvh min-h-0 overflow-hidden">
-      <Sidebar side="left" collapsible={density === "dense" ? "icon" : "offcanvas"}>
+      <Sidebar side="left" collapsible="icon">
         <SidebarHeader className="border-b border-sidebar-border">
           <Link href={rootHref} className="flex h-10 items-center gap-2 px-1 font-heading font-semibold">
             <Image src={SITE_LOGO} alt="" width={28} height={28} />
@@ -57,7 +58,7 @@ export function DashboardShell({ zone, density = "touch", banner, children }: Da
             Main site
           </Link>
         </SidebarFooter>
-        {density === "dense" ? <SidebarRail /> : null}
+        <SidebarRail />
       </Sidebar>
 
       <SidebarInset className="min-h-0 overflow-hidden">

@@ -26,6 +26,9 @@ export const providerKeys = {
   services: () => [...providerKeys.all, "services"] as const,
   service: (id: string) => [...providerKeys.services(), "detail", id] as const,
   portfolio: () => [...providerKeys.all, "portfolio"] as const,
+  schedule: () => [...providerKeys.all, "schedule"] as const,
+  reviews: () => [...providerKeys.all, "reviews"] as const,
+  reviewList: (query: object) => [...providerKeys.reviews(), "list", query] as const,
 }
 
 export const adminKeys = {

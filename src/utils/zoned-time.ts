@@ -69,3 +69,13 @@ export const formatZonedTime = (v: Date | string) => zonedFormatters.time.format
 /** "Sun, 1 Nov" — for appointment days. */
 export const formatZonedDay = (v: Date | string) => zonedFormatters.date.format(new Date(v))
 export const formatZonedDateTime = (v: Date | string) => zonedFormatters.dateTime.format(new Date(v))
+
+const WEEKDAY_INDEX: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }
+const weekdayFormat = new Intl.DateTimeFormat("en-US", { weekday: "short", timeZone: APP_TIME_ZONE })
+
+/** Local weekday (0 = Sunday … 6 = Saturday, like `Availability.weekday`) and minutes since local midnight. */
+export function zonedWeekdayMinutes(date: Date, timeZone: string = APP_TIME_ZONE) {
+  const p = zonedParts(date, timeZone)
+  const weekday = timeZone === APP_TIME_ZONE ? weekdayFormat.format(date) : new Intl.DateTimeFormat("en-US", { weekday: "short", timeZone }).format(date)
+  return { weekday: WEEKDAY_INDEX[weekday], minutes: p.hour * 60 + p.minute }
+}

@@ -29,6 +29,10 @@ export const AUDIT_ACTION_LABEL: Record<string, string> = {
   "payout.approve": "Approved the payout",
   "payout.reject": "Rejected the payout",
   "payout.mark_paid": "Marked the payout as paid",
+  "booking.provider_accept": "Provider accepted the booking",
+  "booking.provider_decline": "Provider declined the booking",
+  "booking.start": "Provider started the work",
+  "booking.provider_done": "Provider marked the job done",
 }
 
 export const auditActionLabel = (action: string) => AUDIT_ACTION_LABEL[action] ?? action

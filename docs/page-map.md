@@ -76,9 +76,9 @@ Sidebar shell, dynamic, `noindex`. Signed-in `PROVIDER` with onboarding finished
 | `/provider/services/[id]/edit` | Edit service | Edit or pause a service | placeholder | PR-05 |
 | `/provider/requests` | Available requests | Matching engine (approved only; city, categories + sub-categories, my areas or whole city); tabs New / Quoted, filters, sort | built | PR-06, SY-01 |
 | `/provider/requests/[id]` | Request details | Details + send a quote | placeholder | PR-07 |
-| `/provider/quotes` | Quotes | Quotes sent and their status | placeholder | PR-07 |
-| `/provider/bookings` | My bookings | Accept, decline, start, complete | placeholder | PR-08 |
-| `/provider/bookings/[id]` | Booking details | Customer details only after confirmation | placeholder | PR-08 |
+| `/provider/quotes` | My quotes | Status tabs + counts, price / duration / budget, booking link, withdraw a waiting quote ([provider-quotes-bookings-feature.md](provider-quotes-bookings-feature.md)) | built | PR-07 |
+| `/provider/bookings` | My bookings | Current / Finished / Cancelled; accept, decline (reason), start, mark done | built | PR-08 |
+| `/provider/bookings/[id]` | Booking details | Next step + actions, when/where, customer (locked until accepted, notes masked), money, timeline | built | PR-08, BR-02 |
 | `/provider/messages` | Messages | Chats with customers | placeholder | PR-09 |
 | `/provider/messages/[bookingId]` | Chat | Thread; contact details blocked before confirmation | placeholder | PR-09 |
 | `/provider/portfolio` | Portfolio | Photos of past work | placeholder | PR-04 |

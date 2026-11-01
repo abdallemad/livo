@@ -47,7 +47,7 @@ Static/ISR, indexed, in `sitemap.ts`. Layouts read nothing from the request.
 | `/services` | All fixed-price services with advanced filters (`/services?…` noindex) ([catalog-feature.md](catalog-feature.md)) | static / ISR | MK-02, MK-06 |
 | `/services/[category]` | Category page: fixed-price services + "request a quote" CTA | SSG (`generateStaticParams` = all slugs) + `…/page/[page]` | MK-02 |
 | `/services/[category]/[service]` | Fixed-price service detail + "Book now" | ISR (`generateStaticParams → []`, `revalidate = 3600`) | MK-02 |
-| `/providers/[id]` | Public provider profile: bio, portfolio, rating, reviews, services. **No contact details** | ISR | PR-04, SY-04 |
+| `/providers/[id]` | Public provider profile: bio, portfolio, rating, reviews, services, working hours. **No contact details**; approved + active providers only (else 404) — built, `docs/provider-profile-feature.md` | ISR | PR-04, SY-04 |
 | `/how-it-works` | Two tabs/sections: for customers, for providers | static | MK-03 |
 | `/become-provider` | Provider landing + CTA to sign-up as provider | static | MK-04 |
 | `/about` | About | static | MK-05 |
@@ -80,7 +80,7 @@ All `noindex`. Per-visitor UI is a client island (`AccountControls`), layouts st
 | `/account` | Dashboard | Upcoming bookings, open requests, new quotes, things to act on ([customer-dashboard-requests-feature.md](customer-dashboard-requests-feature.md)) | CU-08 |
 | `/account/book/[serviceId]` | **Book fixed-price service** (wizard, ≤ 5 steps) | date/time → address → notes → payment → confirm | CU-02, CU-07 |
 | `/account/requests` | My requests | List with status; cancel a draft / open request | CU-13, CU-11 |
-| `/account/requests/new` | **New quote request** | description, photos, category, address, optional budget, preferred time | CU-03 |
+| `/account/requests/new` | **New quote request** | description, photos, category, address, optional budget, preferred time — built, `docs/customer-new-request-feature.md` | CU-03 |
 | `/account/requests/[id]` | Request details | Timeline, received quotes, compare, accept one | CU-04, CU-05, CU-08 |
 | `/account/bookings` | My bookings | List with next step ([customer-account-feature.md](customer-account-feature.md)) | CU-13 |
 | `/account/bookings/[id]` | Booking details | Status timeline, pay, confirm completion, review, cancel, open dispute | CU-09…CU-12 |

@@ -21,7 +21,7 @@ Header-only shell, no request reads, `noindex` only on `/search?…` (via the pr
 | `/services/[category]` | Category services | Description, sub-categories, providers count, quote CTA, services, pagination, JSON-LD | built | ● | MK-02 |
 | `/services/[category]/page/[page]` | Category services | Page N (page 1 → 308, past the end → 404) | built | ● | MK-02 |
 | `/services/[category]/[service]` | Service details | Gallery, price, duration, Book now, provider summary, reviews, more / similar services, JSON-LD; 308 if moved ([catalog-feature.md](catalog-feature.md)) | built | ● | MK-02 |
-| `/providers/[id]` | Provider profile | Bio, portfolio, reviews, services; no contact details | placeholder | ● | PR-04, SY-04 |
+| `/providers/[id]` | Provider profile | Verified badge, specialties, areas, hours, bio, track record, live services, portfolio, visible reviews; no contact details; 404 unless approved + active ([provider-profile-feature.md](provider-profile-feature.md)) | built | ● | PR-04, PR-10, SY-04 |
 | `/search` | Search | Find a service in your area | placeholder | ◐ | MK-06 |
 | `/how-it-works` | How it works | Steps for customers and providers | placeholder | ◐ | MK-03 |
 | `/become-provider` | Join as a provider | Provider landing + sign-up CTA | placeholder | ◐ | MK-04 |
@@ -51,7 +51,7 @@ Sidebar shell, dynamic, `noindex`. Signed-in `CUSTOMER` with onboarding finished
 | `/account` | My account | Counts, needs your attention (confirm, pay, compare, review), upcoming bookings, open requests ([customer-dashboard-requests-feature.md](customer-dashboard-requests-feature.md)) | built | CU-08 |
 | `/account/book/[serviceId]` | Book the service | Date & time → address → notes → payment → confirmation | placeholder | CU-02, CU-07 |
 | `/account/requests` | My requests | Active / Booked / Closed, quotes + lowest price, booking link, cancel (draft / open) | built | CU-13, CU-11 |
-| `/account/requests/new` | New quote request | Job description, photos, category, address, budget | placeholder | CU-03 |
+| `/account/requests/new` | New quote request | Quote category, title, description (no contact details), size, private photos, address or area, budget, preferred date; opens + notifies matching providers ([customer-new-request-feature.md](customer-new-request-feature.md)) | built | CU-03 |
 | `/account/requests/[id]` | Request details | Request stages, quotes received, accept one | placeholder | CU-04, CU-05, CU-08 |
 | `/account/bookings` | My bookings | Current / Finished / Cancelled, next step, provider phone once confirmed, review link ([customer-account-feature.md](customer-account-feature.md)) | built | CU-13 |
 | `/account/bookings/[id]` | Booking details | Stages, payment, confirm completion, cancel, dispute | placeholder | CU-09…CU-12 |

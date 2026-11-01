@@ -79,3 +79,15 @@ export function zonedWeekdayMinutes(date: Date, timeZone: string = APP_TIME_ZONE
   const weekday = timeZone === APP_TIME_ZONE ? weekdayFormat.format(date) : new Intl.DateTimeFormat("en-US", { weekday: "short", timeZone }).format(date)
   return { weekday: WEEKDAY_INDEX[weekday], minutes: p.hour * 60 + p.minute }
 }
+
+/** "YYYY-MM-DD" of the local day containing `date` (a date input's value). */
+export function zonedIsoDay(date: Date, timeZone: string = APP_TIME_ZONE) {
+  const { year, month, day } = zonedParts(date, timeZone)
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`
+}
+
+/** UTC instant of local midnight for a "YYYY-MM-DD" day. */
+export function zonedDayStart(isoDay: string, timeZone: string = APP_TIME_ZONE) {
+  const [y, m, d] = isoDay.split("-").map(Number)
+  return zonedMidnight(y, m, d, timeZone)
+}

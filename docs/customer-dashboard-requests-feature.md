@@ -59,7 +59,7 @@ No schema change and no migration.
 
 ## Not done / follow-ups
 
-The cards link to pages that are still placeholders: `/account/requests/new` (create a request, CU-03),
+`/account/requests/new` (create a request, CU-03) is now built — `docs/customer-new-request-feature.md`. The cards link to pages that are still placeholders:
 `/account/requests/[id]` (compare and accept quotes, CU-04/05), `/account/bookings[/id]` (confirm completion, pay,
 cancel, dispute — CU-07, CU-09, CU-11, CU-12) and `/account/bookings/[id]/review` (CU-10). Also: a "seen" marker for
 new quotes, and notifying providers when a request they matched (but didn't quote) is cancelled.

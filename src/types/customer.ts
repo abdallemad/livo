@@ -65,3 +65,41 @@ export interface CustomerDashboardDto {
   upcoming: CustomerBookingCard[]
   openRequests: CustomerRequestCard[]
 }
+
+// --- new quote request (CU-03) — docs/customer-new-request-feature.md ---------------------
+
+export interface RequestPhotoDto {
+  id: string
+  mimeType: string
+  sizeBytes: number
+  /** Owner-only `/api/me/files/[id]` (a short-lived signed redirect). Never a public URL. */
+  previewUrl: string
+}
+
+export interface NewRequestCategoryOption {
+  id: string
+  name: string
+  parentName: string | null
+}
+
+export interface NewRequestAddressOption {
+  id: string
+  label: string
+  areaId: string | null
+  isDefault: boolean
+}
+
+export interface NewRequestFormData {
+  city: string | null
+  categories: NewRequestCategoryOption[]
+  addresses: NewRequestAddressOption[]
+  areas: { id: string; name: string }[]
+  /** Photos uploaded but not yet attached to a request (resume after a refresh). */
+  pendingPhotos: RequestPhotoDto[]
+  /** From `?category=<slug>` when it names a quote category. */
+  preselectedCategoryId: string | null
+  /** Today in Cairo ("YYYY-MM-DD"), the date input's minimum. */
+  today: string
+  maxDate: string
+  expiryDays: number
+}

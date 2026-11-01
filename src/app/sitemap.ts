@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next"
 import { absoluteUrl } from "@/lib/site-url"
 import { getCategoryPaths } from "@/services/catalog.service"
+import { getPublicProviderPaths } from "@/services/public-provider.service"
 import { getPublishedSlugs } from "@/services/static-page.service"
 import { categoryPageHref } from "@/utils/catalog"
 
@@ -38,7 +39,17 @@ async function categoryEntries(): Promise<MetadataRoute.Sitemap> {
   }
 }
 
+/** Public provider profiles (PR-04): approved providers with an active account only. */
+async function providerEntries(): Promise<MetadataRoute.Sitemap> {
+  try {
+    return (await getPublicProviderPaths()).map((p) => ({ url: absoluteUrl(p.path), lastModified: p.updatedAt }))
+  } catch (error) {
+    console.error("[sitemap] provider entries skipped (database unavailable)", error)
+    return []
+  }
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [pages, categories] = await Promise.all([staticPageEntries(), categoryEntries()])
-  return [...STATIC_PATHS.map((path) => ({ url: absoluteUrl(path) })), ...pages, ...categories]
+  const [pages, categories, providers] = await Promise.all([staticPageEntries(), categoryEntries(), providerEntries()])
+  return [...STATIC_PATHS.map((path) => ({ url: absoluteUrl(path) })), ...pages, ...categories, ...providers]
 }

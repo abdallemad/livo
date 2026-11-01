@@ -144,7 +144,7 @@ export function ServiceDetailView({ s }: { s: ServiceDetail }) {
                 <div className="flex items-center gap-1.5">
                   <BriefcaseBusiness className="size-4 text-muted-foreground" aria-hidden />
                   <dt className="sr-only">Jobs done</dt>
-                  <dd>{formatNumber(p.completedJobs)} jobs done</dd>
+                  <dd>{formatNumber(p.completedJobs)} {p.completedJobs === 1 ? "job" : "jobs"} done</dd>
                 </div>
                 {p.yearsExperience ? (
                   <div className="flex items-center gap-1.5">

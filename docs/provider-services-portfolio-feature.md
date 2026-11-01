@@ -57,7 +57,7 @@ never re-publishes a hidden service (AD-02).
   which must be exactly the provider's items (`validateOrder`, else 409). The list moves at once and rolls
   back if the server refuses.
 - Every write calls `revalidateStorefront()`: the portfolio is shown on the public provider profile
-  (`/providers/[id]`, still a placeholder).
+  (`/providers/[id]`, `docs/provider-profile-feature.md`).
 
 ## Photos (both features)
 

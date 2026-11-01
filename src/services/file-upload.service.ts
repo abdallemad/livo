@@ -15,6 +15,8 @@ import { detectFileType, type DetectedType } from "@/utils/file-signature"
 
 export const SERVICE_IMAGE_PREFIX = (userId: string) => `uploads/services/${userId}/`
 export const PORTFOLIO_IMAGE_PREFIX = (userId: string) => `uploads/portfolio/${userId}/`
+/** Quote-request photos (CU-03): private; the owner previews them, providers see a count until a detail page exists. */
+export const REQUEST_IMAGE_PREFIX = (userId: string) => `uploads/requests/${userId}/`
 export const DOCUMENT_PREFIX = (userId: string) => `private/verification/${userId}/`
 
 export class StorageUnavailableError extends AppError {

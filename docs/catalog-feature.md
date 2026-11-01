@@ -84,7 +84,7 @@ No schema change and no migration.
 
 ## Not done / follow-ups
 
-- **Provider profile** `/providers/[id]` and the booking wizard `/account/book/[serviceId]` (where **Book now** leads) are still placeholders.
+- The booking wizard `/account/book/[serviceId]` (where **Book now** leads) is still a placeholder. The provider profile `/providers/[id]` is built (`docs/provider-profile-feature.md`).
 - The home page's category tiles are still hard-coded and link to `/services`; switch them to the real categories.
 - `/search` (MK-06) is still a placeholder — `/services` filters cover search for now; it could redirect there.
 - A service whose slug is literally `page` would be shadowed by `/services/<category>/page/…`; slugs come from titles, so it's unlikely.

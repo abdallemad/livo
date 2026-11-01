@@ -30,7 +30,7 @@ src/
     ui/              shadcn (base-nova, Base UI)
     shared/          PageHeader, EmptyState, StatusBadge, StatCard, PriceTag, RatingStars, BookingTimeline,
                      Stepper, ConfirmDialog, PagePlaceholder… (+ index.ts)
-    layout/          AppHeader, AppFooter, MobileMenu, DashboardShell (+ nav, breadcrumb, bottom tabs),
+    layout/          AppHeader (grouped hover dropdowns: NavMenu — docs/navigation.md), AppFooter, MobileMenu, DashboardShell (+ nav, breadcrumb, bottom tabs),
                      AccountControls (Sign in link / AccountMenu dropdown — dark mode lives here,
                      not as a header button), ThemeToggle (onboarding header + preview only)
     onboarding/      wizard, steps, RoleCard, FirstServiceForm, ServicePreviewCard, SuccessScreen
@@ -68,4 +68,7 @@ Feature docs: `docs/api-conventions.md`, `docs/onboarding-feature.md`, `docs/adm
 `docs/customer-dashboard-requests-feature.md`,
 `docs/customer-account-feature.md`,
 `docs/catalog-feature.md`,
-`docs/landing-page.md`. Page map: `docs/page-map.md`.
+`docs/landing-page.md`,
+`docs/customer-new-request-feature.md`,
+`docs/provider-profile-feature.md`,
+`docs/navigation.md`. Page map: `docs/page-map.md`.

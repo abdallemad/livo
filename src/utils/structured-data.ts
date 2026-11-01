@@ -98,3 +98,21 @@ export function faqJsonLd(entries: readonly { q: string; a: string }[]) {
     mainEntity: entries.map((e) => ({ "@type": "Question", name: e.q, acceptedAnswer: { "@type": "Answer", text: e.a } })),
   }
 }
+
+/**
+ * A public provider profile (`/providers/[id]`): the person, what they do and where. No contact point (SY-04) and no
+ * `aggregateRating` — review markup for the site's own providers is self-serving in Google's rules and would not show.
+ */
+export function providerJsonLd(p: { name: string; href: string; bio: string | null; specialties: string[]; city: string; image: string | null }) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: p.name,
+    url: absoluteUrl(p.href),
+    ...(p.bio ? { description: p.bio } : {}),
+    ...(p.image ? { image: p.image.startsWith("http") ? p.image : absoluteUrl(p.image) } : {}),
+    ...(p.specialties.length ? { knowsAbout: p.specialties } : {}),
+    workLocation: { "@type": "City", name: p.city },
+    memberOf: { "@type": "Organization", name: SITE_NAME, url: absoluteUrl("/") },
+  }
+}

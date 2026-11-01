@@ -34,3 +34,12 @@ test("trust copy never promises a warranty, a money-back guarantee or refund ter
   assert.match(trust.TRUST_STRIP.find((t) => t.icon === "payment")!.label, /online/i)
   assert.match(trust.MONEY_FLOW.footnote, /online/i)
 })
+
+test("providerJsonLd: Person with no contact point or rating markup (SY-04)", async () => {
+  const { providerJsonLd } = await import("@/utils/structured-data")
+  const ld = providerJsonLd({ name: "Omar", href: "/providers/u1", bio: null, specialties: ["Plumbing"], city: "Cairo", image: null }) as Record<string, unknown>
+  assert.equal(ld["@type"], "Person")
+  assert.ok(String(ld.url).endsWith("/providers/u1"))
+  assert.deepEqual(ld.knowsAbout, ["Plumbing"])
+  for (const key of ["telephone", "email", "contactPoint", "aggregateRating", "description", "image"]) assert.equal(key in ld, false, key)
+})

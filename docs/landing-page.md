@@ -7,7 +7,7 @@ Static / ISR (`revalidate = 3600`), built and verified with `npm run build` agai
 
 | # | Section | File (`components/marketing/`) | Data | When empty |
 |---|---|---|---|---|
-| 1 | Header — logo, Services / How it works / Become a provider, `AccountControls` island | `layout/AppHeader.tsx` | — | — |
+| 1 | Header — logo, grouped hover dropdowns (Services + live categories / For providers / Help — `docs/navigation.md`), `AccountControls` island | `layout/AppHeader.tsx`, `layout/NavMenu.tsx` | top-level categories (`getNavCategories`) | static links only |
 | 2 | Hero — the one H1, launch city + services, **Book a service** (amber) / Join as a provider, service + area search | `Hero.tsx` | areas (`getSearchAreas`) | "All of {city}" only |
 | 2b | Trust strip — 4 promises | `TrustStrip.tsx` | constants | — |
 | 3 | Popular services — title, "From X EGP", duration, category icon → service page | `PopularServices.tsx` | `getPopularServices` (LIVE only) | real **category tiles without prices**; hidden if no categories |

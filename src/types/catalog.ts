@@ -113,3 +113,18 @@ export interface ServiceDetail {
 
 /** A service lookup: found, moved to another category (308), or nothing (404). */
 export type ServiceLookup = { kind: "found"; service: ServiceDetail } | { kind: "moved"; href: string } | { kind: "missing" }
+
+/** `/providers/[id]` — the public provider profile (PR-04, SY-04; docs/provider-profile-feature.md). No contact details. */
+export interface PublicProviderProfile extends PublicProviderSummary {
+  href: string
+  specialties: { slug: string; name: string }[]
+  /** Sat → Fri, or null when the provider never set working hours. */
+  hours: { day: string; ranges: string[] }[] | null
+  /** Show stars only above the trust threshold (`MIN_PROVIDER_REVIEWS_FOR_STARS`). */
+  showStars: boolean
+  ratingBreakdown: { rating: number; count: number; percent: number }[]
+  services: CatalogServiceCard[]
+  portfolio: { id: string; title: string; description: string | null; images: string[] }[]
+  reviews: PublicReview[]
+  updatedAt: string
+}

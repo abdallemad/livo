@@ -11,6 +11,11 @@ export const API_ROUTES = {
     dashboard: "/api/me/dashboard",
     requests: "/api/me/requests",
     requestStatus: (id: string) => `/api/me/requests/${encodeURIComponent(id)}/status`,
+    /** Photos for a new quote request (CU-03): POST to upload, DELETE an unsent one. */
+    requestImages: "/api/me/requests/images",
+    requestImage: (id: string) => `/api/me/requests/images/${encodeURIComponent(id)}`,
+    /** Owner-only preview of the customer's own upload (307 to a signed link). */
+    file: (id: string) => `/api/me/files/${encodeURIComponent(id)}`,
     settings: "/api/me/settings",
     settingsPersonal: "/api/me/settings/personal",
     settingsInterests: "/api/me/settings/interests",

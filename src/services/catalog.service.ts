@@ -3,7 +3,7 @@ import type { Prisma } from "@prisma/client"
 import { catalogRepository as repo, type CatalogServiceRow } from "@/repositories/catalog.repository"
 import type { CatalogQuery } from "@/schemas/catalog.schema"
 import { VISIBLE_SERVICE } from "@/services/admin-catalog.service"
-import type { CatalogCategory, CatalogFilterOptions, CatalogIndex, CatalogServicePage, CategoryDirectory, CategoryPageData, ServiceLookup } from "@/types/catalog"
+import type { CatalogCategory, CatalogFilterOptions, CatalogIndex, CatalogServicePage, CategoryDirectory, CategoryPageData, PublicReview, ServiceLookup } from "@/types/catalog"
 import { CATALOG_PAGE_SIZE, type CatalogSort, normalizePriceRange, serviceHref } from "@/utils/catalog"
 import { maskContactDetails } from "@/utils/contact-mask"
 import { firstName } from "@/utils/provider-booking"
@@ -136,6 +136,17 @@ export async function getCategoryDirectory(): Promise<CategoryDirectory> {
   return { categories: (await loadCategories()).filter((c) => !c.parentSlug) }
 }
 
+type ReviewRow = Awaited<ReturnType<typeof repo.findProviderReviews>>[number]
+
+const toPublicReview = (r: ReviewRow): PublicReview => ({
+  id: r.id,
+  rating: r.rating,
+  comment: r.comment ? maskContactDetails(r.comment).text : null,
+  reply: r.providerReply ? maskContactDetails(r.providerReply).text : null,
+  customerFirstName: firstName(r.reviewer.name),
+  createdAt: r.createdAt.toISOString(),
+})
+
 const RELATED = 3
 const REVIEWS = 5
 
@@ -184,14 +195,7 @@ export async function getServiceDetail(categorySlug: string, serviceSlug: string
         city: label(p.city),
         memberSince: p.createdAt.toISOString(),
       },
-      reviews: reviews.map((r) => ({
-        id: r.id,
-        rating: r.rating,
-        comment: r.comment ? maskContactDetails(r.comment).text : null,
-        reply: r.providerReply,
-        customerFirstName: firstName(r.reviewer.name),
-        createdAt: r.createdAt.toISOString(),
-      })),
+      reviews: reviews.map(toPublicReview),
       moreFromProvider: more.map(toCard),
       similar: similar.map(toCard),
       updatedAt: s.updatedAt.toISOString(),
@@ -207,4 +211,19 @@ export async function getPopularServices(take: number) {
 /** Active areas for search boxes (landing hero). */
 export async function getSearchAreas() {
   return (await repo.findActiveAreas()).map((a) => ({ slug: a.slug, name: label(a) }))
+}
+
+/** A public provider's LIVE services, in the catalog's "recommended" order (`/providers/[id]`). */
+export async function getProviderServiceCards(providerId: string, take: number) {
+  return (await repo.findServices({ AND: [VISIBLE_SERVICE, { providerId }] }, ORDER.recommended, take)).map(toCard)
+}
+
+/** A provider's latest visible customer reviews, masked (SY-04) — shared by the service page and the profile. */
+export async function getProviderReviews(providerId: string, take: number): Promise<PublicReview[]> {
+  return (await repo.findProviderReviews(providerId, take)).map(toPublicReview)
+}
+
+/** The header's Services dropdown: active top-level categories in their admin order (docs/navigation.md). */
+export async function getNavCategories(): Promise<{ slug: string; name: string }[]> {
+  return (await loadCategories()).filter((c) => !c.parentSlug).map((c) => ({ slug: c.slug, name: c.name }))
 }

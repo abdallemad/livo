@@ -13,6 +13,13 @@ export const onboardingKeys = {
   state: () => [...onboardingKeys.all, "state"] as const,
 }
 
+export const providerKeys = {
+  all: ["provider"] as const,
+  dashboard: () => [...providerKeys.all, "dashboard"] as const,
+  requests: () => [...providerKeys.all, "requests"] as const,
+  requestList: (query: object) => [...providerKeys.requests(), "list", query] as const,
+}
+
 export const adminKeys = {
   all: ["admin"] as const,
   dashboard: () => [...adminKeys.all, "dashboard"] as const,
@@ -33,6 +40,9 @@ export const adminKeys = {
   booking: (id: string) => [...adminKeys.bookings(), "detail", id] as const,
   payments: () => [...adminKeys.all, "payments"] as const,
   paymentList: (query: object) => [...adminKeys.payments(), "list", query] as const,
+  payouts: () => [...adminKeys.all, "payouts"] as const,
+  payoutList: (query: object) => [...adminKeys.payouts(), "list", query] as const,
+  commission: () => [...adminKeys.all, "commission"] as const,
   disputes: () => [...adminKeys.all, "disputes"] as const,
   disputeList: (query: object) => [...adminKeys.disputes(), "list", query] as const,
   dispute: (id: string) => [...adminKeys.disputes(), "detail", id] as const,

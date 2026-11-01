@@ -104,11 +104,11 @@ All `noindex`. Gate by verification status (see §1).
 |---|---|---|---|
 | `/provider/onboarding` | Complete profile — **superseded by `/onboarding`**, retire this placeholder | specialty, experience, categories, coverage areas | PR-01 |
 | `/provider/verification` | Verification | Upload ID/photo/certificates + status: `PENDING` / `ACTIVE` / `SUSPENDED` / `REJECTED` (with reason) | PR-02, PR-03 |
-| `/provider` | Dashboard | New matching requests, today's bookings, month earnings, simple stats | PR-14 |
+| `/provider` | Dashboard | Account status, new matching requests, today's bookings, month earnings, simple stats ([provider-dashboard-requests-feature.md](provider-dashboard-requests-feature.md)) | PR-14, PR-03 |
 | `/provider/services` | My fixed-price services | List | PR-05 |
 | `/provider/services/new` | Add service | title, description, price, category, duration | PR-05 |
 | `/provider/services/[id]/edit` | Edit / deactivate service | | PR-05 |
-| `/provider/requests` | **Available project requests** matching category + area | | PR-06, SY-01 |
+| `/provider/requests` | **Available project requests** matching category + area | Approved providers only; no customer identity or address (BR-02) | PR-06, SY-01 |
 | `/provider/requests/[id]` | Request details + **submit quote** (price, duration, message) | Customer contact hidden | PR-07 |
 | `/provider/quotes` | My quotes | Status of each | PR-07 |
 | `/provider/bookings` | Bookings | Accept / reject / start / finish | PR-08 |
@@ -148,8 +148,8 @@ All `noindex`. Do **not** list `/admin` in `robots.ts`. CRUD routes follow `/adm
 | `/admin/disputes` | Disputes queue | | AD-05 |
 | `/admin/disputes/[id]` | Resolve dispute | Review evidence, decide, full/partial refund; writes audit log (money rule: [admin-disputes-reviews-feature.md](admin-disputes-reviews-feature.md)) | AD-05 |
 | `/admin/payments` | Payments | Review (read-only; totals + filters — [admin-payments-feature.md](admin-payments-feature.md)) | AD-07 |
-| `/admin/payouts` | Payout requests | Approve / reject / mark paid | AD-07 |
-| `/admin/settings/commission` | Commission % (global; per-category later) | | AD-06 |
+| `/admin/payouts` | Payout requests | Approve / reject / mark paid; balance-checked against the wallet ledger ([admin-commission-payouts-feature.md](admin-commission-payouts-feature.md)) | AD-07 |
+| `/admin/settings/commission` | Commission % (global + per-category overrides) | Applies to new bookings only (BR-01) | AD-06 |
 | `/admin/reviews` | Reviews moderation | Hide offending reviews (SHOULD); hiding recomputes the provider rating | AD-08 |
 | `/admin/content` | Static page content (FAQ, terms…) | SHOULD | AD-10 |
 | `/admin/audit-log` | Audit log | All financial ops and admin decisions | AD-11, NF-12 |

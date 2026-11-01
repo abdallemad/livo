@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { COMMISSION_MAX, COMMISSION_MIN } from "@/utils/commission"
 import { paginationQuerySchema } from "./common.schema"
 
 /**
@@ -210,6 +211,56 @@ export const paymentListQuerySchema = paginationQuerySchema.extend({
 })
 
 export type PaymentListQuery = z.infer<typeof paymentListQuerySchema>
+
+// ---------------------------------------------------------------------------
+// Commission (AD-06) and payouts (AD-07) — docs/admin-commission-payouts-feature.md
+// ---------------------------------------------------------------------------
+
+/**
+ * A percent with at most 2 decimals (`Decimal(5, 2)`); form inputs arrive as strings. A blank field
+ * is "missing", not 0 — `z.coerce` alone would turn "" into a silent 0% commission.
+ */
+export const commissionRateSchema = z
+  .preprocess((v) => (typeof v === "string" && v.trim() === "" ? undefined : v), z.coerce.number({ error: "Enter a percentage." }))
+  .pipe(z.number())
+  .refine((v) => v >= COMMISSION_MIN, `The rate can't be below ${COMMISSION_MIN}%.`)
+  .refine((v) => v <= COMMISSION_MAX, `The rate can't be above ${COMMISSION_MAX}%.`)
+  .refine((v) => Math.abs(v * 100 - Math.round(v * 100)) < 1e-6, "Use at most 2 decimals.")
+
+/** `PATCH /api/admin/commission` (global) and `PUT /api/admin/commission/categories/[id]` (override). */
+export const commissionRateBodySchema = z.object({ ratePercent: commissionRateSchema })
+export type CommissionRateInput = z.input<typeof commissionRateBodySchema>
+export type CommissionRateValues = z.output<typeof commissionRateBodySchema>
+
+export const ADMIN_PAYOUT_STATUSES = ["REQUESTED", "APPROVED", "PAID", "REJECTED"] as const
+export const PAYOUT_REFERENCE_MAX = 100
+
+export const payoutListQuerySchema = paginationQuerySchema.extend({
+  status: z.enum(ADMIN_PAYOUT_STATUSES).optional(),
+  q: searchSchema,
+})
+
+/** `PATCH /api/admin/payouts/[id]/status`; which `from` each needs lives in `utils/payout-rules.ts`. */
+export const payoutStatusSchema = z.discriminatedUnion("status", [
+  z.object({ status: z.literal("APPROVED") }),
+  z.object({ status: z.literal("REJECTED"), reason: reasonSchema }),
+  z.object({
+    status: z.literal("PAID"),
+    /** Bank / wallet transfer reference, kept in the ledger note and the audit log. */
+    reference: z
+      .string()
+      .trim()
+      .max(PAYOUT_REFERENCE_MAX, `Keep the reference under ${PAYOUT_REFERENCE_MAX} characters.`)
+      .optional()
+      .transform((v) => v || undefined),
+  }),
+])
+export const markPaidFormSchema = payoutStatusSchema.options[2].omit({ status: true })
+
+export type PayoutListQuery = z.infer<typeof payoutListQuerySchema>
+export type PayoutStatusValues = z.infer<typeof payoutStatusSchema>
+export type MarkPaidFormInput = z.input<typeof markPaidFormSchema>
+export type MarkPaidFormValues = z.output<typeof markPaidFormSchema>
 
 export type RequestListQuery = z.infer<typeof requestListQuerySchema>
 export type BookingListQuery = z.infer<typeof bookingListQuerySchema>

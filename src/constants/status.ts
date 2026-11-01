@@ -5,6 +5,7 @@ import {
   CircleDot,
   Clock,
   CreditCard,
+  Send,
   Eye,
   Ban,
   RotateCcw,
@@ -26,6 +27,7 @@ import type {
   EscrowState,
   PaymentMethod,
   PaymentStatus,
+  PayoutStatus,
   QuoteStatus,
   RequestStatus,
   Role,
@@ -154,6 +156,14 @@ export const PAYMENT_STATUS: Record<PaymentStatus, StatusMeta> = {
   FAILED: { label: "Failed", variant: "destructive", icon: XCircle },
   REFUNDED: { label: "Refunded", variant: "warning", icon: RotateCcw },
   PARTIALLY_REFUNDED: { label: "Partly refunded", variant: "warning", icon: RotateCcw },
+}
+
+/** `Payout.status` (PR-12 / AD-07). */
+export const PAYOUT_STATUS: Record<PayoutStatus, StatusMeta> = {
+  REQUESTED: { label: "Requested", variant: "warning", icon: Hourglass },
+  APPROVED: { label: "Approved — to send", variant: "info", icon: CheckCircle2 },
+  PAID: { label: "Paid", variant: "success", icon: Send },
+  REJECTED: { label: "Rejected", variant: "destructive", icon: XCircle },
 }
 
 /** `Payment.escrowState` (BR-08). */

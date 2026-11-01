@@ -15,7 +15,7 @@ Component → hook (TanStack Query) → api-client → /api/... route.ts → ser
 | `/api/me`, `/api/me/*` | the signed-in user's own data | `requireUser()` / `getViewer()` |
 | `/api/auth/sync` | first sign-in | Clerk session |
 | `/api/<feature>` | public reads / customer writes | per route |
-| `/api/provider/<feature>` | providers (and admins) | `requireProvider()` |
+| `/api/provider/<feature>` | providers (and admins) | `requireProvider()` — today `GET /api/provider/dashboard`, `GET /api/provider/requests` (`docs/provider-dashboard-requests-feature.md`) |
 | `/api/admin/<feature>` | admins only | proxy 404 + `requireAdmin()` |
 
 Admin endpoints today: `GET /api/admin/dashboard`, `GET /api/admin/providers`, `GET /api/admin/providers/[id]`,
@@ -25,9 +25,10 @@ Admin endpoints today: `GET /api/admin/dashboard`, `GET /api/admin/providers`, `
 `PATCH /api/admin/services/[id]/status`, `GET /api/admin/requests`, `GET /api/admin/requests/[id]`,
 `PATCH /api/admin/requests/[id]/status`, `GET /api/admin/bookings`, `GET /api/admin/bookings/[id]`,
 `PATCH /api/admin/bookings/[id]/status`, `GET /api/admin/disputes`, `GET /api/admin/disputes/[id]`,
-`GET /api/admin/reviews`, `PATCH /api/admin/reviews/[id]/status`, `GET /api/admin/payments` (see `docs/admin-dashboard-feature.md`,
+`GET /api/admin/reviews`, `PATCH /api/admin/reviews/[id]/status`, `GET /api/admin/payments`, `GET|PATCH /api/admin/commission`,
+`PUT|DELETE /api/admin/commission/categories/[id]`, `GET /api/admin/payouts`, `PATCH /api/admin/payouts/[id]/status` (see `docs/admin-dashboard-feature.md`,
 `docs/admin-providers-users-feature.md`, `docs/admin-catalog-feature.md`, `docs/admin-requests-bookings-feature.md`,
-`docs/admin-disputes-reviews-feature.md`, `docs/admin-payments-feature.md`). `PATCH /api/admin/disputes/[id]/status` takes `UNDER_REVIEW` or `RESOLVED` + a decision.
+`docs/admin-disputes-reviews-feature.md`, `docs/admin-payments-feature.md`, `docs/admin-commission-payouts-feature.md`). `PATCH /api/admin/disputes/[id]/status` takes `UNDER_REVIEW` or `RESOLVED` + a decision.
 
 `requireUser()` (and so `requireRole`/`requireProvider`/`requireAdmin`) also rejects accounts whose
 `User.status` isn't `ACTIVE` with **403** (AD-03 suspension).

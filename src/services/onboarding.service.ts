@@ -1,12 +1,18 @@
 import "server-only"
-import { createHash, randomUUID } from "node:crypto"
+import { randomUUID } from "node:crypto"
 import { clerkClient } from "@clerk/nextjs/server"
 import { Prisma, type File as FileRow } from "@prisma/client"
 import { MAX_CERTIFICATES, PROVIDER_TERMS_VERSION, SERVICE_MAX_IMAGES, type OnboardingStep } from "@/constants/onboarding"
-import { ALLOWED_IMAGE_TYPES, MAX_IMAGE_BYTES, MAX_PDF_BYTES } from "@/constants/upload"
-import { AppError, ConflictError, ForbiddenError, NotFoundError, ValidationError } from "@/lib/errors"
+import { ConflictError, ForbiddenError, NotFoundError, ValidationError } from "@/lib/errors"
 import { sendOpsAlert } from "@/lib/ops-alerts"
-import { deleteObject, isR2Configured, presignInline, putPrivateObject } from "@/lib/r2.provider"
+import {
+  DOCUMENT_PREFIX,
+  removeObject,
+  SERVICE_IMAGE_PREFIX,
+  signedPreview,
+  storePrivate,
+  validateUpload,
+} from "@/services/file-upload.service"
 import { onboardingRepository as repo, type OnboardingUserRow } from "@/repositories/onboarding.repository"
 import type {
   AddressStepValues,
@@ -23,7 +29,7 @@ import type {
   OnboardingFinishDto,
   OnboardingStateDto,
 } from "@/types/onboarding"
-import { detectFileType, EXTENSION_BY_TYPE, type DetectedType } from "@/utils/file-signature"
+import { EXTENSION_BY_TYPE } from "@/utils/file-signature"
 import {
   assertStepEditable,
   canFinish,
@@ -42,14 +48,6 @@ import { uniqueSlug } from "@/utils/slug"
  * returns DTOs, never Prisma rows.
  */
 
-const SERVICE_IMAGE_PREFIX = (userId: string) => `uploads/services/${userId}/`
-const DOCUMENT_PREFIX = (userId: string) => `private/verification/${userId}/`
-
-class StorageUnavailableError extends AppError {
-  constructor() {
-    super("File uploads aren't available right now. Try again in a little while.", "STORAGE_UNAVAILABLE", 503)
-  }
-}
 
 // ----------------------------------------------------------------------------
 // State
@@ -302,43 +300,6 @@ export async function saveProviderProfile(userId: string, values: ProviderProfil
 // Uploads (documents + service images)
 // ----------------------------------------------------------------------------
 
-interface ValidatedUpload {
-  bytes: Uint8Array
-  type: DetectedType
-  sha256: string
-}
-
-/** Magic-byte + size validation (CLAUDE.md §7). The browser's mime type and file name are ignored. */
-async function validateUpload(file: Blob, allowPdf: boolean): Promise<ValidatedUpload> {
-  const bytes = new Uint8Array(await file.arrayBuffer())
-  const type = detectFileType(bytes)
-  const allowed: readonly string[] = allowPdf ? [...ALLOWED_IMAGE_TYPES, "application/pdf"] : ALLOWED_IMAGE_TYPES
-  if (!type || !allowed.includes(type)) {
-    throw new ValidationError("Unsupported file type.", {
-      file: [allowPdf ? "Upload a photo (JPG, PNG, or WebP) or a PDF." : "Upload a JPG, PNG, or WebP photo."],
-    })
-  }
-  const max = type === "application/pdf" ? MAX_PDF_BYTES : MAX_IMAGE_BYTES
-  if (bytes.byteLength > max) {
-    throw new ValidationError("The file is too large.", { file: [`The maximum size is ${Math.round(max / 1024 / 1024)} MB.`] })
-  }
-  return { bytes, type, sha256: createHash("sha256").update(bytes).digest("hex") }
-}
-
-async function storePrivate(key: string, upload: ValidatedUpload) {
-  if (!isR2Configured()) throw new StorageUnavailableError()
-  await putPrivateObject(key, upload.bytes, upload.type)
-}
-
-/** Removing a stored object is best effort: a leftover private object is harmless, a failed request isn't. */
-async function removeObject(key: string) {
-  try {
-    if (isR2Configured()) await deleteObject(key)
-  } catch (error) {
-    console.error("[onboarding] could not delete storage object", error)
-  }
-}
-
 /**
  * Provider step 4 (PR-02). NATIONAL_ID and SELFIE replace the previous one;
  * up to MAX_CERTIFICATES certificates. Stored under a private prefix that no
@@ -424,8 +385,7 @@ export async function getFilePreviewUrl(userId: string, fileId: string): Promise
   const file = await repo.findFileById(fileId)
   const ownPrefix = file && (file.key.startsWith(DOCUMENT_PREFIX(userId)) || file.key.startsWith(SERVICE_IMAGE_PREFIX(userId)))
   if (!file || file.uploadedById !== userId || !ownPrefix) throw new NotFoundError("File not found.")
-  if (!isR2Configured()) throw new StorageUnavailableError()
-  return presignInline(file.key, file.mimeType)
+  return signedPreview(file.key, file.mimeType)
 }
 
 // ----------------------------------------------------------------------------

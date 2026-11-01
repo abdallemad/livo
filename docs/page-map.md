@@ -71,9 +71,9 @@ Sidebar shell, dynamic, `noindex`. Signed-in `PROVIDER` with onboarding finished
 | `/provider` | Provider dashboard | Account status, new requests, bookings to accept, month earnings + wallet, rating; 5 newest matching requests, today's bookings (Cairo time) ([provider-dashboard-requests-feature.md](provider-dashboard-requests-feature.md)) | built | PR-14, PR-03 |
 | `/provider/onboarding` | Complete your profile | Superseded by `/onboarding`; retire this placeholder | placeholder | PR-01 |
 | `/provider/verification` | Account verification | Documents and review status | placeholder | PR-02, PR-03 |
-| `/provider/services` | My services | Fixed-price services offered | placeholder | PR-05 |
-| `/provider/services/new` | Add a service | Title, description, price, category, duration | placeholder | PR-05 |
-| `/provider/services/[id]/edit` | Edit service | Edit or pause a service | placeholder | PR-05 |
+| `/provider/services` | My services | Visibility + reason, on/off switch, edit, delete (only without bookings) ([provider-services-portfolio-feature.md](provider-services-portfolio-feature.md)) | built | PR-05 |
+| `/provider/services/new` | Add a service | Title, category, description, price, duration, photos, live preview | built | PR-05 |
+| `/provider/services/[id]/edit` | Edit service | Same form; slug never changes; hidden-by-Livo banner | built | PR-05 |
 | `/provider/requests` | Available requests | Matching engine (approved only; city, categories + sub-categories, my areas or whole city); tabs New / Quoted, filters, sort | built | PR-06, SY-01 |
 | `/provider/requests/[id]` | Request details | Details + send a quote | placeholder | PR-07 |
 | `/provider/quotes` | My quotes | Status tabs + counts, price / duration / budget, booking link, withdraw a waiting quote ([provider-quotes-bookings-feature.md](provider-quotes-bookings-feature.md)) | built | PR-07 |
@@ -81,7 +81,7 @@ Sidebar shell, dynamic, `noindex`. Signed-in `PROVIDER` with onboarding finished
 | `/provider/bookings/[id]` | Booking details | Next step + actions, when/where, customer (locked until accepted, notes masked), money, timeline | built | PR-08, BR-02 |
 | `/provider/messages` | Messages | Chats with customers | placeholder | PR-09 |
 | `/provider/messages/[bookingId]` | Chat | Thread; contact details blocked before confirmation | placeholder | PR-09 |
-| `/provider/portfolio` | Portfolio | Photos of past work | placeholder | PR-04 |
+| `/provider/portfolio` | Portfolio | Gallery of past work: add / edit (1–6 photos), delete, reorder | built | PR-04 |
 | `/provider/schedule` | Schedule | Available days and hours | placeholder | PR-10 |
 | `/provider/earnings` | Earnings | Owed, collected, commission deducted | placeholder | PR-11 |
 | `/provider/payouts` | Payouts | Request a payout + history | placeholder | PR-12 |

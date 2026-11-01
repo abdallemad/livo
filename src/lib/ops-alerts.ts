@@ -7,7 +7,7 @@ import "server-only"
  * Wire a provider here; callers don't change. Failures must never break the
  * caller's request, hence no throw.
  */
-export type OpsAlert = { kind: "provider.submitted_for_review"; providerId: string }
+export type OpsAlert = { kind: "provider.submitted_for_review" | "provider.resubmitted_for_review"; providerId: string }
 
 export async function sendOpsAlert(alert: OpsAlert): Promise<void> {
   try {

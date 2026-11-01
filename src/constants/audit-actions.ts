@@ -4,6 +4,9 @@
  */
 export const AUDIT_ACTION_LABEL: Record<string, string> = {
   "provider.submit_for_review": "Submitted the application for review",
+  "provider.resubmit": "Sent the application for review again",
+  "provider.document_upload": "Uploaded a verification document",
+  "provider.document_delete": "Deleted a verification document",
   "provider.approve": "Approved the provider",
   "provider.reject": "Rejected the application",
   "provider.suspend": "Suspended the provider",

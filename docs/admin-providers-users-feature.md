@@ -29,6 +29,10 @@ schema default. Parsed with the same Zod schema the API route uses (`useUrlQuery
 | `SUSPEND` | APPROVED → SUSPENDED | required | the reason |
 | `REINSTATE` | SUSPENDED → APPROVED | — | "Your provider account is active again" |
 
+A rejected provider can fix their documents and send the application again from `/provider/verification`
+(`REJECTED → PENDING`, audited `provider.resubmit`, admins notified) — it then reappears under **Pending review**
+([provider-verification-settings-feature.md](provider-verification-settings-feature.md)).
+
 One conditional `UPDATE … WHERE verificationStatus = <from>`: a stale button or a second admin gets
 **409**. The audit row (`provider.approve|reject|suspend|reinstate`, `metadata: { from, to, reason? }`) and
 the `PROVIDER_DECISION` notification commit in the same transaction. `rejectionReason` holds the reason the

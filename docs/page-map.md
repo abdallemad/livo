@@ -70,7 +70,7 @@ Sidebar shell, dynamic, `noindex`. Signed-in `PROVIDER` with onboarding finished
 |---|---|---|---|---|
 | `/provider` | Provider dashboard | Account status, new requests, bookings to accept, month earnings + wallet, rating; 5 newest matching requests, today's bookings (Cairo time) ([provider-dashboard-requests-feature.md](provider-dashboard-requests-feature.md)) | built | PR-14, PR-03 |
 | `/provider/onboarding` | Complete your profile | Superseded by `/onboarding`; retire this placeholder | placeholder | PR-01 |
-| `/provider/verification` | Account verification | Documents and review status | placeholder | PR-02, PR-03 |
+| `/provider/verification` | Account verification | Status + reason, documents (editable per status), send for review again, history ([provider-verification-settings-feature.md](provider-verification-settings-feature.md)) | built | PR-02, PR-03 |
 | `/provider/services` | My services | Visibility + reason, on/off switch, edit, delete (only without bookings) ([provider-services-portfolio-feature.md](provider-services-portfolio-feature.md)) | built | PR-05 |
 | `/provider/services/new` | Add a service | Title, category, description, price, duration, photos, live preview | built | PR-05 |
 | `/provider/services/[id]/edit` | Edit service | Same form; slug never changes; hidden-by-Livo banner | built | PR-05 |
@@ -87,7 +87,7 @@ Sidebar shell, dynamic, `noindex`. Signed-in `PROVIDER` with onboarding finished
 | `/provider/payouts` | Payouts | Request (wallet / InstaPay / bank, min 100 EGP, one at a time) + history with status | built | PR-12 |
 | `/provider/reviews` | Reviews | Rating summary + distribution, Needs a reply / Replied, rating filter, public reply (no contact details) | built | PR-13, SY-05 |
 | `/provider/notifications` | Notifications | New requests, bookings, payments | placeholder | SY-02 |
-| `/provider/settings` | Settings | Profile, areas, account | placeholder | AU-06 |
+| `/provider/settings` | Settings | Personal details (Clerk-synced), work profile (bio, specialties, areas), sign-in & security | built | AU-06 |
 
 ## Admin: `(admin)/admin`
 

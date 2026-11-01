@@ -43,7 +43,8 @@ Static/ISR, indexed, in `sitemap.ts`. Layouts read nothing from the request.
 | Route | Page | Rendering | Req |
 |---|---|---|---|
 | `/` | Home: value prop, categories, how-it-works teaser, CTA for customer & provider | static, `revalidate = 3600` | MK-01 |
-| `/services` | All categories + all fixed-price services with advanced filters (`/services?…` noindex) ([catalog-feature.md](catalog-feature.md)) | static / ISR | MK-02, MK-06 |
+| `/category` | All categories with their sub-categories (moved out of `/services`, [catalog-feature.md](catalog-feature.md)) | static / ISR | MK-02 |
+| `/services` | All fixed-price services with advanced filters (`/services?…` noindex) ([catalog-feature.md](catalog-feature.md)) | static / ISR | MK-02, MK-06 |
 | `/services/[category]` | Category page: fixed-price services + "request a quote" CTA | SSG (`generateStaticParams` = all slugs) + `…/page/[page]` | MK-02 |
 | `/services/[category]/[service]` | Fixed-price service detail + "Book now" | ISR (`generateStaticParams → []`, `revalidate = 3600`) | MK-02 |
 | `/providers/[id]` | Public provider profile: bio, portfolio, rating, reviews, services. **No contact details** | ISR | PR-04, SY-04 |
@@ -54,6 +55,7 @@ Static/ISR, indexed, in `sitemap.ts`. Layouts read nothing from the request.
 | `/faq` | FAQ | static (or CMS-driven, AD-10) | MK-05 |
 | `/terms` | Terms of service | static | MK-05 |
 | `/privacy` | Privacy policy | static | MK-05 |
+| `/policies` | Our policies (bookings, payments, cancellations, disputes) — `StaticPage` slug `policies`, linked from the landing trust section ([landing-page.md](landing-page.md)) | ISR | MK-05 |
 | `/search` | Search service + area (**SHOULD**) | dynamic; `X-Robots-Tag: noindex, follow` set in proxy | MK-06 |
 | `/blog`, `/blog/[slug]` | **COULD** — skip in MVP | | MK-08 |
 

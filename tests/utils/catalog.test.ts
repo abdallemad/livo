@@ -33,3 +33,14 @@ test("duration labels", () => {
   assert.equal(durationLabel(120), "2 hours")
   assert.equal(durationLabel(90), "1.5 hours")
 })
+
+test("service URL and meta excerpts", async () => {
+  const { metaExcerpt, serviceHref } = await import("@/utils/catalog")
+  assert.equal(serviceHref("plumbing", "gas-heater"), "/services/plumbing/gas-heater")
+  assert.equal(metaExcerpt("  Short   text\nhere "), "Short text here")
+  const long = "Installing the heater and connecting water and gas, then a leak test. ".repeat(4)
+  const out = metaExcerpt(long, 60)
+  assert.ok(out.length <= 60, out)
+  assert.ok(out.endsWith("…"))
+  assert.ok(!out.includes("  "))
+})

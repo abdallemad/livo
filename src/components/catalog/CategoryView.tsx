@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { SITE_NAME } from "@/constants/site"
 import type { CategoryPageData } from "@/types/catalog"
-import { categoryPageHref } from "@/utils/catalog"
+import { CATEGORIES_PATH, categoryPageHref } from "@/utils/catalog"
 import { formatNumber } from "@/utils/format"
 import { breadcrumbJsonLd, serviceListJsonLd } from "@/utils/structured-data"
 import { Crumbs } from "./Crumbs"
@@ -18,7 +18,7 @@ export function categoryCrumbs(d: CategoryPageData) {
   const page = d.services.page
   return [
     { name: "Home", path: "/" },
-    { name: "Services", path: "/services" },
+    { name: "Categories", path: CATEGORIES_PATH },
     ...(d.parent ? [{ name: d.parent.name, path: categoryPageHref(d.parent.slug) }] : []),
     { name: d.category.name, path: categoryPageHref(d.category.slug) },
     ...(page > 1 ? [{ name: `Page ${page}`, path: categoryPageHref(d.category.slug, page) }] : []),

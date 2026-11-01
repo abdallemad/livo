@@ -25,3 +25,16 @@ export function pageMetadata({
 export function notFoundMetadata(): Metadata {
   return { title: "Not found", robots: { index: false, follow: true } }
 }
+
+/**
+ * The landing page `/` (docs/landing-page.md): the root layout's default title (no "| Livo" template suffix), the site
+ * description, canonical `/`. Relative URL only — `metadataBase` makes it absolute.
+ */
+export function landingMetadata({ title, description }: { title: string; description: string }): Metadata {
+  return {
+    title: { absolute: title },
+    description,
+    alternates: { canonical: "/" },
+    openGraph: { ...DEFAULT_OPEN_GRAPH, title, description, url: "/" },
+  }
+}

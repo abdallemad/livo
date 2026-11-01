@@ -13,6 +13,13 @@ export const onboardingKeys = {
   state: () => [...onboardingKeys.all, "state"] as const,
 }
 
+export const providerKeys = {
+  all: ["provider"] as const,
+  dashboard: () => [...providerKeys.all, "dashboard"] as const,
+  requests: () => [...providerKeys.all, "requests"] as const,
+  requestList: (query: object) => [...providerKeys.requests(), "list", query] as const,
+}
+
 export const adminKeys = {
   all: ["admin"] as const,
   dashboard: () => [...adminKeys.all, "dashboard"] as const,

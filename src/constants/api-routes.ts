@@ -21,6 +21,10 @@ export const API_ROUTES = {
     submit: "/api/onboarding/submit",
     file: (id: string) => `/api/onboarding/files/${encodeURIComponent(id)}`,
   },
+  provider: {
+    dashboard: "/api/provider/dashboard",
+    requests: "/api/provider/requests",
+  },
   admin: {
     dashboard: "/api/admin/dashboard",
     providers: "/api/admin/providers",

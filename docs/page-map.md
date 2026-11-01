@@ -68,13 +68,13 @@ Sidebar shell, dynamic, `noindex`. Signed-in `PROVIDER` with onboarding finished
 
 | Route | Page | What it shows | Status | Req |
 |---|---|---|---|---|
-| `/provider` | Provider dashboard | New matching requests, today's bookings, monthly earnings | built | PR-14 |
+| `/provider` | Provider dashboard | Account status, new requests, bookings to accept, month earnings + wallet, rating; 5 newest matching requests, today's bookings (Cairo time) ([provider-dashboard-requests-feature.md](provider-dashboard-requests-feature.md)) | built | PR-14, PR-03 |
 | `/provider/onboarding` | Complete your profile | Superseded by `/onboarding`; retire this placeholder | placeholder | PR-01 |
 | `/provider/verification` | Account verification | Documents and review status | placeholder | PR-02, PR-03 |
 | `/provider/services` | My services | Fixed-price services offered | placeholder | PR-05 |
 | `/provider/services/new` | Add a service | Title, description, price, category, duration | placeholder | PR-05 |
 | `/provider/services/[id]/edit` | Edit service | Edit or pause a service | placeholder | PR-05 |
-| `/provider/requests` | Available requests | Requests in your specialty and area | placeholder | PR-06, SY-01 |
+| `/provider/requests` | Available requests | Matching engine (approved only; city, categories + sub-categories, my areas or whole city); tabs New / Quoted, filters, sort | built | PR-06, SY-01 |
 | `/provider/requests/[id]` | Request details | Details + send a quote | placeholder | PR-07 |
 | `/provider/quotes` | Quotes | Quotes sent and their status | placeholder | PR-07 |
 | `/provider/bookings` | My bookings | Accept, decline, start, complete | placeholder | PR-08 |

@@ -104,11 +104,11 @@ All `noindex`. Gate by verification status (see §1).
 |---|---|---|---|
 | `/provider/onboarding` | Complete profile — **superseded by `/onboarding`**, retire this placeholder | specialty, experience, categories, coverage areas | PR-01 |
 | `/provider/verification` | Verification | Upload ID/photo/certificates + status: `PENDING` / `ACTIVE` / `SUSPENDED` / `REJECTED` (with reason) | PR-02, PR-03 |
-| `/provider` | Dashboard | New matching requests, today's bookings, month earnings, simple stats | PR-14 |
+| `/provider` | Dashboard | Account status, new matching requests, today's bookings, month earnings, simple stats ([provider-dashboard-requests-feature.md](provider-dashboard-requests-feature.md)) | PR-14, PR-03 |
 | `/provider/services` | My fixed-price services | List | PR-05 |
 | `/provider/services/new` | Add service | title, description, price, category, duration | PR-05 |
 | `/provider/services/[id]/edit` | Edit / deactivate service | | PR-05 |
-| `/provider/requests` | **Available project requests** matching category + area | | PR-06, SY-01 |
+| `/provider/requests` | **Available project requests** matching category + area | Approved providers only; no customer identity or address (BR-02) | PR-06, SY-01 |
 | `/provider/requests/[id]` | Request details + **submit quote** (price, duration, message) | Customer contact hidden | PR-07 |
 | `/provider/quotes` | My quotes | Status of each | PR-07 |
 | `/provider/bookings` | Bookings | Accept / reject / start / finish | PR-08 |

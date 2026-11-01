@@ -15,7 +15,7 @@ Component → hook (TanStack Query) → api-client → /api/... route.ts → ser
 | `/api/me`, `/api/me/*` | the signed-in user's own data | `requireUser()` / `getViewer()` |
 | `/api/auth/sync` | first sign-in | Clerk session |
 | `/api/<feature>` | public reads / customer writes | per route |
-| `/api/provider/<feature>` | providers (and admins) | `requireProvider()` |
+| `/api/provider/<feature>` | providers (and admins) | `requireProvider()` — today `GET /api/provider/dashboard`, `GET /api/provider/requests` (`docs/provider-dashboard-requests-feature.md`) |
 | `/api/admin/<feature>` | admins only | proxy 404 + `requireAdmin()` |
 
 Admin endpoints today: `GET /api/admin/dashboard`, `GET /api/admin/providers`, `GET /api/admin/providers/[id]`,

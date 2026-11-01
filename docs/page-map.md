@@ -110,7 +110,7 @@ Dashboard shell, dynamic, `noindex`; non-admins get a 404 (proxy + layout + ever
 | `/admin/bookings/[id]` | Booking details | Money snapshot, payments/escrow, milestones, timeline, read-only chat, reviews, history, cancel while unpaid | built | AD-04 |
 | `/admin/disputes` | Disputes | Status tabs + counts, search, money held ([admin-disputes-reviews-feature.md](admin-disputes-reviews-feature.md)) | built | AD-05 |
 | `/admin/disputes/[id]` | Resolve dispute | Evidence, chat, money, start review, decision with live money preview (release / partial / full refund / no action) | built | AD-05 |
-| `/admin/payments` | Payments | Review all payments | placeholder | AD-07 |
+| `/admin/payments` | Payments | Totals (collected, held, released, refunded, cash), every payment with status / method / escrow filters + search; read-only ([admin-payments-feature.md](admin-payments-feature.md)) | built | AD-07 |
 | `/admin/payouts` | Payout requests | Approve, reject, mark as paid | placeholder | AD-07 |
 | `/admin/settings/commission` | Commission | Platform-wide commission rate | placeholder | AD-06 |
 | `/admin/reviews` | Reviews | Both directions, filters, hide / show (rating recomputed, BR-04 flag) | built | AD-08 |

@@ -45,6 +45,7 @@ export const API_ROUTES = {
     bookings: "/api/admin/bookings",
     booking: (id: string) => `/api/admin/bookings/${encodeURIComponent(id)}`,
     bookingStatus: (id: string) => `/api/admin/bookings/${encodeURIComponent(id)}/status`,
+    payments: "/api/admin/payments",
     /** Admin-only preview of a provider verification document (307 to a signed link). */
     file: (id: string) => `/api/admin/files/${encodeURIComponent(id)}`,
   },

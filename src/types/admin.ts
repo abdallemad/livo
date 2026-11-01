@@ -16,6 +16,7 @@ import type {
   VerificationStatus,
 } from "@prisma/client"
 import type { SettlementPayment } from "@/utils/dispute-settlement"
+import type { PaymentSummary } from "@/utils/payment-summary"
 import type { ServiceVisibilityState } from "@/utils/service-visibility"
 import type { Paginated } from "./api"
 
@@ -453,4 +454,40 @@ export interface AdminReviewListItem {
 
 export interface AdminReviewList extends Paginated<AdminReviewListItem> {
   hiddenCount: number
+}
+
+// ---------------------------------------------------------------------------
+// Payments (`/admin/payments`, AD-07) — docs/admin-payments-feature.md
+// ---------------------------------------------------------------------------
+
+export interface AdminPaymentListItem {
+  id: string
+  method: PaymentMethod
+  amount: number
+  refundedAmount: number
+  status: PaymentStatus
+  escrowState: EscrowState
+  milestone: string | null
+  gatewayRef: string | null
+  paidAt: string | null
+  releasedAt: string | null
+  createdAt: string
+  bookingId: string
+  bookingNumber: string
+  bookingStatus: BookingStatus
+  bookingTitle: string
+  /** Percent, from the booking's frozen snapshot (BR-01). */
+  commissionRate: number
+  customerId: string
+  customerName: string
+  providerId: string
+  providerName: string
+  /** An open (not resolved) dispute on the booking freezes its money. */
+  dispute: { id: string; status: DisputeStatus } | null
+}
+
+export interface AdminPaymentList extends Paginated<AdminPaymentListItem> {
+  counts: Record<PaymentStatus, number>
+  /** Totals over ALL payments (not the filtered page) — `utils/payment-summary.ts`. */
+  summary: PaymentSummary
 }

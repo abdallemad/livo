@@ -147,7 +147,7 @@ All `noindex`. Do **not** list `/admin` in `robots.ts`. CRUD routes follow `/adm
 | `/admin/bookings/[id]` | Booking detail | Payment/escrow state, messages (for disputes); cancel only while no money is captured | AD-04 |
 | `/admin/disputes` | Disputes queue | | AD-05 |
 | `/admin/disputes/[id]` | Resolve dispute | Review evidence, decide, full/partial refund; writes audit log (money rule: [admin-disputes-reviews-feature.md](admin-disputes-reviews-feature.md)) | AD-05 |
-| `/admin/payments` | Payments | Review | AD-07 |
+| `/admin/payments` | Payments | Review (read-only; totals + filters — [admin-payments-feature.md](admin-payments-feature.md)) | AD-07 |
 | `/admin/payouts` | Payout requests | Approve / reject / mark paid | AD-07 |
 | `/admin/settings/commission` | Commission % (global; per-category later) | | AD-06 |
 | `/admin/reviews` | Reviews moderation | Hide offending reviews (SHOULD); hiding recomputes the provider rating | AD-08 |

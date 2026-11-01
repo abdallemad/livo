@@ -4,12 +4,12 @@ import { MARKETING_NAV } from "@/constants/nav"
 import { SITE_LOGO, SITE_NAME } from "@/constants/site"
 import { AccountControls } from "./AccountControls"
 import { MobileMenu } from "./MobileMenu"
-import { ThemeToggle } from "./ThemeToggle"
 
 /**
  * Marketing header (docs/DESIGN-SYSTEM.md §7): logo at start, nav, account
- * island at end. Static; only MobileMenu / ThemeToggle / AccountControls are
- * client islands. Nav links are real <a> elements in the cached HTML.
+ * island at end. Static; only MobileMenu / AccountControls are client islands.
+ * Nav links are real <a> elements in the cached HTML. Dark mode lives in the
+ * account dropdown (`AccountMenu`), not as a header button.
  */
 export function AppHeader() {
   return (
@@ -32,7 +32,6 @@ export function AppHeader() {
           ))}
         </nav>
         <div className="ms-auto flex items-center gap-1">
-          <ThemeToggle />
           <AccountControls />
         </div>
       </div>

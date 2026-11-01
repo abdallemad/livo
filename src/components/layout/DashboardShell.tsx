@@ -16,7 +16,6 @@ import { AccountControls } from "./AccountControls"
 import { BottomTabs } from "./BottomTabs"
 import { DashboardBreadcrumb } from "./DashboardBreadcrumb"
 import { DashboardNav } from "./DashboardNav"
-import { ThemeToggle } from "./ThemeToggle"
 
 interface DashboardShellProps {
   /** Picks root, label, sidebar nav and (customer/provider) mobile bottom tabs from `DASHBOARD_NAV`. */
@@ -33,7 +32,8 @@ interface DashboardShellProps {
  * `h-dvh overflow-hidden`; only the content column scrolls. Sidebar sits at the
  * inline START (left in LTR); on mobile it becomes a sheet and the bottom tab
  * bar carries the main destinations. Static: reads nothing from the request —
- * active state, breadcrumb and account controls are client islands.
+ * active state, breadcrumb and account controls are client islands. Dark mode
+ * is toggled from the account dropdown (`AccountMenu`), not a header button.
  */
 export function DashboardShell({ zone, density = "touch", banner, children }: DashboardShellProps) {
   const { root: rootHref, label: zoneLabel, tabs } = DASHBOARD_NAV[zone]
@@ -74,7 +74,6 @@ export function DashboardShell({ zone, density = "touch", banner, children }: Da
           </div>
           <div className="ms-auto flex items-center gap-1">
             {tabs ? <SidebarTrigger className="md:hidden" /> : null}
-            <ThemeToggle />
             <AccountControls />
           </div>
         </header>

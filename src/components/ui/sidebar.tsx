@@ -490,7 +490,8 @@ const sidebarMenuButtonVariants = cva(
         sm: "h-7 text-xs",
         lg: "h-12 text-sm group-data-[collapsible=icon]:p-0!",
         /** 44px rows for customer/provider shells (touch targets, §4). */
-        touch: "h-11 text-base [&_svg]:size-5",
+        // Collapsed to icons the button is 32px, so the 20px touch icon drops back to 16px.
+        touch: "h-11 text-base [&_svg]:size-5 group-data-[collapsible=icon]:[&_svg]:size-4",
       },
     },
     defaultVariants: {

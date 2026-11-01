@@ -103,7 +103,7 @@ All `noindex`. Gate by verification status (see §1).
 | Route | Page | Purpose | Req |
 |---|---|---|---|
 | `/provider/onboarding` | Complete profile — **superseded by `/onboarding`**, retire this placeholder | specialty, experience, categories, coverage areas | PR-01 |
-| `/provider/verification` | Verification | Upload ID/photo/certificates + status: `PENDING` / `ACTIVE` / `SUSPENDED` / `REJECTED` (with reason) | PR-02, PR-03 |
+| `/provider/verification` | Verification | Upload ID/photo/certificates + status: `PENDING` / `ACTIVE` / `SUSPENDED` / `REJECTED` (with reason); resubmit after rejection ([provider-verification-settings-feature.md](provider-verification-settings-feature.md)) | PR-02, PR-03 |
 | `/provider` | Dashboard | Account status, new matching requests, today's bookings, month earnings, simple stats ([provider-dashboard-requests-feature.md](provider-dashboard-requests-feature.md)) | PR-14, PR-03 |
 | `/provider/services` | My fixed-price services | List | PR-05 |
 | `/provider/services/new` | Add service | title, description, price, category, duration | PR-05 |
@@ -121,7 +121,7 @@ All `noindex`. Gate by verification status (see §1).
 | `/provider/payouts` | Request payout + history | One waiting request at a time; checked under the provider lock | PR-12 |
 | `/provider/reviews` | Reviews received, reply | SHOULD; replies are public, contact details refused ([provider-schedule-reviews-feature.md](provider-schedule-reviews-feature.md)) | PR-13 |
 | `/provider/notifications` | Notification center | | SY-02 |
-| `/provider/settings` | Profile, areas, account | | AU-06 |
+| `/provider/settings` | Profile, areas, account | Account deletion (AU-07) via support for now | AU-06 |
 
 Out of MVP: company/team accounts (PR-15), paid promotion (PR-16).
 

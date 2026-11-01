@@ -28,7 +28,7 @@ Providers can "save and exit" on every step; the wizard resumes where the DB say
 | Pure rules | `src/utils/onboarding-state.ts` (step derivation, edit guards, `homeFor`), `src/utils/zone-access.ts` (redirects), `src/utils/file-signature.ts` (magic bytes) |
 | Schemas | `src/schemas/onboarding.schema.ts` (one Zod schema per step, English messages) |
 | Repository | `src/repositories/onboarding.repository.ts` |
-| Service | `src/services/onboarding.service.ts`; upload plumbing (validation, private storage, signed previews) in `src/services/file-upload.service.ts`, shared with provider services and portfolio |
+| Service | `src/services/onboarding.service.ts`; upload plumbing (validation, private storage, signed previews) in `src/services/file-upload.service.ts`, shared with provider services and portfolio; the Clerk name sync in `src/services/clerk-profile.service.ts`, shared with provider settings |
 | API routes | `src/app/api/onboarding/**` (table below) |
 | Types | `src/types/onboarding.ts` (DTOs) |
 | Hooks | `src/hooks/use-onboarding.ts`, `use-unsaved-changes.ts`, `use-focus-on-mount.ts` |

@@ -1,6 +1,5 @@
 import "server-only"
 import { randomUUID } from "node:crypto"
-import { clerkClient } from "@clerk/nextjs/server"
 import { Prisma, type File as FileRow } from "@prisma/client"
 import { MAX_CERTIFICATES, PROVIDER_TERMS_VERSION, SERVICE_MAX_IMAGES, type OnboardingStep } from "@/constants/onboarding"
 import { ConflictError, ForbiddenError, NotFoundError, ValidationError } from "@/lib/errors"
@@ -29,6 +28,7 @@ import type {
   OnboardingFinishDto,
   OnboardingStateDto,
 } from "@/types/onboarding"
+import { syncNameToClerk } from "@/services/clerk-profile.service"
 import { EXTENSION_BY_TYPE } from "@/utils/file-signature"
 import {
   assertStepEditable,
@@ -509,22 +509,5 @@ async function withUniqueRetry<T>(fn: () => Promise<T>): Promise<T> {
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") return fn()
     throw error
-  }
-}
-
-/**
- * Mirrors the name into Clerk (UI reads identity from Clerk) and returns the
- * Clerk profile image, which the user may have just changed in step 2.
- * Best effort: a Clerk hiccup must not lose the user's step.
- */
-async function syncNameToClerk(userId: string, name: string): Promise<string | null> {
-  const [firstName, ...rest] = name.split(/\s+/)
-  try {
-    const client = await clerkClient()
-    const updated = await client.users.updateUser(userId, { firstName, lastName: rest.join(" ") || undefined })
-    return updated.hasImage ? updated.imageUrl : null
-  } catch (error) {
-    console.error("[onboarding] could not sync name to Clerk", error)
-    return null
   }
 }

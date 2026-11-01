@@ -13,6 +13,8 @@ export interface CatalogServiceCard {
   /** Detail page: `/services/<category slug>/<service slug>`. */
   href: string
   categoryName: string
+  /** The category's icon, or its parent's (`constants/category-icons.ts`). */
+  categoryIconKey: string | null
   providerId: string
   providerName: string
   price: number

@@ -4,6 +4,9 @@ import { db } from "@/lib/db"
 
 const name = { select: { nameEn: true, nameAr: true } } as const
 
+/** Key prefix of real service uploads (`file-upload.service.ts`); the public image route serves nothing else. */
+export const SERVICE_IMAGE_KEY = "uploads/services/"
+
 const cardSelect = {
   id: true,
   slug: true,
@@ -11,9 +14,10 @@ const cardSelect = {
   price: true,
   durationMinutes: true,
   providerId: true,
-  category: { select: { slug: true, nameEn: true, nameAr: true } },
+  category: { select: { slug: true, nameEn: true, nameAr: true, iconKey: true, parent: { select: { iconKey: true } } } },
   provider: { select: { ratingAvg: true, ratingCount: true, user: { select: { name: true } } } },
-  images: { orderBy: { createdAt: "asc" }, take: 1, select: { id: true } },
+  // Only photos the public image route will serve (same prefix rule), so a card never links a 404.
+  images: { where: { key: { startsWith: SERVICE_IMAGE_KEY } }, orderBy: { createdAt: "asc" }, take: 1, select: { id: true } },
 } satisfies Prisma.ServiceSelect
 
 export type CatalogServiceRow = Prisma.ServiceGetPayload<{ select: typeof cardSelect }>
@@ -68,7 +72,7 @@ class CatalogRepository {
         durationMinutes: true,
         updatedAt: true,
         categoryId: true,
-        images: { orderBy: { createdAt: "asc" }, select: { id: true } },
+        images: { where: { key: { startsWith: SERVICE_IMAGE_KEY } }, orderBy: { createdAt: "asc" }, select: { id: true } },
         category: { select: { slug: true, nameEn: true, nameAr: true, type: true, parent: { select: { slug: true, nameEn: true, nameAr: true } } } },
         provider: {
           select: {
@@ -104,7 +108,7 @@ class CatalogRepository {
 
   /** A photo of a LIVE service only — hidden / off / suspended services' photos are not served publicly. */
   findPublicServiceImage(fileId: string, visible: Prisma.ServiceWhereInput) {
-    return db.file.findFirst({ where: { id: fileId, key: { startsWith: "uploads/services/" }, service: visible }, select: { key: true, mimeType: true } })
+    return db.file.findFirst({ where: { id: fileId, key: { startsWith: SERVICE_IMAGE_KEY }, service: visible }, select: { key: true, mimeType: true } })
   }
 }
 

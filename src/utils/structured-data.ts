@@ -74,3 +74,27 @@ export function serviceJsonLd(s: { title: string; description: string; href: str
     offers: { "@type": "Offer", price: s.price.toFixed(2), priceCurrency: "EGP", url: absoluteUrl(s.href), availability: "https://schema.org/InStock" },
   }
 }
+
+/** The landing page: the site and its search (→ `/services?q=`), so search engines can offer a site search box. */
+export function websiteJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: SITE_NAME,
+    url: absoluteUrl("/"),
+    potentialAction: {
+      "@type": "SearchAction",
+      target: { "@type": "EntryPoint", urlTemplate: `${absoluteUrl("/services")}?q={search_term_string}` },
+      "query-input": "required name=search_term_string",
+    },
+  }
+}
+
+/** FAQPage from the same entries the accordion renders — the JSON-LD and the visible answers can't drift apart. */
+export function faqJsonLd(entries: readonly { q: string; a: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: entries.map((e) => ({ "@type": "Question", name: e.q, acceptedAnswer: { "@type": "Answer", text: e.a } })),
+  }
+}

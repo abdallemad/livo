@@ -55,6 +55,9 @@ Service photos are private R2 objects. This route streams one **only if** its ke
 be hidden later). Allowed in robots.txt (`/api/images/`). Reads use the new `getPrivateObject()` in `lib/r2.provider.ts`. Without R2
 configured, cards fall back to the placeholder icon only if the service has no photo — otherwise the image 404s.
 
+Cards and the service page only reference photos whose key starts with `uploads/services/` — the same rule the image route
+applies — so seeded or legacy files never render as broken images.
+
 ## Cache & sitemap
 
 - Hourly ISR on all three routes; every admin / provider catalog write already calls `revalidateStorefront()`

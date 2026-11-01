@@ -178,3 +178,12 @@
   content-visibility: auto;
   contain-intrinsic-size: auto 600px;
 }
+
+/*
+ * Below-the-fold landing bands (CLAUDE.md §9, docs/landing-page.md): the browser skips rendering work until a band
+ * nears the viewport. Spacing lives INSIDE each band so paint containment never clips focus rings.
+ */
+.defer-render {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 640px;
+}

@@ -32,6 +32,7 @@ const toCard = (s: CatalogServiceRow) => ({
   title: s.title,
   href: serviceHref(s.category.slug, s.slug),
   categoryName: label(s.category),
+  categoryIconKey: s.category.iconKey ?? s.category.parent?.iconKey ?? null,
   providerId: s.providerId,
   providerName: s.provider.user.name || "Livo provider",
   price: num(s.price),
@@ -196,4 +197,14 @@ export async function getServiceDetail(categorySlug: string, serviceSlug: string
       updatedAt: s.updatedAt.toISOString(),
     },
   }
+}
+
+/** The landing page's "Popular services": the top LIVE services by the same "recommended" order as `/services`. */
+export async function getPopularServices(take: number) {
+  return (await repo.findServices(VISIBLE_SERVICE, ORDER.recommended, take)).map(toCard)
+}
+
+/** Active areas for search boxes (landing hero). */
+export async function getSearchAreas() {
+  return (await repo.findActiveAreas()).map((a) => ({ slug: a.slug, name: label(a) }))
 }

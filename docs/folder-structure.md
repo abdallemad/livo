@@ -31,7 +31,8 @@ src/
     shared/          PageHeader, EmptyState, StatusBadge, StatCard, PriceTag, RatingStars, BookingTimeline,
                      Stepper, ConfirmDialog, PagePlaceholder… (+ index.ts)
     layout/          AppHeader, AppFooter, MobileMenu, DashboardShell (+ nav, breadcrumb, bottom tabs),
-                     AccountControls (Sign in link / AccountMenu dropdown), ThemeToggle
+                     AccountControls (Sign in link / AccountMenu dropdown — dark mode lives here,
+                     not as a header button), ThemeToggle (onboarding header + preview only)
     onboarding/      wizard, steps, RoleCard, FirstServiceForm, ServicePreviewCard, ImageUploader, SuccessScreen
     service/ provider/ request/ chat/   domain components (ServiceCard, ProviderCard, QuoteCard, ChatBubble…)
     design-system/   style-guide sections
@@ -57,4 +58,4 @@ src/
 
 Feature docs: `docs/api-conventions.md`, `docs/onboarding-feature.md`, `docs/admin-dashboard-feature.md`,
 `docs/admin-providers-users-feature.md`, `docs/admin-catalog-feature.md`, `docs/admin-requests-bookings-feature.md`,
-`docs/admin-disputes-reviews-feature.md`. Page map: `docs/page-map.md`.
+`docs/admin-disputes-reviews-feature.md`, `docs/admin-payments-feature.md`. Page map: `docs/page-map.md`.

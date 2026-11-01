@@ -194,6 +194,23 @@ export const bookingListQuerySchema = paginationQuerySchema.extend({
  */
 export const adminCancelStatusSchema = z.object({ status: z.literal("CANCELLED"), reason: reasonSchema })
 
+// ---------------------------------------------------------------------------
+// Payments (AD-07, docs/admin-payments-feature.md) — read-only review
+// ---------------------------------------------------------------------------
+
+export const ADMIN_PAYMENT_STATUSES = ["PENDING", "PAID", "PARTIALLY_REFUNDED", "REFUNDED", "FAILED"] as const
+export const ADMIN_PAYMENT_METHODS = ["ONLINE", "CASH"] as const
+export const ADMIN_ESCROW_STATES = ["NONE", "HELD", "RELEASED", "PARTIALLY_REFUNDED", "REFUNDED"] as const
+
+export const paymentListQuerySchema = paginationQuerySchema.extend({
+  status: z.enum(ADMIN_PAYMENT_STATUSES).optional(),
+  method: z.enum(ADMIN_PAYMENT_METHODS).optional(),
+  escrow: z.enum(ADMIN_ESCROW_STATES).optional(),
+  q: searchSchema,
+})
+
+export type PaymentListQuery = z.infer<typeof paymentListQuerySchema>
+
 export type RequestListQuery = z.infer<typeof requestListQuerySchema>
 export type BookingListQuery = z.infer<typeof bookingListQuerySchema>
 export type AdminCancelValues = z.infer<typeof adminCancelStatusSchema>

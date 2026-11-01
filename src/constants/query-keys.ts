@@ -27,6 +27,8 @@ export const providerKeys = {
   service: (id: string) => [...providerKeys.services(), "detail", id] as const,
   portfolio: () => [...providerKeys.all, "portfolio"] as const,
   schedule: () => [...providerKeys.all, "schedule"] as const,
+  earnings: (query: object) => [...providerKeys.all, "earnings", query] as const,
+  payouts: (query: object) => [...providerKeys.all, "payouts", query] as const,
   reviews: () => [...providerKeys.all, "reviews"] as const,
   reviewList: (query: object) => [...providerKeys.reviews(), "list", query] as const,
 }

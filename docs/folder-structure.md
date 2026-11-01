@@ -62,4 +62,5 @@ Feature docs: `docs/api-conventions.md`, `docs/onboarding-feature.md`, `docs/adm
 `docs/admin-commission-payouts-feature.md`, `docs/provider-dashboard-requests-feature.md`,
 `docs/provider-quotes-bookings-feature.md`,
 `docs/provider-services-portfolio-feature.md`,
-`docs/provider-schedule-reviews-feature.md`. Page map: `docs/page-map.md`.
+`docs/provider-schedule-reviews-feature.md`,
+`docs/provider-earnings-payouts-feature.md`. Page map: `docs/page-map.md`.

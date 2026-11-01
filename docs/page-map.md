@@ -104,9 +104,10 @@ Dashboard shell, dynamic, `noindex`; non-admins get a 404 (proxy + layout + ever
 | `/admin/categories/new` | New category | Names (EN + AR), URL, type, parent, order, icon, description, status | built | AD-02 |
 | `/admin/categories/[id]/edit` | Edit category | Same form; URL read-only | built | AD-02 |
 | `/admin/services` | Services | Search, category + visibility filters, why each is (not) public, hide / restore | built | AD-02 |
-| `/admin/requests` | Requests and quotes | All quote requests and quotes | placeholder | AD-04 |
-| `/admin/bookings` | Bookings | Every booking | placeholder | AD-04 |
-| `/admin/bookings/[id]` | Booking details | Payment status, held amount, chats | placeholder | AD-04 |
+| `/admin/requests` | Requests and quotes | Status tabs + counts, category filter, search ([admin-requests-bookings-feature.md](admin-requests-bookings-feature.md)) | built | AD-04 |
+| `/admin/requests/[id]` | Request details | Request, every quote, its booking, history, close request | built | AD-04 |
+| `/admin/bookings` | Bookings | Status (with counts) + type filters, search; amount, commission, payment/escrow | built | AD-04 |
+| `/admin/bookings/[id]` | Booking details | Money snapshot, payments/escrow, milestones, timeline, read-only chat, reviews, history, cancel while unpaid | built | AD-04 |
 | `/admin/disputes` | Disputes | Open disputes | placeholder | AD-05 |
 | `/admin/disputes/[id]` | Resolve dispute | Evidence, decision, full or partial refund | placeholder | AD-05 |
 | `/admin/payments` | Payments | Review all payments | placeholder | AD-07 |

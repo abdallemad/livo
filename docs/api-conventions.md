@@ -22,8 +22,10 @@ Admin endpoints today: `GET /api/admin/dashboard`, `GET /api/admin/providers`, `
 `PATCH /api/admin/providers/[id]/status`, `GET /api/admin/files/[id]`, `GET /api/admin/users`, `GET /api/admin/users/[id]`,
 `PATCH /api/admin/users/[id]/status`, `PATCH /api/admin/disputes/[id]/status`, `GET|POST /api/admin/categories`,
 `GET|PATCH|DELETE /api/admin/categories/[id]`, `PATCH /api/admin/categories/[id]/status`, `GET /api/admin/services`,
-`PATCH /api/admin/services/[id]/status` (see `docs/admin-dashboard-feature.md`, `docs/admin-providers-users-feature.md`,
-`docs/admin-catalog-feature.md`).
+`PATCH /api/admin/services/[id]/status`, `GET /api/admin/requests`, `GET /api/admin/requests/[id]`,
+`PATCH /api/admin/requests/[id]/status`, `GET /api/admin/bookings`, `GET /api/admin/bookings/[id]`,
+`PATCH /api/admin/bookings/[id]/status` (see `docs/admin-dashboard-feature.md`, `docs/admin-providers-users-feature.md`,
+`docs/admin-catalog-feature.md`, `docs/admin-requests-bookings-feature.md`).
 
 `requireUser()` (and so `requireRole`/`requireProvider`/`requireAdmin`) also rejects accounts whose
 `User.status` isn't `ACTIVE` with **403** (AD-03 suspension).

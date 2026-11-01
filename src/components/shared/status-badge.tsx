@@ -5,6 +5,7 @@ import {
   DISPUTE_STATUS,
   PROVIDER_STATUS,
   USER_STATUS,
+  type StatusMeta,
   VERIFICATION_STATUS,
   WORK_STATUS,
   type VerificationStatus,
@@ -70,6 +71,17 @@ export function ProviderStatusBadge({ status, className }: { status: DbVerificat
 /** `User.status` (AD-03). */
 export function UserStatusBadge({ status, className }: { status: UserStatus; className?: string }) {
   const { label, variant, icon: Icon } = USER_STATUS[status]
+  return (
+    <Badge variant={variant} className={cn(className)}>
+      <Icon data-icon="inline-start" aria-hidden />
+      {label}
+    </Badge>
+  )
+}
+
+/** Any status shown with a `StatusMeta` record (request, quote, payment…): icon + label, never colour alone. */
+export function MetaBadge({ meta, className }: { meta: StatusMeta; className?: string }) {
+  const { label, variant, icon: Icon } = meta
   return (
     <Badge variant={variant} className={cn(className)}>
       <Icon data-icon="inline-start" aria-hidden />

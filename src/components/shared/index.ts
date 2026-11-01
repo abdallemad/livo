@@ -11,6 +11,7 @@ export { StatCard } from "./stat-card"
 export {
   BookingStatusBadge,
   DisputeStatusBadge,
+  MetaBadge,
   ProviderStatusBadge,
   StatusBadge,
   UserStatusBadge,

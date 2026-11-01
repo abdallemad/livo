@@ -142,8 +142,9 @@ All `noindex`. Do **not** list `/admin` in `robots.ts`. CRUD routes follow `/adm
 | `/admin/categories/new`, `/[id]/edit` | Category CRUD | type: `fixed` / `quote` / `both`, parent, active flag | AD-02 |
 | `/admin/services` | All fixed-price services | Moderate / deactivate | AD-02 |
 | `/admin/requests` | All quote requests (+ quotes) | | AD-04 |
+| `/admin/requests/[id]` | Request detail | Quotes, booking, close a DRAFT/OPEN request with a reason | AD-04 |
 | `/admin/bookings` | All bookings | | AD-04 |
-| `/admin/bookings/[id]` | Booking detail | Payment/escrow state, messages (for disputes) | AD-04 |
+| `/admin/bookings/[id]` | Booking detail | Payment/escrow state, messages (for disputes); cancel only while no money is captured | AD-04 |
 | `/admin/disputes` | Disputes queue | | AD-05 |
 | `/admin/disputes/[id]` | Resolve dispute | Review evidence, decide, full/partial refund; writes audit log | AD-05 |
 | `/admin/payments` | Payments | Review | AD-07 |

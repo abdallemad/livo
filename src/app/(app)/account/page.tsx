@@ -1,75 +1,20 @@
 import type { Metadata } from "next"
-import Link from "next/link"
-import { CalendarCheck, ClipboardList, MessageSquareQuote, Plus } from "lucide-react"
-import { EmptyState, PageHeader, StatCard } from "@/components/shared"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { formatNumber } from "@/utils/format"
+import { auth } from "@clerk/nextjs/server"
+import { redirect } from "next/navigation"
+import { CustomerDashboard } from "@/components/customer/dashboard/CustomerDashboard"
+import { getCustomerDashboard } from "@/services/customer.service"
 
-/** /account — customer dashboard (docs/SITEMAP.md §3, CU-08). Data wiring comes with the booking/request features. */
+/**
+ * /account — customer home (docs/SITEMAP.md §3, CU-08, docs/customer-dashboard-requests-feature.md).
+ * First snapshot read on the server by calling the service directly for the session's own user id
+ * (CLAUDE.md §2 exception; the zone layout enforces the role) and handed to the client island as
+ * `initialData`; it refetches from `GET /api/me/dashboard`. Private: `noindex` from the layout.
+ */
 export const metadata: Metadata = { title: "My account" }
 
-export default function CustomerDashboardPage() {
-  return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Welcome"
-        description="Track your bookings, requests, and the quotes you've received."
-        actions={
-          <>
-            <Button variant="outline" render={<Link href="/services" />}>
-              Browse services
-            </Button>
-            <Button render={<Link href="/account/requests/new" />}>
-              <Plus data-icon="inline-start" aria-hidden />
-              Request a quote
-            </Button>
-          </>
-        }
-      />
-
-      <div className="grid gap-4 sm:grid-cols-3">
-        <StatCard label="Upcoming bookings" value={formatNumber(0)} icon={CalendarCheck} />
-        <StatCard label="Open requests" value={formatNumber(0)} icon={ClipboardList} />
-        <StatCard label="New quotes" value={formatNumber(0)} icon={MessageSquareQuote} />
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Upcoming bookings</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <EmptyState
-              icon={CalendarCheck}
-              title="No bookings yet"
-              description="Book a fixed-price service and it will show up here with its date."
-              action={
-                <Button variant="outline" render={<Link href="/services" />}>
-                  Browse services
-                </Button>
-              }
-            />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Open requests</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <EmptyState
-              icon={ClipboardList}
-              title="No requests yet"
-              description="Request a quote for your first project and compare the offers."
-              action={
-                <Button variant="outline" render={<Link href="/account/requests/new" />}>
-                  Request a quote
-                </Button>
-              }
-            />
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  )
+export default async function CustomerDashboardPage() {
+  const { userId } = await auth()
+  // Layout and page render in parallel, so don't rely on the layout's gate having run first.
+  if (!userId) redirect("/sign-in?redirect_url=%2Faccount")
+  return <CustomerDashboard initialData={await getCustomerDashboard(userId)} />
 }

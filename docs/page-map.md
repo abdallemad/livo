@@ -46,9 +46,9 @@ Sidebar shell, dynamic, `noindex`. Signed-in `CUSTOMER` with onboarding finished
 
 | Route | Page | What it shows | Status | Req |
 |---|---|---|---|---|
-| `/account` | My account | Upcoming bookings, open requests, new quotes | built | CU-08 |
+| `/account` | My account | Counts, needs your attention (confirm, pay, compare, review), upcoming bookings, open requests ([customer-dashboard-requests-feature.md](customer-dashboard-requests-feature.md)) | built | CU-08 |
 | `/account/book/[serviceId]` | Book the service | Date & time → address → notes → payment → confirmation | placeholder | CU-02, CU-07 |
-| `/account/requests` | My requests | Quote requests and their status | placeholder | CU-13 |
+| `/account/requests` | My requests | Active / Booked / Closed, quotes + lowest price, booking link, cancel (draft / open) | built | CU-13, CU-11 |
 | `/account/requests/new` | New quote request | Job description, photos, category, address, budget | placeholder | CU-03 |
 | `/account/requests/[id]` | Request details | Request stages, quotes received, accept one | placeholder | CU-04, CU-05, CU-08 |
 | `/account/bookings` | My bookings | Upcoming and past bookings | placeholder | CU-13 |

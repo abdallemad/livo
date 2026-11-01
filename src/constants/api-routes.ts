@@ -5,6 +5,11 @@
 export const API_ROUTES = {
   health: "/api/health",
   me: "/api/me",
+  customer: {
+    dashboard: "/api/me/dashboard",
+    requests: "/api/me/requests",
+    requestStatus: (id: string) => `/api/me/requests/${encodeURIComponent(id)}/status`,
+  },
   authSync: "/api/auth/sync",
   onboarding: {
     state: "/api/onboarding",

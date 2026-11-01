@@ -1,9 +1,18 @@
+import { Suspense } from "react"
 import type { Metadata } from "next"
-import { PagePlaceholder } from "@/components/shared"
+import { PaymentsHistory } from "@/components/customer/account/PaymentsHistory"
+import { Skeleton } from "@/components/ui/skeleton"
 
-/** /account/payments — docs/SITEMAP.md (CU-13, SY-07). Private: `noindex` comes from the zone layout. */
+/**
+ * /account/payments — payments and invoices (docs/SITEMAP.md §3, CU-13, SY-07, docs/customer-account-feature.md).
+ * View and page in the URL (`useSearchParams` → Suspense); data from `GET /api/me/payments`. Private: `noindex`.
+ */
 export const metadata: Metadata = { title: "Payments and invoices" }
 
 export default function AccountPaymentsPage() {
-  return <PagePlaceholder title={"Payments and invoices"} description={"All your payments and invoices."} route="/account/payments" reqs={["CU-13", "SY-07"]} />
+  return (
+    <Suspense fallback={<Skeleton className="h-96 w-full" />}>
+      <PaymentsHistory />
+    </Suspense>
+  )
 }

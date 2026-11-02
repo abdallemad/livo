@@ -1,5 +1,6 @@
 /** Domain-neutral building blocks (docs/DESIGN-SYSTEM.md §8). Presentational only — no data fetching. */
 export { BookingTimeline, type TimelineEvent } from "./booking-timeline"
+export { BrandMark, BrandWordmark } from "./brand-logo"
 export { ConfirmDialog } from "./confirm-dialog"
 export { EmptyState } from "./empty-state"
 export { Ltr } from "./ltr"

@@ -1,8 +1,8 @@
-import Image from "next/image"
 import Link from "next/link"
 import { MessageCircle, Phone } from "lucide-react"
 import { FOOTER_NAV } from "@/constants/nav"
-import { SITE_DESCRIPTION, SITE_LOGO, SITE_NAME, SOCIAL_LINKS, SUPPORT_PHONE, SUPPORT_WHATSAPP } from "@/constants/site"
+import { BrandWordmark } from "@/components/shared/brand-logo"
+import { SITE_DESCRIPTION, SITE_NAME, SOCIAL_LINKS, SUPPORT_PHONE, SUPPORT_WHATSAPP } from "@/constants/site"
 
 /**
  * Marketing footer (docs/landing-page.md §13). Static — the year is computed at build/regeneration time (the layout
@@ -14,9 +14,8 @@ export function AppFooter() {
     <footer className="border-t bg-card">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-4 md:px-6">
         <div className="space-y-3">
-          <Link href="/" className="flex items-center gap-2 font-heading text-lg font-semibold">
-            <Image src={SITE_LOGO} alt="" width={28} height={28} />
-            {SITE_NAME}
+          <Link href="/" className="inline-flex items-center rounded-md focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none">
+            <BrandWordmark height={36} />
           </Link>
           <p className="text-sm text-muted-foreground">{SITE_DESCRIPTION}</p>
           {SUPPORT_PHONE || SUPPORT_WHATSAPP ? (

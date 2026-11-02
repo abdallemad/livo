@@ -35,8 +35,13 @@ export const API_ROUTES = {
     /** The booking wizard's confirmation step, polled while the payment settles. */
     bookingConfirmation: (id: string) => `/api/me/bookings/${encodeURIComponent(id)}/confirmation`,
     payments: "/api/me/payments",
+    /** Booking chat (CU-06) — docs/messages-feature.md. */
+    messages: "/api/me/messages",
+    thread: (bookingId: string) => `/api/me/messages/${encodeURIComponent(bookingId)}`,
   },
   authSync: "/api/auth/sync",
+  /** Pusher private-channel signatures (called by pusher-js, not by hooks) — docs/realtime-feature.md. */
+  realtimeAuth: "/api/realtime/auth",
   /** Stripe → Livo, signature-authenticated (never called by the browser). */
   stripeWebhook: "/api/webhook/stripe",
   onboarding: {
@@ -86,6 +91,9 @@ export const API_ROUTES = {
     settingsPersonal: "/api/provider/settings/personal",
     settingsWork: "/api/provider/settings/work",
     payouts: "/api/provider/payouts",
+    /** Booking chat (PR-09) — docs/messages-feature.md. */
+    messages: "/api/provider/messages",
+    thread: (bookingId: string) => `/api/provider/messages/${encodeURIComponent(bookingId)}`,
     reviews: "/api/provider/reviews",
     reviewReply: (id: string) => `/api/provider/reviews/${encodeURIComponent(id)}/reply`,
     /** Owner-only preview of a service / portfolio photo (307 to a 5-minute signed link). */

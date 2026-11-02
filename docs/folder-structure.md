@@ -35,6 +35,7 @@ src/
                      not as a header button), ThemeToggle (onboarding header + preview only)
     onboarding/      wizard, steps, RoleCard, FirstServiceForm, ServicePreviewCard, SuccessScreen
     booking/         BookServiceWizard, BookingConfirmation, PayNowButton (docs/booking-checkout-feature.md)
+    chat/            ConversationList, ChatThread (docs/messages-feature.md)
     service/ provider/ request/ chat/   domain components (ServiceCard, ProviderCard, QuoteCard, ChatBubble…)
     design-system/   style-guide sections
     providers/       query-provider, theme-provider
@@ -48,7 +49,7 @@ src/
   services/          <feature>.service.ts (business rules, auth guards)
   repositories/      <feature>.repository.ts (only place Prisma is used)
   schemas/           <feature>.schema.ts (Zod, shared by form + API route)
-  lib/               db, api-route, api-client, api-guard, errors, r2, stripe, query-client, site-url, storefront-cache,
+  lib/               db, api-route, api-client, api-guard, errors, r2, stripe, pusher (server), pusher-client (browser), query-client, site-url, storefront-cache,
                      zone-guard (layout-level role gate), utils
   utils/             pure helpers (slug, format, zone-access, seo-metadata, structured-data)
   constants/         site, api-routes, query-keys, nav (+ customer-nav, provider-nav, admin-nav), status, upload
@@ -76,4 +77,5 @@ Feature docs: `docs/api-conventions.md`, `docs/onboarding-feature.md`, `docs/adm
 `docs/booking-checkout-feature.md`,
 `docs/customer-booking-detail-feature.md`,
 `docs/customer-request-detail-feature.md`,
-`docs/provider-request-detail-feature.md`. Page map: `docs/page-map.md`.
+`docs/provider-request-detail-feature.md`,
+`docs/realtime-feature.md`, `docs/messages-feature.md`. Page map: `docs/page-map.md`.

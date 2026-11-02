@@ -57,8 +57,8 @@ Sidebar shell, dynamic, `noindex`. Signed-in `CUSTOMER` with onboarding finished
 | `/account/bookings/[id]` | Booking details | Progress, next step + actions (pay, confirm the job, cancel before acceptance, review, report a problem), provider (phone after acceptance), payment & refunds, history ([customer-booking-detail-feature.md](customer-booking-detail-feature.md)) | built | CU-09…CU-12 |
 | `/account/bookings/[id]/review` | Rate the service | Stars and a comment, after completion | placeholder | CU-10 |
 | `/account/bookings/[id]/dispute` | Open a dispute | Reason plus photos or documents | placeholder | CU-12 |
-| `/account/messages` | Messages | Chats for confirmed bookings | placeholder | CU-06 |
-| `/account/messages/[bookingId]` | Chat | Thread; contact details blocked before confirmation | placeholder | CU-06, SY-04 |
+| `/account/messages` | Messages | Conversations for bookings the provider accepted, last message, live ([messages-feature.md](messages-feature.md)) | built | CU-06 |
+| `/account/messages/[bookingId]` | Chat | Live thread (Pusher); opens only after acceptance, read-only once the job ends | built | CU-06, SY-04 |
 | `/account/payments` | Payments and invoices | Paid / held / refunded totals, payment history, invoices (PDF to come) | built | CU-13, SY-07 |
 | `/account/addresses` | Addresses | Add, edit, delete, one default, up to 10 | built | CU-14 |
 | `/account/notifications` | Notifications | Updates on requests and bookings | placeholder | SY-02 |
@@ -81,8 +81,8 @@ Sidebar shell, dynamic, `noindex`. Signed-in `PROVIDER` with onboarding finished
 | `/provider/quotes` | My quotes | Status tabs + counts, price / duration / budget, booking link, withdraw a waiting quote ([provider-quotes-bookings-feature.md](provider-quotes-bookings-feature.md)) | built | PR-07 |
 | `/provider/bookings` | My bookings | Current / Finished / Cancelled; accept, decline (reason), start, mark done | built | PR-08 |
 | `/provider/bookings/[id]` | Booking details | Next step + actions, when/where, customer (locked until accepted, notes masked), money, timeline | built | PR-08, BR-02 |
-| `/provider/messages` | Messages | Chats with customers | placeholder | PR-09 |
-| `/provider/messages/[bookingId]` | Chat | Thread; contact details blocked before confirmation | placeholder | PR-09 |
+| `/provider/messages` | Messages | Conversations with customers ([messages-feature.md](messages-feature.md)) | built | PR-09 |
+| `/provider/messages/[bookingId]` | Chat | Live thread (Pusher); opens only after acceptance | built | PR-09 |
 | `/provider/portfolio` | Portfolio | Gallery of past work: add / edit (1–6 photos), delete, reorder | built | PR-04 |
 | `/provider/schedule` | Schedule | Weekly hours (Sat→Fri, up to 3 ranges a day) + next 14 days of bookings, flags bookings outside hours ([provider-schedule-reviews-feature.md](provider-schedule-reviews-feature.md)) | built | PR-10 |
 | `/provider/earnings` | Earnings | Available, on hold, received, commission; this vs last month; wallet movements with balance after ([provider-earnings-payouts-feature.md](provider-earnings-payouts-feature.md)) | built | PR-11 |

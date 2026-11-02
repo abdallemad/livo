@@ -15,6 +15,9 @@ someone else's request is a 404.
 | Progress (CU-08) | The shared `BookingTimeline`: Open → Accepted → Payment held → In progress → Completed → Reviewed, with dates; Cancelled / Disputed / Expired as exceptions (`requestTimelineState`). |
 | Your request | Description, place (full saved address, or area + city), budget, wanted-on date, photos (owner-only signed previews via `/api/me/files/[id]`), **Cancel request** while draft / open (CU-11, existing endpoint). |
 
+New quotes arrive **live**: when a provider sends or changes a quote, the customer gets a toast and this page refreshes
+itself ([realtime-feature.md](realtime-feature.md)).
+
 ## Accepting a quote (CU-05)
 
 The dialog restates the price and asks how to pay: **online** (Stripe Checkout, only when Stripe is configured) or

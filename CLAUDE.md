@@ -541,6 +541,7 @@ Pre-launch env validation lives in `tests/prelaunch/check-env.mjs`.
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY` | Clerk |
 | `NEXT_PUBLIC_CLERK_SIGN_IN_URL`, `…SIGN_UP_URL`, `…SIGN_IN_FALLBACK_REDIRECT_URL`, `…SIGN_UP_FALLBACK_REDIRECT_URL` | Clerk routing (`/auth-callback`) |
 | `STRIPE_SECRET`, `STRIPE_WEBHOOK_SECRET` (`STRIPE_KEY` unused for hosted checkout) | Stripe |
+| `PUSHER_APP_ID`, `PUSHER_SECRET` (server), `NEXT_PUBLIC_PUSHER_KEY`, `NEXT_PUBLIC_PUSHER_CLUSTER` (browser) | **Livo:** real-time notifications + booking chat (`docs/realtime-feature.md`); all four or none |
 | `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME` | storage |
 | `NEXT_PUBLIC_R2_PUBLIC_URL` (optional) | images-only public host |
 | `R2_PUBLIC_URL` (optional) | **never** point at a bucket holding paid binaries |

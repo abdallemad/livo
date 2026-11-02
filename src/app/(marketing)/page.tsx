@@ -11,6 +11,7 @@ import { SocialProof } from "@/components/marketing/SocialProof"
 import { TrustStrip } from "@/components/marketing/TrustStrip"
 import { WhyTrust } from "@/components/marketing/WhyTrust"
 import { WorkGallery } from "@/components/marketing/WorkGallery"
+import { MotionProvider } from "@/components/motion/MotionProvider"
 import { JsonLd } from "@/components/seo/json-ld"
 import { SITE_DESCRIPTION, SITE_TITLE } from "@/constants/site"
 import { LANDING_FAQ } from "@/constants/trust"
@@ -38,18 +39,21 @@ export default async function HomePage() {
   return (
     <>
       <JsonLd data={[organizationJsonLd(), websiteJsonLd(), faqJsonLd(LANDING_FAQ)]} />
-      <Hero areas={data.areas} />
-      <TrustStrip />
-      <PopularServices services={data.popularServices} categories={data.categories} />
-      <HowItWorks />
-      <WhyTrust policiesPublished={data.policiesPublished} />
-      <MeetProviders providers={data.providers} />
-      <WorkGallery images={data.gallery} />
-      <SocialProof proof={data.proof} />
-      <MoneyFlow />
-      <LandingFaq />
-      <ProviderBand />
-      <FinalCta />
+      {/* Scroll and text animations (docs/landing-page.md "Motion"); the server HTML still holds every word. */}
+      <MotionProvider>
+        <Hero areas={data.areas} />
+        <TrustStrip />
+        <PopularServices services={data.popularServices} categories={data.categories} />
+        <HowItWorks />
+        <WhyTrust policiesPublished={data.policiesPublished} />
+        <MeetProviders providers={data.providers} />
+        <WorkGallery images={data.gallery} />
+        <SocialProof proof={data.proof} />
+        <MoneyFlow />
+        <LandingFaq />
+        <ProviderBand />
+        <FinalCta />
+      </MotionProvider>
     </>
   )
 }

@@ -3,6 +3,7 @@ import { RatingStars } from "@/components/shared"
 import { SOCIAL_PROOF } from "@/constants/trust"
 import type { ProofItem } from "@/utils/trust"
 import { formatNumber } from "@/utils/format"
+import { CountUp } from "@/components/motion/CountUp"
 
 /**
  * Social proof (docs/landing-page.md §8). At launch: just "Now live in {city}". Each number (rating, providers,
@@ -28,14 +29,16 @@ export function SocialProof({ proof }: { proof: ProofItem[] }) {
                 <div key="rating">
                   <dt className="text-sm text-muted-foreground">Average rating</dt>
                   <dd className="flex items-center gap-2 font-heading text-2xl font-semibold tabular-nums">
-                    {formatNumber(p.value)} <RatingStars value={p.value} />
+                    <CountUp value={p.value} decimals={1} /> <RatingStars value={p.value} />
                     <span className="text-sm font-normal text-muted-foreground">({formatNumber(p.count)} reviews)</span>
                   </dd>
                 </div>
               ) : (
                 <div key={p.kind}>
                   <dt className="text-sm text-muted-foreground">{p.kind === "providers" ? "Verified providers" : "Jobs completed"}</dt>
-                  <dd className="font-heading text-2xl font-semibold tabular-nums">{formatNumber(p.value)}</dd>
+                  <dd className="font-heading text-2xl font-semibold tabular-nums">
+                    <CountUp value={p.value} />
+                  </dd>
                 </div>
               ),
             )}

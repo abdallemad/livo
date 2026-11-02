@@ -7,7 +7,6 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
@@ -66,13 +65,20 @@ export function DashboardNav({ zone, size = "default" }: DashboardNavProps) {
                     >
                       <Icon aria-hidden />
                       <span>{item.label}</span>
-                      {isMessagesItem(item.href) && unread > 0 ? <span className="sr-only">, {unread} unread</span> : null}
+                      {isMessagesItem(item.href) && unread > 0 ? (
+                        <>
+                          <span className="sr-only">, {unread} unread</span>
+                          {/* Inside the row (not SidebarMenuBadge, which only positions itself for the sm/default/lg
+                              sizes — the touch rows pushed it below the item). Hidden when the sidebar is icons-only. */}
+                          <span
+                            aria-hidden
+                            className="ms-auto flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-primary px-1.5 text-xs leading-none font-semibold text-primary-foreground tabular-nums group-data-[collapsible=icon]:hidden"
+                          >
+                            {badgeText(unread)}
+                          </span>
+                        </>
+                      ) : null}
                     </SidebarMenuButton>
-                    {isMessagesItem(item.href) && unread > 0 ? (
-                      <SidebarMenuBadge aria-hidden className="bg-primary text-primary-foreground">
-                        {badgeText(unread)}
-                      </SidebarMenuBadge>
-                    ) : null}
                   </SidebarMenuItem>
                 )
               })}

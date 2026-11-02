@@ -323,8 +323,11 @@ Provider verification: `PENDING` Under review (warning) · `ACTIVE` Active (succ
 
 ## 10. Motion
 
-- Motion answers an action (open, expand, save, confirm). Durations 150–200ms, ease-out. Use `tw-animate-css` classes already in shadcn; `motion` library only for the hero and the booking-confirmed moment.
-- **No** scroll-reveal on every section, **no** hover-lift on every card.
+- Motion answers an action (open, expand, save, confirm). Durations 150–200ms, ease-out. Use `tw-animate-css` classes already in shadcn; `motion` library only for the hero, the booking-confirmed moment and the landing page (below).
+- **No** scroll-reveal on every section, **no** hover-lift on every card — in dashboards, forms and content pages.
+- **Exception — the landing page `/`** (decided 2026-11-03, see [landing-page.md](landing-page.md#motion)): word-by-word
+  title animation, scroll reveals, staggered card grids with a small hover lift, count-up stats and a drifting hero
+  backdrop, built from `src/components/motion/*`. Don't copy these into other pages without the same decision.
 - Respect `prefers-reduced-motion` (`motion-reduce:` variants / `useReducedMotion`).
 - Loading uses `Skeleton` that matches the final layout (no spinners for page content).
 

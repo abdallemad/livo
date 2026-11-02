@@ -4,9 +4,11 @@ import { MARKETING_NAV_GROUPS } from "@/constants/nav"
 import { BrandWordmark } from "@/components/shared/brand-logo"
 import { getNavCategories } from "@/services/catalog.service"
 import { buildNavGroups } from "@/utils/nav"
+import { NotificationBell } from "@/components/notifications/NotificationBell"
 import { AccountControls } from "./AccountControls"
 import { MobileMenu } from "./MobileMenu"
 import { NavMenu } from "./NavMenu"
+import { RealtimeNotifications } from "./RealtimeNotifications"
 
 /**
  * Category links for the Services dropdown, read at build / ISR regeneration time (never per request — CLAUDE.md §4.1
@@ -37,6 +39,9 @@ export async function AppHeader() {
         </Link>
         <NavMenu groups={groups} />
         <div className="ms-auto flex items-center gap-1">
+          {/* Client islands: render nothing for signed-out visitors, so this static header stays static. */}
+          <RealtimeNotifications />
+          <NotificationBell />
           <AccountControls />
         </div>
       </div>

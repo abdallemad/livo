@@ -3,6 +3,8 @@ import { Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { HERO } from "@/constants/trust"
 import { LAUNCH_CATEGORIES, LAUNCH_CITY } from "@/constants/site"
+import { HeroBackdrop } from "@/components/motion/HeroBackdrop"
+import { SplitWords } from "@/components/motion/split-words"
 
 /** "plumbing, electrical and cleaning" — the launch services from constants, as one readable line. */
 function servicesLine() {
@@ -17,16 +19,18 @@ function servicesLine() {
  */
 export function Hero({ areas }: { areas: { slug: string; name: string }[] }) {
   return (
-    <section aria-labelledby="hero-title" className="bg-gradient-to-b from-primary/8 to-background">
+    <section aria-labelledby="hero-title" className="relative isolate overflow-hidden bg-gradient-to-b from-primary/8 to-background">
+      <HeroBackdrop />
       <div className="mx-auto max-w-6xl space-y-8 px-4 pt-12 pb-10 md:px-6 md:pt-20 md:pb-14">
         <div className="max-w-3xl space-y-4">
-          <h1 id="hero-title" className="text-4xl leading-tight font-semibold text-balance md:text-6xl">
-            {HERO.title}
+          {/* Text animation in CSS (runs at first paint — this is the LCP element; docs/landing-page.md "Motion"). */}
+          <h1 id="hero-title" aria-label={HERO.title} className="text-4xl leading-tight font-semibold text-balance md:text-6xl">
+            <SplitWords text={HERO.title} />
           </h1>
-          <p className="text-lg text-muted-foreground md:text-xl">
+          <p className="rise-in text-lg text-muted-foreground md:text-xl" style={{ animationDelay: "350ms" }}>
             Now in {LAUNCH_CITY}: {servicesLine()} — by providers we check ourselves.
           </p>
-          <div className="flex flex-wrap gap-3 pt-2">
+          <div className="rise-in flex flex-wrap gap-3 pt-2" style={{ animationDelay: "500ms" }}>
             <Button size="lg" variant="commit" render={<Link href="/services" />}>
               {HERO.primaryCta}
             </Button>
@@ -36,7 +40,7 @@ export function Hero({ areas }: { areas: { slug: string; name: string }[] }) {
           </div>
         </div>
 
-        <form action="/services" method="get" role="search" aria-label="Find a service" className="grid max-w-3xl gap-2 rounded-2xl border bg-card p-2 shadow-sm sm:grid-cols-[1fr_12rem_auto]">
+        <form action="/services" method="get" role="search" aria-label="Find a service" style={{ animationDelay: "650ms" }} className="rise-in grid max-w-3xl gap-2 rounded-2xl border bg-card p-2 shadow-sm sm:grid-cols-[1fr_12rem_auto]">
           <label className="sr-only" htmlFor="hero-q">
             What do you need?
           </label>

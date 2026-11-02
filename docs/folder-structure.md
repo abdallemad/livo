@@ -28,7 +28,7 @@ src/
     robots.ts sitemap.ts not-found.tsx
   components/
     ui/              shadcn (base-nova, Base UI)
-    shared/          PageHeader, EmptyState, StatusBadge, StatCard, PriceTag, RatingStars, BookingTimeline,
+    shared/          BrandMark / BrandWordmark (docs/brand-assets.md), PageHeader, EmptyState, StatusBadge, StatCard, PriceTag, RatingStars, BookingTimeline,
                      Stepper, ConfirmDialog, PagePlaceholder… (+ index.ts)
     layout/          AppHeader (grouped hover dropdowns: NavMenu — docs/navigation.md), AppFooter, MobileMenu, DashboardShell (+ nav, breadcrumb, bottom tabs),
                      AccountControls (Sign in link / AccountMenu dropdown — dark mode lives here,
@@ -79,4 +79,5 @@ Feature docs: `docs/api-conventions.md`, `docs/onboarding-feature.md`, `docs/adm
 `docs/customer-booking-detail-feature.md`,
 `docs/customer-request-detail-feature.md`,
 `docs/provider-request-detail-feature.md`,
-`docs/realtime-feature.md`, `docs/messages-feature.md`, `docs/notifications-feature.md`. Page map: `docs/page-map.md`.
+`docs/realtime-feature.md`, `docs/messages-feature.md`, `docs/notifications-feature.md`,
+`docs/brand-assets.md` (logo, favicon, app icons). Page map: `docs/page-map.md`.

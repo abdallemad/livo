@@ -1,4 +1,3 @@
-import Image from "next/image"
 import Link from "next/link"
 import { NotificationBell } from "@/components/notifications/NotificationBell"
 import { RealtimeNotifications } from "./RealtimeNotifications"
@@ -12,7 +11,8 @@ import {
   SidebarRail,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { SITE_LOGO, SITE_NAME } from "@/constants/site"
+import { BrandMark } from "@/components/shared/brand-logo"
+import { SITE_NAME } from "@/constants/site"
 import { DASHBOARD_NAV, type DashboardZone } from "@/constants/dashboard-nav"
 import { AccountControls } from "./AccountControls"
 import { BottomTabs } from "./BottomTabs"
@@ -45,7 +45,7 @@ export function DashboardShell({ zone, density = "touch", banner, children }: Da
       <Sidebar side="left" collapsible="icon">
         <SidebarHeader className="border-b border-sidebar-border">
           <Link href={rootHref} className="flex h-10 items-center gap-2 px-1 font-heading font-semibold">
-            <Image src={SITE_LOGO} alt="" width={28} height={28} />
+            <BrandMark size={28} />
             <span className="group-data-[collapsible=icon]:hidden">{SITE_NAME}</span>
             <span className="text-sm font-normal text-muted-foreground group-data-[collapsible=icon]:hidden">
               {zoneLabel}
@@ -68,7 +68,7 @@ export function DashboardShell({ zone, density = "touch", banner, children }: Da
           <SidebarTrigger className={tabs ? "max-md:hidden" : undefined} />
           {tabs ? (
             <Link href={rootHref} className="flex items-center gap-2 font-heading font-semibold md:hidden">
-              <Image src={SITE_LOGO} alt="" width={24} height={24} />
+              <BrandMark size={24} />
               {SITE_NAME}
             </Link>
           ) : null}

@@ -9,7 +9,13 @@ export const SITE_DESCRIPTION =
 export const SITE_LOCALE = "en_US"
 export const SITE_LANG = "en"
 export const SITE_DIR = "ltr"
-export const SITE_LOGO = "/logo.svg"
+/**
+ * Brand assets (docs/brand-assets.md). The square **mark** ("LV" + arrow) is the logo everywhere a small square fits —
+ * dashboard sidebars, structured data — and is the source of `src/app/icon.png`, `apple-icon.png` and `favicon.ico`.
+ * The **wordmark** is the mark + "Livo" lettering, with a dark-mode copy whose lettering is light lavender.
+ */
+export const SITE_LOGO = "/logo-mark.png"
+export const SITE_WORDMARK = { light: "/logo-wordmark.png", dark: "/logo-wordmark-dark.png", width: 517, height: 192 } as const
 
 /** Spread into any page-level `openGraph` — a page's object REPLACES the root's. */
 export const DEFAULT_OPEN_GRAPH = {

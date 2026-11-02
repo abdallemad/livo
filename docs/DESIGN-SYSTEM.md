@@ -236,7 +236,7 @@ Add `commit` to the button `cva` (`bg-commit text-commit-foreground hover:bg-com
 
 | Shell | Route group | Structure |
 |---|---|---|
-| **Marketing** | `(marketing)` | Header (logo at start; nav: Services, How it works, Become a provider; `AccountControls` island at end) + footer. Static; no request reads. |
+| **Marketing** | `(marketing)` | Header (logo — `BrandWordmark`, [brand-assets.md](brand-assets.md) — at start; nav: Services, How it works, Become a provider; `AccountControls` island at end) + footer. Static; no request reads. |
 | **Customer app** | `(app)/account` | Desktop: sidebar at start + `<main>` scrolls; the header button (or the rail) collapses the sidebar to **icons only** with tooltips, like the admin one — it never disappears. Mobile: top bar + **bottom tab bar** (Home, My requests, My bookings, Messages, My account). |
 | **Provider app** | `(provider)/provider` | Same as customer but tabs: Home, Requests, My bookings, Messages, Earnings. Bigger type and targets. Verification-status banner pinned at top until `ACTIVE`. |
 | **Admin** | `(admin)/admin` | Collapsible (icons-only) sidebar + breadcrumb bar + dense content. Desktop-first. |

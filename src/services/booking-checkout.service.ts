@@ -8,6 +8,7 @@ import { bookingCheckoutRepository as repo, type BookingConfirmationRow } from "
 import type { CreateServiceBookingValues } from "@/schemas/booking.schema"
 import { VISIBLE_SERVICE } from "@/services/admin-catalog.service"
 import { DEFAULT_GLOBAL_RATE } from "@/services/commission.service"
+import { pushStoredNotifications, type StoredNotification } from "@/services/notification.service"
 import type { BookingConfirmationDto, BookServiceFormData, CheckoutSessionDto, CreatedBookingDto } from "@/types/booking"
 import type { DayHours } from "@/utils/availability"
 import { BOOKING_MAX_DAYS, bookableDays, nextBookingNumber, slotInstant, slotProblem, toMinorUnits } from "@/utils/booking-checkout"
@@ -136,7 +137,7 @@ export async function createServiceBooking(userId: string, values: CreateService
   const year = Number(zonedIsoDay(now).slice(0, 4))
   const title = service.title
 
-  let created: { booking: { id: string; number: string; status: CreatedBookingDto["status"] }; paymentId: string } | null = null
+  let created: { booking: { id: string; number: string; status: CreatedBookingDto["status"] }; paymentId: string; notifications: StoredNotification[] } | null = null
   for (let attempt = 0; attempt < NUMBER_RETRIES && !created; attempt++) {
     try {
       created = await repo.transaction(async (tx) => {
@@ -178,14 +179,13 @@ export async function createServiceBooking(userId: string, values: CreateService
           { actorId: userId, action: "booking.create", entityType: "Booking", entityId: booking.id, metadata: { serviceId: service.id, amount, commissionRate: rate, method: values.paymentMethod } },
           tx,
         )
+        const notifications: StoredNotification[] = []
         if (!online) {
           // Cash: nothing to wait for — the provider sees it now (PR-08).
-          await repo.createNotifications(
-            [{ userId: p.userId, type: "BOOKING_CREATED", title: `New booking ${booking.number}`, body: `${title} — accept or decline it. Paid in cash after the job.`, payload: { bookingId: booking.id } }],
-            tx,
-          )
+          notifications.push({ userId: p.userId, type: "BOOKING_CREATED", title: `New booking ${booking.number}`, body: `${title} — accept or decline it. Paid in cash after the job.`, payload: { bookingId: booking.id } })
+          await repo.createNotifications(notifications.map((n) => ({ ...n, payload: { bookingId: booking.id } })), tx)
         }
-        return { booking, paymentId: payment.id }
+        return { booking, paymentId: payment.id, notifications }
       })
     } catch (e) {
       // Two bookings took the same number at once: read the new highest and try again.
@@ -194,6 +194,8 @@ export async function createServiceBooking(userId: string, values: CreateService
     }
   }
   const { booking, paymentId } = created!
+  // After the commit: a cash booking reaches the provider's bell at once (docs/notifications-feature.md).
+  await pushStoredNotifications(created!.notifications)
 
   if (!online) return { ...booking, checkoutUrl: null }
 
@@ -406,8 +408,8 @@ export async function markCheckoutPaid(session: Stripe.Checkout.Session, source:
   }
 
   const b = payment.booking
-  return repo.transaction(async (tx) => {
-    if ((await repo.markPaymentPaid(payment.id, sessionPayload(session, source, eventId), new Date(), tx)).count === 0) return "duplicate"
+  const result = await repo.transaction(async (tx) => {
+    if ((await repo.markPaymentPaid(payment.id, sessionPayload(session, source, eventId), new Date(), tx)).count === 0) return { outcome: "duplicate" as const, notifications: [] }
     const released = (await repo.releaseToProvider(b.id, tx)).count > 0
     await repo.createAuditLog(
       { actorId: null, action: "payment.paid", entityType: "Booking", entityId: b.id, metadata: { paymentId: payment.id, amount: num(payment.amount), sessionId: session.id, source } },
@@ -437,8 +439,14 @@ export async function markCheckoutPaid(session: Stripe.Checkout.Session, source:
       )
     }
     await repo.createNotifications(notifications, tx)
-    return "paid"
+    return { outcome: "paid" as const, notifications }
   })
+
+  // After the commit: "New booking" for the provider, "Payment received" for the customer — live (docs/notifications-feature.md).
+  await pushStoredNotifications(
+    result.notifications.map((n) => ({ userId: n.userId, type: n.type, title: n.title, body: n.body, payload: n.payload as StoredNotification["payload"] })),
+  )
+  return result.outcome
 }
 
 /** Expired / failed checkout: the attempt fails, the booking stays PENDING_PAYMENT so the customer can pay again. */

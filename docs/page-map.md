@@ -61,7 +61,7 @@ Sidebar shell, dynamic, `noindex`. Signed-in `CUSTOMER` with onboarding finished
 | `/account/messages/[bookingId]` | Chat | Live thread (Pusher); opens only after acceptance, read-only once the job ends | built | CU-06, SY-04 |
 | `/account/payments` | Payments and invoices | Paid / held / refunded totals, payment history, invoices (PDF to come) | built | CU-13, SY-07 |
 | `/account/addresses` | Addresses | Add, edit, delete, one default, up to 10 | built | CU-14 |
-| `/account/notifications` | Notifications | Updates on requests and bookings | placeholder | SY-02 |
+| `/account/notifications` | Notifications | All / unread, mark all read, live; plus the header bell ([notifications-feature.md](notifications-feature.md)) | built | SY-02 |
 | `/account/settings` | Settings | Personal details (Clerk-synced), interests, sign-in & security; deletion via support | built | AU-06 |
 
 ## Provider: `(provider)/provider`
@@ -88,7 +88,7 @@ Sidebar shell, dynamic, `noindex`. Signed-in `PROVIDER` with onboarding finished
 | `/provider/earnings` | Earnings | Available, on hold, received, commission; this vs last month; wallet movements with balance after ([provider-earnings-payouts-feature.md](provider-earnings-payouts-feature.md)) | built | PR-11 |
 | `/provider/payouts` | Payouts | Request (wallet / InstaPay / bank, min 100 EGP, one at a time) + history with status | built | PR-12 |
 | `/provider/reviews` | Reviews | Rating summary + distribution, Needs a reply / Replied, rating filter, public reply (no contact details) | built | PR-13, SY-05 |
-| `/provider/notifications` | Notifications | New requests, bookings, payments | placeholder | SY-02 |
+| `/provider/notifications` | Notifications | Same list for providers ([notifications-feature.md](notifications-feature.md)) | built | SY-02 |
 | `/provider/settings` | Settings | Personal details (Clerk-synced), work profile (bio, specialties, areas), sign-in & security | built | AU-06 |
 
 ## Admin: `(admin)/admin`

@@ -7,6 +7,7 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
+  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
@@ -14,6 +15,7 @@ import {
 import { cn } from "@/lib/utils"
 import { DASHBOARD_NAV, type DashboardZone } from "@/constants/dashboard-nav"
 import type { NavItem } from "@/types/nav"
+import { useUnreadMessages } from "@/hooks/use-chat"
 
 /** Layouts don't re-render on navigation, so the active state lives in this client island. */
 export function isActivePath(pathname: string, item: Pick<NavItem, "href" | "exact">) {
@@ -26,8 +28,15 @@ interface DashboardNavProps {
   size?: "default" | "touch"
 }
 
+/** Which chat side a zone's **Messages** item counts for (admins have no chat). */
+export const chatSideOf = (zone: DashboardZone) => (zone === "account" ? "CUSTOMER" : zone === "provider" ? "PROVIDER" : null)
+export const isMessagesItem = (href: string) => href.endsWith("/messages")
+/** "9+" keeps the badge narrow. */
+export const badgeText = (n: number) => (n > 9 ? "9+" : String(n))
+
 export function DashboardNav({ zone, size = "default" }: DashboardNavProps) {
   const groups = DASHBOARD_NAV[zone].nav
+  const unread = useUnreadMessages(chatSideOf(zone)).data?.total ?? 0
   const pathname = usePathname()
   const { isMobile, setOpenMobile } = useSidebar()
   return (
@@ -57,7 +66,13 @@ export function DashboardNav({ zone, size = "default" }: DashboardNavProps) {
                     >
                       <Icon aria-hidden />
                       <span>{item.label}</span>
+                      {isMessagesItem(item.href) && unread > 0 ? <span className="sr-only">, {unread} unread</span> : null}
                     </SidebarMenuButton>
+                    {isMessagesItem(item.href) && unread > 0 ? (
+                      <SidebarMenuBadge aria-hidden className="bg-primary text-primary-foreground">
+                        {badgeText(unread)}
+                      </SidebarMenuBadge>
+                    ) : null}
                   </SidebarMenuItem>
                 )
               })}

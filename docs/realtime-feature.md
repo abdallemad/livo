@@ -46,16 +46,12 @@ customer, provider and admin dashboard page. It subscribes to the signed-in user
    new quote immediately, the home counters update;
 2. shows a toast with **View** → the `href`, unless the user is already on that page.
 
-Pushed today:
+Pushed today: every stored notification listed in [notifications-feature.md](notifications-feature.md) (quotes sent and
+accepted, provider booking actions, cash bookings, payments, customer confirm / cancel, new matching requests) through
+`pushStoredNotifications()`, plus a toast for each chat message ([messages-feature.md](messages-feature.md)). The toast
+also refreshes the **bell** and the **Messages** badge.
 
-| When | To | Toast |
-|---|---|---|
-| A provider **sends** or **re-sends** a quote (`PUT /api/provider/requests/[id]/quote`) | the customer | "New quote on "*title*"" · price · days → `/account/requests/[id]` |
-| A provider **changes** their waiting quote | the customer | "A provider updated their quote on "*title*"" |
-| A chat **message** is sent | the other participant | "New message from *name*" · preview → their thread |
-
-The quote's `QUOTE_RECEIVED` notification row is still written in the same transaction as before; the push only adds the
-live toast.
+Notification rows are still written inside each transaction as before; the push only makes them appear at once.
 
 ## Code
 
@@ -74,8 +70,6 @@ Packages: `pusher` (server), `pusher-js` (browser).
 
 ## Not done / follow-ups
 
-- A notification **center** (`/account/notifications`, `/provider/notifications`, bell with unread count) — the rows exist
-  (`Notification`), the pages are still placeholders. Toasts are only seen while a dashboard is open.
-- Pushing the other existing notifications live (booking accepted / declined, payment received, quote accepted, new
-  matching request for providers…): call `pushNotification()` after each of those transactions.
+- The notification centre is built ([notifications-feature.md](notifications-feature.md)); admin decisions, disputes
+  and payouts are stored but not pushed live yet.
 - Presence ("online"), typing indicators and read receipts.

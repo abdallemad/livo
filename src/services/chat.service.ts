@@ -5,7 +5,7 @@ import { ConflictError, ForbiddenError, NotFoundError } from "@/lib/errors"
 import { isRealtimeConfigured, publish, pushNotification } from "@/lib/pusher"
 import { chatRepository as repo, type ConversationRow } from "@/repositories/chat.repository"
 import type { SendMessageValues } from "@/schemas/chat.schema"
-import type { ChatMessageDto, ChatThreadDto, ConversationDto } from "@/types/chat"
+import type { ChatMessageDto, ChatThreadDto, ConversationDto, UnreadMessagesDto } from "@/types/chat"
 import { canReadChat, chatClosedReason, type ChatSide, messagePreview, THREAD_LIMIT } from "@/utils/chat"
 import { contactVisible } from "@/utils/customer-booking"
 
@@ -32,7 +32,8 @@ const toMessage = (m: { id: string; bookingId: string; senderId: string; body: s
 })
 
 export async function listConversations(userId: string, side: ChatSide): Promise<ConversationDto[]> {
-  const rows = await repo.findConversations(sideWhere(side, userId))
+  const [rows, unread] = await Promise.all([repo.findConversations(sideWhere(side, userId)), repo.countUnread(userId, side)])
+  const unreadBy = new Map(unread.map((u) => [u.bookingId, u.n]))
   return rows
     .map((b): ConversationDto => {
       const last = b.messages[0]
@@ -46,6 +47,7 @@ export async function listConversations(userId: string, side: ChatSide): Promise
         lastMessage: last ? { body: messagePreview(last.body), at: last.createdAt.toISOString(), fromMe: last.senderId === userId } : null,
         activityAt: (last?.createdAt ?? b.contactUnlockedAt!).toISOString(),
         closedReason: chatClosedReason(b.status, true),
+        unread: unreadBy.get(b.id) ?? 0,
       }
     })
     .sort((a, b) => b.activityAt.localeCompare(a.activityAt))
@@ -113,4 +115,20 @@ export async function assertCanSubscribe(userId: string, channelName: string): P
   if (!b || (b.customerId !== userId && b.providerId !== userId) || !canReadChat(b.contactUnlockedAt !== null)) {
     throw new ForbiddenError("Not your conversation.")
   }
+}
+
+/** The sidebar badge: unread messages across all my conversations on this side. */
+export async function countUnreadMessages(userId: string, side: ChatSide): Promise<UnreadMessagesDto> {
+  const rows = await repo.countUnread(userId, side)
+  return { total: rows.reduce((sum, r) => sum + r.n, 0) }
+}
+
+/**
+ * `POST …/messages/[bookingId]/read` — I've seen this thread up to now. 404 when it isn't my conversation. Idempotent;
+ * the marker never moves backwards.
+ */
+export async function markThreadRead(userId: string, side: ChatSide, bookingId: string, now = new Date()): Promise<void> {
+  const b = await repo.findConversation(bookingId, sideWhere(side, userId))
+  if (!b || !canReadChat(b.contactUnlockedAt !== null)) throw new NotFoundError("That conversation doesn't exist.")
+  await repo.markRead(b.id, userId, side, now)
 }

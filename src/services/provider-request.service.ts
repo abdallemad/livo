@@ -6,10 +6,10 @@ import type { ProviderRequestListQuery } from "@/schemas/provider.schema"
 import type { ProviderOption, ProviderRequestCard, ProviderRequestList } from "@/types/provider"
 import { API_ROUTES } from "@/constants/api-routes"
 import { ConflictError, NotFoundError } from "@/lib/errors"
-import { pushNotification } from "@/lib/pusher"
 import { providerRequestRepository as detailRepo, type ProviderRequestDetailRow } from "@/repositories/provider-request.repository"
 import type { ProviderQuoteValues } from "@/schemas/provider.schema"
 import { signedPreview } from "@/services/file-upload.service"
+import { pushStoredNotifications, type StoredNotification } from "@/services/notification.service"
 import type { ProviderQuoteSentDto, ProviderRequestDetail } from "@/types/provider"
 import { maskContactDetails } from "@/utils/contact-mask"
 import { formatPrice } from "@/utils/format"
@@ -244,26 +244,19 @@ export async function sendQuote(providerId: string, requestId: string, values: P
       id = existing.id
     }
 
-    await detailRepo.createNotification(
-      {
-        userId: r.customerId,
-        type: "QUOTE_RECEIVED",
-        title: mode === "UPDATE" ? `A provider updated their quote on "${r.title}"` : `New quote on "${r.title}"`,
-        body: `${formatPrice(values.price)}${values.durationDays ? ` · ${values.durationDays} ${values.durationDays === 1 ? "day" : "days"}` : ""}. Compare quotes and choose one.`,
-        payload: { requestId, quoteId: id },
-      },
-      tx,
-    )
-    return { dto: { id, status: "PENDING" as const, mode }, customerId: r.customerId, title: r.title }
+    const notification: StoredNotification = {
+      userId: r.customerId,
+      type: "QUOTE_RECEIVED",
+      title: mode === "UPDATE" ? `A provider updated their quote on "${r.title}"` : `New quote on "${r.title}"`,
+      body: `${formatPrice(values.price)}${values.durationDays ? ` · ${values.durationDays} ${values.durationDays === 1 ? "day" : "days"}` : ""}. Compare quotes and choose one.`,
+      payload: { requestId, quoteId: id },
+    }
+    await detailRepo.createNotification({ ...notification, payload: notification.payload ?? undefined }, tx)
+    return { dto: { id, status: "PENDING" as const, mode }, notification }
   })
 
-  // After the commit: a live toast for the customer wherever they are in their dashboard (docs/realtime-feature.md).
-  await pushNotification(sent.customerId, {
-    type: "QUOTE_RECEIVED",
-    title: sent.dto.mode === "UPDATE" ? `A provider updated their quote on "${sent.title}"` : `New quote on "${sent.title}"`,
-    body: `${formatPrice(values.price)}${values.durationDays ? ` · ${values.durationDays} ${values.durationDays === 1 ? "day" : "days"}` : ""}`,
-    href: `/account/requests/${requestId}`,
-  })
+  // After the commit: the customer's bell + a live toast wherever they are in their dashboard (docs/notifications-feature.md).
+  await pushStoredNotifications([sent.notification])
   return sent.dto
 }
 

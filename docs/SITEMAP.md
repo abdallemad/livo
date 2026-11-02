@@ -90,7 +90,7 @@ All `noindex`. Per-visitor UI is a client island (`AccountControls`), layouts st
 | `/account/messages/[bookingId]` | Chat thread | Block phone/email patterns (SY-04) | CU-06, SY-04 |
 | `/account/payments` | Payments & invoices | PDF invoices (SHOULD) — not generated yet | CU-13, SY-07 |
 | `/account/addresses` | Saved addresses | SHOULD | CU-14 |
-| `/account/notifications` | Notification center | | SY-02 |
+| `/account/notifications` | Notification center ([notifications-feature.md](notifications-feature.md)) | | SY-02 |
 | `/account/settings` | Profile (name, photo), delete account | Deletion via support for now | AU-06, AU-07 |
 
 Browsing services reuses the **public** pages (`/services/*`). Do not duplicate them under `/account`.

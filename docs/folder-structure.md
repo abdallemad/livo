@@ -4,7 +4,7 @@ The authoritative rules are in `CLAUDE.md` §2–§3; this is the map of what ex
 
 ```
 prisma/              schema.prisma, seed.ts, sql/ (dated idempotent migrations: 2026-11-01-schema-baseline, 2026-11-01-onboarding,
-                     2026-11-02-service-moderation)
+                     2026-11-02-service-moderation, 2026-11-03-chat-read-markers)
 scripts/             prebuild-db.cjs, build-with-deployment-id.mjs, prepare-standalone.mjs,
                      deployment-id.mjs, warm-cache.mjs, archive/ (one-offs)
 tests/               node:test suites — api/, utils/, ui/ (logical-class direction guard), onboarding/, prelaunch/ + alias loader
@@ -36,6 +36,7 @@ src/
     onboarding/      wizard, steps, RoleCard, FirstServiceForm, ServicePreviewCard, SuccessScreen
     booking/         BookServiceWizard, BookingConfirmation, PayNowButton (docs/booking-checkout-feature.md)
     chat/            ConversationList, ChatThread (docs/messages-feature.md)
+    notifications/   NotificationBell, NotificationsList, NotificationItem (docs/notifications-feature.md)
     service/ provider/ request/ chat/   domain components (ServiceCard, ProviderCard, QuoteCard, ChatBubble…)
     design-system/   style-guide sections
     providers/       query-provider, theme-provider
@@ -78,4 +79,4 @@ Feature docs: `docs/api-conventions.md`, `docs/onboarding-feature.md`, `docs/adm
 `docs/customer-booking-detail-feature.md`,
 `docs/customer-request-detail-feature.md`,
 `docs/provider-request-detail-feature.md`,
-`docs/realtime-feature.md`, `docs/messages-feature.md`. Page map: `docs/page-map.md`.
+`docs/realtime-feature.md`, `docs/messages-feature.md`, `docs/notifications-feature.md`. Page map: `docs/page-map.md`.

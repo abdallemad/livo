@@ -1,5 +1,5 @@
 import "server-only"
-import type { Prisma } from "@prisma/client"
+import { Prisma } from "@prisma/client"
 import { db } from "@/lib/db"
 
 const person = { select: { name: true, avatarUrl: true, phone: true } } as const
@@ -45,6 +45,35 @@ class ChatRepository {
   async findMessages(bookingId: string, take: number) {
     const rows = await db.message.findMany({ where: { bookingId }, orderBy: { createdAt: "desc" }, take, select: { id: true, bookingId: true, senderId: true, body: true, createdAt: true } })
     return rows.reverse()
+  }
+
+  /**
+   * Unread messages per booking for one side: messages from the other person after my read marker (or ever, if I never
+   * opened the chat), on bookings whose chat is open to read. Raw SQL because it compares two columns.
+   */
+  async countUnread(userId: string, side: "CUSTOMER" | "PROVIDER") {
+    const mine = side === "CUSTOMER" ? Prisma.sql`b."customerId"` : Prisma.sql`b."providerId"`
+    const marker = side === "CUSTOMER" ? Prisma.sql`b."customerLastReadAt"` : Prisma.sql`b."providerLastReadAt"`
+    const rows = await db.$queryRaw<{ bookingId: string; n: number }[]>`
+      SELECT m."bookingId" AS "bookingId", COUNT(*)::int AS n
+      FROM "Message" m
+      JOIN "Booking" b ON b."id" = m."bookingId"
+      WHERE ${mine} = ${userId}
+        AND m."senderId" <> ${userId}
+        AND b."contactUnlockedAt" IS NOT NULL
+        AND (${marker} IS NULL OR m."createdAt" > ${marker})
+      GROUP BY m."bookingId"`
+    return rows
+  }
+
+  /** Move my read marker to `at` (never backwards). Scoped to my side of the booking. */
+  async markRead(bookingId: string, userId: string, side: "CUSTOMER" | "PROVIDER", at: Date) {
+    const where: Prisma.BookingWhereInput =
+      side === "CUSTOMER"
+        ? { id: bookingId, customerId: userId, OR: [{ customerLastReadAt: null }, { customerLastReadAt: { lt: at } }] }
+        : { id: bookingId, providerId: userId, OR: [{ providerLastReadAt: null }, { providerLastReadAt: { lt: at } }] }
+    const { count } = await db.booking.updateMany({ where, data: side === "CUSTOMER" ? { customerLastReadAt: at } : { providerLastReadAt: at } })
+    return count
   }
 
   createMessage(data: Prisma.MessageUncheckedCreateInput) {

@@ -48,12 +48,17 @@ export function ConversationList({ side, initialData }: { side: ChatSide; initia
                     {c.title} · <bdi dir="ltr">{c.number}</bdi>
                   </span>
                 </span>
-                <span className={cn("block truncate text-sm", c.lastMessage ? "text-foreground/80" : "text-muted-foreground italic")}>
+                <span className={cn("block truncate text-sm", c.unread > 0 ? "font-semibold text-foreground" : c.lastMessage ? "text-foreground/80" : "text-muted-foreground italic")}>
                   {c.lastMessage ? `${c.lastMessage.fromMe ? "You: " : ""}${c.lastMessage.body}` : "No messages yet — say hello."}
                 </span>
               </span>
               <span className="flex shrink-0 flex-col items-end gap-1">
                 <span className="text-xs text-muted-foreground tabular-nums">{formatZonedDateTime(c.activityAt)}</span>
+                {c.unread > 0 ? (
+                  <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-semibold text-primary-foreground tabular-nums" aria-label={`${c.unread} unread`}>
+                    {c.unread > 9 ? "9+" : c.unread}
+                  </span>
+                ) : null}
                 {c.closedReason ? <BookingStatusBadge status={c.status} /> : null}
               </span>
             </Link>

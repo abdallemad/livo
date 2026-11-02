@@ -23,6 +23,13 @@ export interface ConversationDto {
   /** Last message time, or when the booking was accepted. */
   activityAt: string
   closedReason: string | null
+  /** Messages from the other side I haven't read yet. */
+  unread: number
+}
+
+/** `GET …/messages/unread` — the sidebar badge (docs/messages-feature.md). */
+export interface UnreadMessagesDto {
+  total: number
 }
 
 export interface ChatThreadDto {

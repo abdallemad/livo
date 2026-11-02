@@ -534,6 +534,10 @@ model Booking {
   cancelReason  String?
   cancelledAt   DateTime?
 
+  // Chat read markers (docs/messages-feature.md): a message from the other side after this is unread.
+  customerLastReadAt DateTime?
+  providerLastReadAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

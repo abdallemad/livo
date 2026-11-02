@@ -14,6 +14,7 @@ import { ROLE_LABEL } from "@/constants/status"
 import { useAdminUser } from "@/hooks/use-admin-users"
 import type { AdminUserDetail } from "@/types/admin"
 import { formatDate, formatNumber, formatPhone, formatPrice } from "@/utils/format"
+import { MakeAdminAction } from "./MakeAdminAction"
 import { UserStatusActions } from "./UserStatusActions"
 
 const initials = (name: string) =>
@@ -43,6 +44,7 @@ export function UserDetail({ initialData }: { initialData: AdminUserDetail }) {
             <div className="flex flex-wrap items-center gap-2">
               <UserStatusBadge status={u.status} />
               <UserStatusActions id={u.id} name={u.name} role={u.role} status={u.status} size="default" />
+              <MakeAdminAction id={u.id} name={u.name} role={u.role} status={u.status} size="default" />
             </div>
           }
         />

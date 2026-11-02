@@ -17,6 +17,7 @@ import { useAdminUsers } from "@/hooks/use-admin-users"
 import { useUrlQuery } from "@/hooks/use-url-query"
 import { ADMIN_USER_ROLES, ADMIN_USER_STATUSES, userListQuerySchema } from "@/schemas/admin.schema"
 import { formatDate } from "@/utils/format"
+import { MakeAdminAction } from "./MakeAdminAction"
 import { UserStatusActions } from "./UserStatusActions"
 
 const ALL = "ALL"
@@ -139,6 +140,7 @@ export function UsersTable() {
                       <TableCell>
                         <div className="flex items-center justify-end gap-1.5">
                           <UserStatusActions id={u.id} name={u.name} role={u.role} status={u.status} />
+                          <MakeAdminAction id={u.id} name={u.name} role={u.role} status={u.status} />
                           <Button size="sm" variant="ghost" render={<Link href={`/admin/users/${u.id}`} />}>
                             View
                           </Button>

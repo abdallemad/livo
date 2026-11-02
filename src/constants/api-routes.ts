@@ -22,10 +22,17 @@ export const API_ROUTES = {
     addresses: "/api/me/addresses",
     address: (id: string) => `/api/me/addresses/${encodeURIComponent(id)}`,
     addressDefault: (id: string) => `/api/me/addresses/${encodeURIComponent(id)}/default`,
+    /** GET my bookings; POST books a fixed-price service (CU-02, docs/booking-checkout-feature.md). */
     bookings: "/api/me/bookings",
+    /** Stripe Checkout link for an unpaid booking (Pay now / retry). */
+    bookingCheckout: (id: string) => `/api/me/bookings/${encodeURIComponent(id)}/checkout`,
+    /** The booking wizard's confirmation step, polled while the payment settles. */
+    bookingConfirmation: (id: string) => `/api/me/bookings/${encodeURIComponent(id)}/confirmation`,
     payments: "/api/me/payments",
   },
   authSync: "/api/auth/sync",
+  /** Stripe → Livo, signature-authenticated (never called by the browser). */
+  stripeWebhook: "/api/webhook/stripe",
   onboarding: {
     state: "/api/onboarding",
     role: "/api/onboarding/role",
@@ -87,6 +94,8 @@ export const API_ROUTES = {
     users: "/api/admin/users",
     user: (id: string) => `/api/admin/users/${encodeURIComponent(id)}`,
     userStatus: (id: string) => `/api/admin/users/${encodeURIComponent(id)}/status`,
+    /** Promote an account to admin (upgrade only). */
+    userRole: (id: string) => `/api/admin/users/${encodeURIComponent(id)}/role`,
     categories: "/api/admin/categories",
     category: (id: string) => `/api/admin/categories/${encodeURIComponent(id)}`,
     categoryStatus: (id: string) => `/api/admin/categories/${encodeURIComponent(id)}/status`,

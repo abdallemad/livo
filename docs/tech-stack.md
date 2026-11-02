@@ -11,7 +11,7 @@
 | Forms / validation | react-hook-form + Zod v4 |
 | Database | PostgreSQL + Prisma 6 (pooled `DATABASE_URL`, `DIRECT_URL` for CLI) |
 | Storage | Cloudflare R2 (private bucket) via AWS S3 SDK |
-| Payments | Local Egyptian gateway — **not chosen yet** (SRS A5); webhooks go in `/api/webhooks/<provider>` |
+| Payments | **Stripe Checkout** (`stripe`, API version pinned in `src/lib/stripe.ts`), EGP, webhook `POST /api/webhook/stripe` — [booking-checkout-feature.md](booking-checkout-feature.md). Other gateways' webhooks go in `/api/webhooks/<provider>` |
 | Analytics | GA4 via `@next/third-parties`, production only |
 | Tests | Node built-in test runner |
 | Deploy | Docker (node:22-alpine) → VPS via GitHub Actions |

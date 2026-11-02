@@ -3,9 +3,9 @@ import type { Prisma, UserStatus } from "@prisma/client"
 import { ConflictError, NotFoundError, ValidationError } from "@/lib/errors"
 import { auditRepository } from "@/repositories/audit.repository"
 import { userRepository as repo, type AdminUserRow } from "@/repositories/user.repository"
-import type { UserListQuery, UserStatusValues } from "@/schemas/admin.schema"
+import type { UserListQuery, UserRoleValues, UserStatusValues } from "@/schemas/admin.schema"
 import { getEntityHistory, getLatestReason } from "@/services/audit.service"
-import type { AdminUserDetail, AdminUserListItem, UserStatusDto } from "@/types/admin"
+import type { AdminUserDetail, AdminUserListItem, UserRoleDto, UserStatusDto } from "@/types/admin"
 import type { Paginated } from "@/types/api"
 
 /**
@@ -135,5 +135,44 @@ export async function setUserStatus(adminId: string, userId: string, input: User
     )
 
     return { id: userId, status: input.status }
+  })
+}
+
+/**
+ * Promote a customer or provider to ADMIN (upgrade only — there is no "remove admin" button, so one admin
+ * can't lock another out). Only ACTIVE accounts: a suspended account must be re-activated first, and a
+ * deleted one is final. `User.role` lives in Postgres, so the proxy, the admin layout and `requireAdmin()`
+ * see the new role on the person's very next request. A provider keeps their provider profile and services
+ * (`requireProvider()` accepts admins too). Audited `user.make_admin` + a SYSTEM notification, same transaction.
+ */
+export async function promoteToAdmin(adminId: string, userId: string, input: UserRoleValues): Promise<UserRoleDto> {
+  if (userId === adminId) throw new ValidationError("You're already an admin.")
+
+  return repo.transaction(async (tx) => {
+    const current = await repo.findStatus(userId, tx)
+    if (!current) throw new NotFoundError("That user no longer exists.")
+    if (current.role === "ADMIN") throw new ConflictError("This account is already an admin.")
+    if (current.status === "DELETED") throw new ConflictError("This account is deleted and can't be changed.")
+    if (current.status === "SUSPENDED") throw new ConflictError("Re-activate this account before making it an admin.")
+    if ((await repo.promoteToAdmin(userId, tx)) === 0) {
+      throw new ConflictError("This account changed while you were looking at it. Reload and try again.")
+    }
+
+    await auditRepository.createAuditLog(
+      { actorId: adminId, action: "user.make_admin", entityType: "User", entityId: userId, metadata: { from: current.role, to: input.role } },
+      tx,
+    )
+    await auditRepository.createNotification(
+      {
+        userId,
+        type: "SYSTEM",
+        title: "You're now a Livo admin",
+        body: "You can open the admin dashboard from your account menu.",
+        payload: { role: input.role },
+      },
+      tx,
+    )
+
+    return { id: userId, role: input.role }
   })
 }

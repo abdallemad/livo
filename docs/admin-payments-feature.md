@@ -34,7 +34,7 @@ For online money, `collected = held + released + refunded` (tested).
 ## Read-only on purpose
 
 This page never moves money. Money changes only through:
-- the payment gateway webhook (the source of truth for `PAID`, CLAUDE.md §8 — not wired yet),
+- the Stripe webhook `POST /api/webhook/stripe` (the source of truth for `PAID`, CLAUDE.md §8 — [booking-checkout-feature.md](booking-checkout-feature.md)),
 - the booking's auto-release after the objection window (BR-08),
 - a dispute decision (AD-05, `/admin/disputes/[id]`),
 - an admin booking cancellation, which only fails a **pending** checkout (AD-04).
@@ -70,4 +70,5 @@ No schema change and no migration.
 
 - `/admin/payouts` (payout requests, the other half of AD-07).
 - Date-range filter and CSV export.
-- Gateway reconciliation (comparing our rows with the gateway's report) once a gateway is chosen.
+- Gateway reconciliation report (comparing our rows with Stripe's). Gateway refs are Checkout session ids; the payment intent is in `gatewayPayload`.
+- Refunds through Stripe (refunds are still recorded on our rows only).

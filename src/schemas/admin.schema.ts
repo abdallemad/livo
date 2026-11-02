@@ -119,12 +119,19 @@ export const userStatusSchema = z.discriminatedUnion("status", [
   z.object({ status: z.literal("ACTIVE") }),
 ])
 
+/**
+ * `PATCH /api/admin/users/[id]/role` — promote a customer or provider to admin. Upgrade only: there is no
+ * downgrade endpoint, so an admin can't be locked out by another admin through the UI (docs/admin-providers-users-feature.md).
+ */
+export const userRoleSchema = z.object({ role: z.literal("ADMIN") })
+
 export type ProviderDecisionValues = z.infer<typeof providerDecisionSchema>
 export type ReasonFormValues = z.infer<typeof reasonFormSchema>
 export type ProviderListQuery = z.infer<typeof providerListQuerySchema>
 export type ProviderListStatus = (typeof ADMIN_PROVIDER_STATUSES)[number]
 export type UserListQuery = z.infer<typeof userListQuerySchema>
 export type UserStatusValues = z.infer<typeof userStatusSchema>
+export type UserRoleValues = z.infer<typeof userRoleSchema>
 
 /** `/admin/services` visibility filter: what a visitor would see right now. */
 export const SERVICE_VISIBILITIES = ["LIVE", "PROVIDER_OFF", "HIDDEN_BY_ADMIN", "PROVIDER_INACTIVE", "CATEGORY_OFF"] as const

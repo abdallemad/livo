@@ -49,7 +49,7 @@ Sidebar shell, dynamic, `noindex`. Signed-in `CUSTOMER` with onboarding finished
 | Route | Page | What it shows | Status | Req |
 |---|---|---|---|---|
 | `/account` | My account | Counts, needs your attention (confirm, pay, compare, review), upcoming bookings, open requests ([customer-dashboard-requests-feature.md](customer-dashboard-requests-feature.md)) | built | CU-08 |
-| `/account/book/[serviceId]` | Book the service | Date & time → address → notes → payment → confirmation | placeholder | CU-02, CU-07 |
+| `/account/book/[serviceId]` | Book the service | Date & time → address → notes → payment (Stripe Checkout or cash) → confirmation ([booking-checkout-feature.md](booking-checkout-feature.md)) | built | CU-02, CU-07 |
 | `/account/requests` | My requests | Active / Booked / Closed, quotes + lowest price, booking link, cancel (draft / open) | built | CU-13, CU-11 |
 | `/account/requests/new` | New quote request | Quote category, title, description (no contact details), size, private photos, address or area, budget, preferred date; opens + notifies matching providers ([customer-new-request-feature.md](customer-new-request-feature.md)) | built | CU-03 |
 | `/account/requests/[id]` | Request details | Request stages, quotes received, accept one | placeholder | CU-04, CU-05, CU-08 |
@@ -101,7 +101,7 @@ Dashboard shell, dynamic, `noindex`; non-admins get a 404 (proxy + layout + ever
 | `/admin/providers` | Provider applications | Status tabs with counts, search, approve / reject / suspend / reinstate ([admin-providers-users-feature.md](admin-providers-users-feature.md)) | built | AD-01 |
 | `/admin/providers/[id]` | Review provider | Profile, private documents (signed links), services, track record, history, decisions | built | AD-01 |
 | `/admin/users` | Users | Search + role/status filters, suspend / activate | built | AD-03 |
-| `/admin/users/[id]` | User details | Account, activity counts, recent bookings, history, suspend / activate | built | AD-03 |
+| `/admin/users/[id]` | User details | Account, activity counts, recent bookings, history, suspend / activate, make admin | built | AD-03 |
 | `/admin/categories` | Categories | Tree with usage counts, on-site switch, edit, delete when unused ([admin-catalog-feature.md](admin-catalog-feature.md)) | built | AD-02 |
 | `/admin/categories/new` | New category | Names (EN + AR), URL, type, parent, order, icon, description, status | built | AD-02 |
 | `/admin/categories/[id]/edit` | Edit category | Same form; URL read-only | built | AD-02 |

@@ -207,6 +207,12 @@ export interface UserStatusDto {
   status: UserStatus
 }
 
+/** Answer of `PATCH /api/admin/users/[id]/role`. */
+export interface UserRoleDto {
+  id: string
+  role: Role
+}
+
 // ---------------------------------------------------------------------------
 // Catalog: categories and services (`/admin/categories`, `/admin/services`, AD-02)
 // ---------------------------------------------------------------------------

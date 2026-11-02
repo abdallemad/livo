@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto"
 import { API_ROUTES } from "@/constants/api-routes"
 import { ConflictError, NotFoundError, ValidationError } from "@/lib/errors"
 import { newRequestRepository as repo } from "@/repositories/new-request.repository"
+import { pushStoredNotifications, type StoredNotification } from "@/services/notification.service"
 import type { NewRequestValues } from "@/schemas/customer.schema"
 import { REQUEST_IMAGE_PREFIX, removeObject, signedPreview, storePrivate, validateUpload } from "@/services/file-upload.service"
 import type { NewRequestFormData, RequestPhotoDto } from "@/types/customer"
@@ -132,7 +133,7 @@ export async function createRequest(userId: string, values: NewRequestValues, no
   const providerIds = matches.map((m) => m.userId).filter((id) => id !== userId)
   const title = values.title.trim()
 
-  return repo.transaction(async (tx) => {
+  const created = await repo.transaction(async (tx) => {
     const request = await repo.createRequest(
       {
         customerId: userId,
@@ -151,18 +152,20 @@ export async function createRequest(userId: string, values: NewRequestValues, no
     )
     const attached = await repo.attachImages(request.id, userId, imageIds, tx)
     if (attached.count !== imageIds.length) throw new ConflictError("A photo changed while sending. Try again.")
-    await repo.createNotifications(
-      providerIds.map((id) => ({
-        userId: id,
-        type: "NEW_REQUEST_MATCH" as const,
-        title: `New request: ${title}`,
-        body: `${label(category)} — send a quote before it expires.`,
-        payload: { requestId: request.id },
-      })),
-      tx,
-    )
-    return { id: request.id, notified: providerIds.length }
+    const notifications: StoredNotification[] = providerIds.map((id) => ({
+      userId: id,
+      type: "NEW_REQUEST_MATCH" as const,
+      title: `New request: ${title}`,
+      body: `${label(category)} — send a quote before it expires.`,
+      payload: { requestId: request.id },
+    }))
+    await repo.createNotifications(notifications.map((n) => ({ ...n, payload: { requestId: request.id } })), tx)
+    return { id: request.id, notified: providerIds.length, notifications }
   })
+
+  // After the commit: matching providers see it in their bell at once (docs/notifications-feature.md).
+  await pushStoredNotifications(created.notifications)
+  return { id: created.id, notified: created.notified }
 }
 
 // --- photos -------------------------------------------------------------------

@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { Textarea } from "@/components/ui/textarea"
-import { useSendMessage, useThread } from "@/hooks/use-chat"
+import { useMarkThreadRead, useSendMessage, useThread } from "@/hooks/use-chat"
 import { cn } from "@/lib/utils"
 import type { ChatThreadDto } from "@/types/chat"
 import { MESSAGE_MAX, type ChatSide } from "@/utils/chat"
@@ -34,6 +34,14 @@ export function ChatThread({ side, initialData }: { side: ChatSide; initialData:
   useEffect(() => {
     bottom.current?.scrollIntoView({ block: "end" })
   }, [t.messages.length])
+
+  // Seen: on open, and whenever a message from the other side arrives while the thread is open (clears the badge).
+  const markRead = useMarkThreadRead(side, t.bookingId)
+  const lastFromOther = [...t.messages].reverse().find((m) => m.senderId !== t.me)?.id ?? null
+  const { mutate: mark } = markRead
+  useEffect(() => {
+    mark()
+  }, [lastFromOther, mark])
 
   const submit = () => {
     const text = body.trim()

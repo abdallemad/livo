@@ -8,6 +8,7 @@ import { auditRepository } from "@/repositories/audit.repository"
 import { customerRequestRepository as repo, type CustomerRequestDetailRow } from "@/repositories/customer-request.repository"
 import type { AcceptQuoteValues } from "@/schemas/customer.schema"
 import { allocateBookingNumber, commissionFor, isUniqueViolation, openCheckoutSession } from "@/services/booking-checkout.service"
+import { pushStoredNotifications, type StoredNotification } from "@/services/notification.service"
 import type { AcceptedQuoteDto, CustomerQuoteDto, CustomerRequestDetail } from "@/types/customer"
 import { splitAmount } from "@/utils/commission"
 import { maskContactDetails } from "@/utils/contact-mask"
@@ -130,7 +131,13 @@ export async function acceptQuote(customerId: string, requestId: string, values:
   const rate = await commissionFor(first.category)
   const online = values.paymentMethod === "ONLINE"
 
-  let created: { booking: { id: string; number: string; status: AcceptedQuoteDto["status"] }; paymentId: string; title: string; amount: number } | null = null
+  let created: {
+    booking: { id: string; number: string; status: AcceptedQuoteDto["status"] }
+    paymentId: string
+    title: string
+    amount: number
+    notifications: Prisma.NotificationCreateManyInput[]
+  } | null = null
   for (let attempt = 0; attempt < NUMBER_RETRIES && !created; attempt++) {
     try {
       created = await repo.transaction(async (tx) => {
@@ -203,14 +210,17 @@ export async function acceptQuote(customerId: string, requestId: string, values:
           })),
         ]
         await repo.createNotifications(notifications, tx)
-        return { booking, paymentId: payment.id, title: r.title, amount }
+        return { booking, paymentId: payment.id, title: r.title, amount, notifications }
       })
     } catch (e) {
       if (isUniqueViolation(e) && attempt < NUMBER_RETRIES - 1) continue
       throw e
     }
   }
-  const { booking, paymentId, title, amount } = created!
+  const { booking, paymentId, title, amount, notifications } = created!
+
+  // After the commit: the chosen provider ("your quote was accepted") and the others, live (docs/notifications-feature.md).
+  await pushStoredNotifications(notifications.map((n) => ({ userId: n.userId, type: n.type, title: n.title, body: n.body, payload: n.payload as StoredNotification["payload"] })))
 
   if (!online) return { bookingId: booking.id, number: booking.number, status: booking.status, checkoutUrl: null, paymentError: false }
   try {

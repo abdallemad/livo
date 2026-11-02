@@ -38,8 +38,13 @@ export const API_ROUTES = {
     /** Booking chat (CU-06) — docs/messages-feature.md. */
     messages: "/api/me/messages",
     thread: (bookingId: string) => `/api/me/messages/${encodeURIComponent(bookingId)}`,
+    threadRead: (bookingId: string) => `/api/me/messages/${encodeURIComponent(bookingId)}/read`,
+    unreadMessages: "/api/me/messages/unread",
   },
   authSync: "/api/auth/sync",
+  /** The notification centre (bell + `/account/notifications`) — docs/notifications-feature.md. */
+  notifications: "/api/me/notifications",
+  notificationsRead: "/api/me/notifications/read",
   /** Pusher private-channel signatures (called by pusher-js, not by hooks) — docs/realtime-feature.md. */
   realtimeAuth: "/api/realtime/auth",
   /** Stripe → Livo, signature-authenticated (never called by the browser). */
@@ -94,6 +99,8 @@ export const API_ROUTES = {
     /** Booking chat (PR-09) — docs/messages-feature.md. */
     messages: "/api/provider/messages",
     thread: (bookingId: string) => `/api/provider/messages/${encodeURIComponent(bookingId)}`,
+    threadRead: (bookingId: string) => `/api/provider/messages/${encodeURIComponent(bookingId)}/read`,
+    unreadMessages: "/api/provider/messages/unread",
     reviews: "/api/provider/reviews",
     reviewReply: (id: string) => `/api/provider/reviews/${encodeURIComponent(id)}/reply`,
     /** Owner-only preview of a service / portfolio photo (307 to a 5-minute signed link). */

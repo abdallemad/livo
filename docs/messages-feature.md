@@ -15,6 +15,19 @@ layering as the rest of the app: server snapshot → client island → hook → 
 The booking page's **Message the provider** button ([customer-booking-detail-feature.md](customer-booking-detail-feature.md))
 and the provider booking page's **Message the customer** link here.
 
+## Unread counts
+
+- Each booking has a read marker per side (`Booking.customerLastReadAt` / `providerLastReadAt`, migration
+  `prisma/sql/2026-11-03-chat-read-markers.sql`). A message from the **other** side after my marker (or ever, if I never
+  opened the chat) is unread.
+- **Badge** on **Messages** in the sidebar and the mobile tab bar (`9+`, with an `sr-only` "n unread"), from
+  `GET …/messages/unread` (one SQL `COUNT … GROUP BY` — it compares two columns, so it's raw SQL in the repository).
+  Each conversation row shows its own count and a bold preview.
+- **Live:** a new message pushes a toast to the recipient's user channel, which invalidates the zone's queries — the
+  badge refetches at once. Fallback poll: 60 s.
+- **Read:** the thread calls `POST …/messages/[bookingId]/read` when it opens and whenever a message from the other side
+  arrives while it's open; the marker never moves backwards. The badge and list refresh after it.
+
 ## Rules — `src/utils/chat.ts` (pure, tested)
 
 - **A chat exists only once the provider accepted the booking** (`contactUnlockedAt` set). Before that, contact details
@@ -41,8 +54,11 @@ Messages aren't audited and don't create `Notification` rows (one per message wo
 |---|---|---|
 | GET | `/api/me/messages` | `ConversationDto[]` (customer) |
 | GET / POST | `/api/me/messages/[bookingId]` | `ChatThreadDto` / send → 201 `ChatMessageDto` |
+| GET | `/api/me/messages/unread` | `{ total }` for the badge |
+| POST | `/api/me/messages/[bookingId]/read` | mark read → 204 |
 | GET | `/api/provider/messages` | `ConversationDto[]` (provider) |
 | GET / POST | `/api/provider/messages/[bookingId]` | same, as the provider |
+| GET / POST | `/api/provider/messages/unread`, `…/[bookingId]/read` | same, as the provider |
 
 `requireUser()` / `requireProvider()`; reads are `private, no-store`. Not public: no storefront revalidation.
 
@@ -61,11 +77,11 @@ Messages aren't audited and don't create `Notification` rows (one per message wo
 | UI | `src/components/chat/{ConversationList,ChatThread}.tsx` |
 | Pages | `(app)/account/messages/{page,[bookingId]/page}.tsx`, `(provider)/provider/messages/{page,[bookingId]/page}.tsx` |
 
-No schema change and no migration (`Message` already existed).
+Migration `2026-11-03-chat-read-markers.sql` (two nullable columns on `Booking`; additive, idempotent, registered in
+`scripts/prebuild-db.cjs`). Badge UI: `DashboardNav` / `BottomTabs` (`useUnreadMessages`), `useMarkThreadRead` in `hooks/use-chat.ts`.
 
 ## Not done / follow-ups
 
-- **Unread** counts / "seen" (needs a `lastReadAt` per participant — a migration).
 - Photo attachments (`Message.attachments` → `File` exists; upload + owner-only links like request photos).
 - Loading older messages beyond the newest 200.
 - Offline notice for messages (email / SMS, SY-02) — today the other side only gets a toast if a dashboard is open.

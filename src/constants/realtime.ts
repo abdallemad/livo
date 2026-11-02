@@ -1,3 +1,5 @@
+import type { NotificationType } from "@prisma/client"
+
 /**
  * Pusher channel and event names, shared by the server (publish, authorize) and the browser (subscribe) —
  * docs/realtime-feature.md. Every channel is **private-**: the browser must get a signature from
@@ -22,9 +24,12 @@ export function parseChannel(name: string): RealtimeChannel | null {
   return m ? { kind: m[1] as "user" | "booking", id: m[2] } : null
 }
 
-/** What a `notification` event carries: enough for a toast with a link. */
+/**
+ * What a `notification` event carries: enough for a toast with a link. Stored notification types (the bell) plus
+ * `NEW_MESSAGE`, which is pushed but not stored (docs/notifications-feature.md).
+ */
 export interface LiveNotification {
-  type: "QUOTE_RECEIVED" | "NEW_MESSAGE"
+  type: NotificationType | "NEW_MESSAGE"
   title: string
   body: string | null
   href: string

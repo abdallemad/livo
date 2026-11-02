@@ -6,7 +6,7 @@ import { customerKeys, providerKeys } from "@/constants/query-keys"
 import { bookingChannel, REALTIME_EVENTS } from "@/constants/realtime"
 import { api } from "@/lib/api-client"
 import type { SendMessageValues } from "@/schemas/chat.schema"
-import type { ChatMessageDto, ChatThreadDto, ConversationDto } from "@/types/chat"
+import type { ChatMessageDto, ChatThreadDto, ConversationDto, UnreadMessagesDto } from "@/types/chat"
 import { mergeMessage, type ChatSide } from "@/utils/chat"
 import { useChannelEvent } from "./use-realtime"
 
@@ -51,5 +51,31 @@ export function useSendMessage(side: ChatSide, bookingId: string, me: string) {
     onError: (_e, values) =>
       queryClient.setQueryData<ChatThreadDto>(key, (t) => (t ? { ...t, messages: t.messages.filter((x) => x.clientId !== values.clientId) } : t)),
     onSettled: () => queryClient.invalidateQueries({ queryKey: keys(side).conversations() }),
+  })
+}
+
+/**
+ * The sidebar / tab-bar badge on **Messages** (docs/messages-feature.md). Refreshed live: a pushed message toast
+ * invalidates the zone's keys (`RealtimeNotifications`), and opening a thread marks it read. Polls every 60 s as a
+ * fallback. `side = null` (admin zone) → disabled.
+ */
+export function useUnreadMessages(side: ChatSide | null) {
+  return useQuery({
+    queryKey: side ? keys(side).unreadMessages() : ["unread-messages", "none"],
+    queryFn: () => api.get<UnreadMessagesDto>(routes(side!).unreadMessages),
+    enabled: side !== null,
+    refetchInterval: 60_000,
+  })
+}
+
+/** Mark a thread read; refreshes the badge and the conversation list. */
+export function useMarkThreadRead(side: ChatSide, bookingId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () => api.post<void>(routes(side).threadRead(bookingId)),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: keys(side).unreadMessages() })
+      void queryClient.invalidateQueries({ queryKey: keys(side).conversations() })
+    },
   })
 }

@@ -31,6 +31,7 @@ export const customerKeys = {
   booking: (id: string) => [...customerKeys.all, "bookings", "detail", id] as const,
   conversations: () => [...customerKeys.all, "messages"] as const,
   thread: (bookingId: string) => [...customerKeys.all, "messages", bookingId] as const,
+  unreadMessages: () => [...customerKeys.all, "messages", "unread"] as const,
   bookingConfirmation: (id: string) => [...customerKeys.all, "bookings", "confirmation", id] as const,
 }
 
@@ -42,6 +43,7 @@ export const providerKeys = {
   request: (id: string) => [...providerKeys.requests(), "detail", id] as const,
   conversations: () => [...providerKeys.all, "messages"] as const,
   thread: (bookingId: string) => [...providerKeys.all, "messages", bookingId] as const,
+  unreadMessages: () => [...providerKeys.all, "messages", "unread"] as const,
   quotes: () => [...providerKeys.all, "quotes"] as const,
   quoteList: (query: object) => [...providerKeys.quotes(), "list", query] as const,
   bookings: () => [...providerKeys.all, "bookings"] as const,
@@ -87,4 +89,10 @@ export const adminKeys = {
   dispute: (id: string) => [...adminKeys.disputes(), "detail", id] as const,
   reviews: () => [...adminKeys.all, "reviews"] as const,
   reviewList: (query: object) => [...adminKeys.reviews(), "list", query] as const,
+}
+
+/** The notification centre (docs/notifications-feature.md) — any zone; refreshed by live pushes. */
+export const notificationKeys = {
+  all: ["notifications"] as const,
+  list: (query: object) => [...notificationKeys.all, "list", query] as const,
 }

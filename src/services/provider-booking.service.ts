@@ -2,6 +2,7 @@ import "server-only"
 import type { BookingStatus, Prisma } from "@prisma/client"
 import { ConflictError, NotFoundError } from "@/lib/errors"
 import { auditRepository } from "@/repositories/audit.repository"
+import { pushStoredNotifications, type StoredNotification } from "@/services/notification.service"
 import {
   providerBookingRepository as repo,
   type ProviderBookingDetailRow,
@@ -149,7 +150,7 @@ export async function updateBookingStatusByProvider(providerId: string, id: stri
   const action = ACTION_BY_TARGET[input.status]!
   const t = PROVIDER_BOOKING_TRANSITIONS[action]
 
-  return repo.transaction(async (tx) => {
+  const done = await repo.transaction(async (tx) => {
     const booking = await repo.findBookingForUpdate(id, providerId, tx)
     if (!booking || HIDDEN_FROM_PROVIDER.includes(booking.status)) throw new NotFoundError("That booking doesn't exist.")
     const approved = (await repo.findVerificationStatus(providerId, tx))?.verificationStatus === "APPROVED"
@@ -197,10 +198,12 @@ export async function updateBookingStatusByProvider(providerId: string, id: stri
         : action === "FINISH" && release
           ? `Confirm the job is done, or report a problem before ${formatZonedDateTime(release)}.`
           : null
-    await auditRepository.createNotification(
-      { userId: booking.customerId, type: NOTIFY[action].type, title: NOTIFY[action].title(booking.number), body, payload: { bookingId: id } },
-      tx,
-    )
-    return { id, status: t.to }
+    const notification: StoredNotification = { userId: booking.customerId, type: NOTIFY[action].type, title: NOTIFY[action].title(booking.number), body, payload: { bookingId: id } }
+    await auditRepository.createNotification({ ...notification, payload: { bookingId: id } }, tx)
+    return { dto: { id, status: t.to }, notification }
   })
+
+  // After the commit: the customer's bell + a live toast — "Booking LV-… is confirmed" etc. (docs/notifications-feature.md).
+  await pushStoredNotifications([done.notification])
+  return done.dto
 }

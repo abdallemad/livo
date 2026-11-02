@@ -1,5 +1,6 @@
 import Image from "next/image"
 import Link from "next/link"
+import { NotificationBell } from "@/components/notifications/NotificationBell"
 import { RealtimeNotifications } from "./RealtimeNotifications"
 import {
   Sidebar,
@@ -77,6 +78,7 @@ export function DashboardShell({ zone, density = "touch", banner, children }: Da
           <div className="ms-auto flex items-center gap-1">
             {tabs ? <SidebarTrigger className="md:hidden" /> : null}
             <RealtimeNotifications />
+            <NotificationBell />
             <AccountControls />
           </div>
         </header>

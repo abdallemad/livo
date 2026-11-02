@@ -7,6 +7,7 @@ import { customerRequestRepository } from "@/repositories/customer-request.repos
 import { ledgerRepository } from "@/repositories/ledger.repository"
 import type { CustomerBookingStatusValues } from "@/schemas/customer-account.schema"
 import { expireOpenSession, refundOnStripe } from "@/services/booking-checkout.service"
+import { pushStoredNotifications, type StoredNotification } from "@/services/notification.service"
 import type { CustomerBookingDetail, CustomerBookingStatusDto } from "@/types/customer-account"
 import { bookingEvents } from "@/utils/booking-admin"
 import { contactVisible, customerNextStep, customerPaymentLabel, customerPaymentTotals } from "@/utils/customer-booking"
@@ -175,29 +176,32 @@ export async function updateMyBookingStatus(customerId: string, id: string, inpu
     )
 
     // The provider never saw an unpaid booking (PENDING_PAYMENT), so there's nothing to tell them about it.
+    const notifications: StoredNotification[] = []
     if (action === "CONFIRM" || b.status === "PENDING_PROVIDER") {
-      await auditRepository.createNotification(
-        {
-          userId: b.providerId,
-          type: "BOOKING_STATUS_CHANGED",
-          title: action === "CONFIRM" ? `The customer confirmed booking ${b.number}` : `The customer cancelled booking ${b.number}`,
-          body:
-            action === "CONFIRM"
-              ? walletNet > 0
-                ? `${formatPrice(walletNet)} was added to your wallet.`
-                : walletNet < 0
-                  ? `Cash job: Livo's ${formatPrice(-walletNet)} commission was taken from your wallet.`
-                  : "The job is done."
-              : (reason ?? "No reason given."),
-          payload: { bookingId: id },
-        },
-        tx,
-      )
+      const n: StoredNotification = {
+        userId: b.providerId,
+        type: "BOOKING_STATUS_CHANGED",
+        title: action === "CONFIRM" ? `The customer confirmed booking ${b.number}` : `The customer cancelled booking ${b.number}`,
+        body:
+          action === "CONFIRM"
+            ? walletNet > 0
+              ? `${formatPrice(walletNet)} was added to your wallet.`
+              : walletNet < 0
+                ? `Cash job: Livo's ${formatPrice(-walletNet)} commission was taken from your wallet.`
+                : "The job is done."
+            : (reason ?? "No reason given."),
+        payload: { bookingId: id },
+      }
+      notifications.push(n)
+      await auditRepository.createNotification({ ...n, payload: { bookingId: id } }, tx)
     }
 
     const openSessions = action === "CANCEL" ? b.payments.filter((p) => p.status === "PENDING" && p.gatewayRef).map((p) => p.gatewayRef!) : []
-    return { dto: { id, status: t.to, refunded: refund }, refunds, openSessions, number: b.number }
+    return { dto: { id, status: t.to, refunded: refund }, refunds, openSessions, number: b.number, notifications }
   })
+
+  // After the commit: the provider's bell + a live toast (docs/notifications-feature.md).
+  await pushStoredNotifications(result.notifications)
 
   // Outside the transaction: never hold a DB transaction open on a network call.
   for (const sessionId of result.openSessions) await expireOpenSession(sessionId)

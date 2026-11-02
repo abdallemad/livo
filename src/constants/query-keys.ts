@@ -37,6 +37,7 @@ export const providerKeys = {
   dashboard: () => [...providerKeys.all, "dashboard"] as const,
   requests: () => [...providerKeys.all, "requests"] as const,
   requestList: (query: object) => [...providerKeys.requests(), "list", query] as const,
+  request: (id: string) => [...providerKeys.requests(), "detail", id] as const,
   quotes: () => [...providerKeys.all, "quotes"] as const,
   quoteList: (query: object) => [...providerKeys.quotes(), "list", query] as const,
   bookings: () => [...providerKeys.all, "bookings"] as const,

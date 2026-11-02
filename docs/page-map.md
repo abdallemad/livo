@@ -77,7 +77,7 @@ Sidebar shell, dynamic, `noindex`. Signed-in `PROVIDER` with onboarding finished
 | `/provider/services/new` | Add a service | Title, category, description, price, duration, photos, live preview | built | PR-05 |
 | `/provider/services/[id]/edit` | Edit service | Same form; slug never changes; hidden-by-Livo banner | built | PR-05 |
 | `/provider/requests` | Available requests | Matching engine (approved only; city, categories + sub-categories, my areas or whole city); tabs New / Quoted, filters, sort | built | PR-06, SY-01 |
-| `/provider/requests/[id]` | Request details | Details + send a quote | placeholder | PR-07 |
+| `/provider/requests/[id]` | Request details | The job (area only, contact masked), photos, budget, date, quotes so far; send / change / withdraw / re-send my quote; booking link once accepted ([provider-request-detail-feature.md](provider-request-detail-feature.md)) | built | PR-07 |
 | `/provider/quotes` | My quotes | Status tabs + counts, price / duration / budget, booking link, withdraw a waiting quote ([provider-quotes-bookings-feature.md](provider-quotes-bookings-feature.md)) | built | PR-07 |
 | `/provider/bookings` | My bookings | Current / Finished / Cancelled; accept, decline (reason), start, mark done | built | PR-08 |
 | `/provider/bookings/[id]` | Booking details | Next step + actions, when/where, customer (locked until accepted, notes masked), money, timeline | built | PR-08, BR-02 |

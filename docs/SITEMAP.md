@@ -111,7 +111,7 @@ All `noindex`. Gate by verification status (see §1).
 | `/provider/services/new` | Add service | title, description, price, category, duration | PR-05 |
 | `/provider/services/[id]/edit` | Edit / deactivate service | Slug never changes; delete only without bookings ([provider-services-portfolio-feature.md](provider-services-portfolio-feature.md)) | PR-05 |
 | `/provider/requests` | **Available project requests** matching category + area | Approved providers only; no customer identity or address (BR-02) | PR-06, SY-01 |
-| `/provider/requests/[id]` | Request details + **submit quote** (price, duration, message) | Customer contact hidden | PR-07 |
+| `/provider/requests/[id]` | Request details + **submit quote** (price, duration, message) | Customer contact hidden ([provider-request-detail-feature.md](provider-request-detail-feature.md)) | PR-07 |
 | `/provider/quotes` | My quotes | Status of each; withdraw a waiting quote ([provider-quotes-bookings-feature.md](provider-quotes-bookings-feature.md)) | PR-07 |
 | `/provider/bookings` | Bookings | Accept / reject / start / finish; unpaid (`PENDING_PAYMENT`) bookings are hidden | PR-08 |
 | `/provider/bookings/[id]` | Booking details | Customer info only after confirmation (BR-02) | PR-08 |

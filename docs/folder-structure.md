@@ -75,4 +75,5 @@ Feature docs: `docs/api-conventions.md`, `docs/onboarding-feature.md`, `docs/adm
 `docs/navigation.md`,
 `docs/booking-checkout-feature.md`,
 `docs/customer-booking-detail-feature.md`,
-`docs/customer-request-detail-feature.md`. Page map: `docs/page-map.md`.
+`docs/customer-request-detail-feature.md`,
+`docs/provider-request-detail-feature.md`. Page map: `docs/page-map.md`.

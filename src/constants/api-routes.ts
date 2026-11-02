@@ -57,6 +57,10 @@ export const API_ROUTES = {
   provider: {
     dashboard: "/api/provider/dashboard",
     requests: "/api/provider/requests",
+    /** One request (GET), my quote on it (PUT …/quote), its photos — docs/provider-request-detail-feature.md. */
+    request: (id: string) => `/api/provider/requests/${encodeURIComponent(id)}`,
+    requestQuote: (id: string) => `/api/provider/requests/${encodeURIComponent(id)}/quote`,
+    requestPhoto: (id: string, fileId: string) => `/api/provider/requests/${encodeURIComponent(id)}/photos/${encodeURIComponent(fileId)}`,
     quotes: "/api/provider/quotes",
     quoteStatus: (id: string) => `/api/provider/quotes/${encodeURIComponent(id)}/status`,
     bookings: "/api/provider/bookings",

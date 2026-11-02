@@ -1,4 +1,6 @@
 import { z } from "zod"
+import { contactProblem } from "@/utils/new-request"
+import { QUOTE_DURATION_MAX_DAYS, QUOTE_MESSAGE_MAX, QUOTE_PRICE_MAX, QUOTE_PRICE_MIN, QUOTE_VALID_DAYS, QUOTE_VALID_DAYS_DEFAULT } from "@/utils/provider-quote"
 import { paginationQuerySchema } from "./common.schema"
 
 /**
@@ -80,3 +82,35 @@ export type ProviderQuoteListQuery = z.infer<typeof providerQuoteListQuerySchema
 export type ProviderBookingListQuery = z.infer<typeof providerBookingListQuerySchema>
 export type ProviderBookingStatusValues = z.infer<typeof providerBookingStatusSchema>
 export type DeclineFormValues = z.infer<typeof declineFormSchema>
+
+// ---------------------------------------------------------------------------
+// Sending a quote (`/provider/requests/[id]`, PR-07) — docs/provider-request-detail-feature.md
+// ---------------------------------------------------------------------------
+
+const optionalInt = (max: number, message: string) =>
+  z.preprocess(
+    (v) => (v === "" || v === null || v === undefined ? undefined : v),
+    z.coerce.number({ error: "Enter a number." }).int("Whole days only.").min(1, message).max(max, message).optional(),
+  )
+
+/** `PUT /api/provider/requests/[id]/quote`. Contact details are refused in the message (SY-04). */
+export const providerQuoteSchema = z.object({
+  price: z.coerce
+    .number({ error: "Enter your price." })
+    .min(QUOTE_PRICE_MIN, `At least ${QUOTE_PRICE_MIN} EGP.`)
+    .max(QUOTE_PRICE_MAX, "That price is too high."),
+  durationDays: optionalInt(QUOTE_DURATION_MAX_DAYS, `Between 1 and ${QUOTE_DURATION_MAX_DAYS} days.`),
+  message: z
+    .string()
+    .trim()
+    .max(QUOTE_MESSAGE_MAX, `Keep it under ${QUOTE_MESSAGE_MAX} characters.`)
+    .refine((v) => contactProblem(v) === null, { message: "Don't include phone numbers, emails or chat links — they're shared once the customer books." })
+    .optional()
+    .transform((v) => v || undefined),
+  validDays: z.coerce
+    .number()
+    .refine((v) => (QUOTE_VALID_DAYS as readonly number[]).includes(v), "Choose how long the price is valid.")
+    .default(QUOTE_VALID_DAYS_DEFAULT),
+})
+export type ProviderQuoteInput = z.input<typeof providerQuoteSchema>
+export type ProviderQuoteValues = z.output<typeof providerQuoteSchema>

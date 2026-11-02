@@ -50,7 +50,7 @@ quoting your own request and to notify the customer.
 | RESEND | my quote was `WITHDRAWN` / `EXPIRED` | same row back to `PENDING`, `createdAt = now` (one quote per provider per request — `@@unique([requestId, providerId])`) |
 
 One transaction; the customer gets a `QUOTE_RECEIVED` notification ("New quote" / "A provider updated their quote", with
-price and days). Quotes move no money, so — like withdrawing — they aren't audited. Withdrawing still uses
+price and days) and, after the commit, a **live toast** through Pusher ([realtime-feature.md](realtime-feature.md)). Quotes move no money, so — like withdrawing — they aren't audited. Withdrawing still uses
 `PATCH /api/provider/quotes/[id]/status` ([provider-quotes-bookings-feature.md](provider-quotes-bookings-feature.md)).
 Every write invalidates `providerKeys.all`, so the home counts, requests and quotes lists update.
 
@@ -90,4 +90,4 @@ No schema change and no migration.
 
 - "What you'd get" after Livo's commission next to the price (needs the category's rate on this page).
 - Asking the customer a question before quoting (chat only opens after booking, CU-06) and on-site inspection (BR-07, open decision #3).
-- Notifications to providers when a matching request is posted are sent by the new-request flow; real-time delivery comes with the Pusher work.
+- Notifications to providers when a matching request is posted are saved by the new-request flow but not pushed live yet.

@@ -41,6 +41,13 @@ if (env.NODE_ENV === "production" && env.STRIPE_SECRET?.startsWith("sk_test_")) 
   problems.push("Stripe test key used for a production build (use sk_live_)")
 }
 
+// Real-time (docs/realtime-feature.md): optional, but all four or none.
+const PUSHER = ["PUSHER_APP_ID", "PUSHER_SECRET", "NEXT_PUBLIC_PUSHER_KEY", "NEXT_PUBLIC_PUSHER_CLUSTER"]
+const pusherSet = PUSHER.filter((key) => env[key])
+if (pusherSet.length && pusherSet.length < PUSHER.length) {
+  problems.push(`Pusher is half configured: missing ${PUSHER.filter((key) => !env[key]).join(", ")}`)
+}
+
 if (problems.length) {
   console.error(`[check-env] ${problems.join("\n[check-env] ")}`)
   process.exit(1)

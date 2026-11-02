@@ -29,6 +29,8 @@ export const customerKeys = {
   bookingList: (query: object) => [...customerKeys.all, "bookings", query] as const,
   payments: (query: object) => [...customerKeys.all, "payments", query] as const,
   booking: (id: string) => [...customerKeys.all, "bookings", "detail", id] as const,
+  conversations: () => [...customerKeys.all, "messages"] as const,
+  thread: (bookingId: string) => [...customerKeys.all, "messages", bookingId] as const,
   bookingConfirmation: (id: string) => [...customerKeys.all, "bookings", "confirmation", id] as const,
 }
 
@@ -38,6 +40,8 @@ export const providerKeys = {
   requests: () => [...providerKeys.all, "requests"] as const,
   requestList: (query: object) => [...providerKeys.requests(), "list", query] as const,
   request: (id: string) => [...providerKeys.requests(), "detail", id] as const,
+  conversations: () => [...providerKeys.all, "messages"] as const,
+  thread: (bookingId: string) => [...providerKeys.all, "messages", bookingId] as const,
   quotes: () => [...providerKeys.all, "quotes"] as const,
   quoteList: (query: object) => [...providerKeys.quotes(), "list", query] as const,
   bookings: () => [...providerKeys.all, "bookings"] as const,

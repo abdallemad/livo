@@ -86,7 +86,7 @@ All `noindex`. Per-visitor UI is a client island (`AccountControls`), layouts st
 | `/account/bookings/[id]` | Booking details | Status timeline, pay, confirm completion, review, cancel, open dispute ([customer-booking-detail-feature.md](customer-booking-detail-feature.md)) | CU-09…CU-12 |
 | `/account/bookings/[id]/review` | Leave review (stars + comment) | Only when `Completed` (BR-03) | CU-10 |
 | `/account/bookings/[id]/dispute` | Open dispute with reason + evidence | | CU-12 |
-| `/account/messages` | Conversations list | Only for confirmed bookings | CU-06 |
+| `/account/messages` | Conversations list | Only for confirmed bookings ([messages-feature.md](messages-feature.md)) | CU-06 |
 | `/account/messages/[bookingId]` | Chat thread | Block phone/email patterns (SY-04) | CU-06, SY-04 |
 | `/account/payments` | Payments & invoices | PDF invoices (SHOULD) — not generated yet | CU-13, SY-07 |
 | `/account/addresses` | Saved addresses | SHOULD | CU-14 |
@@ -172,7 +172,7 @@ Everything else is a Server Action. Allowed Route Handlers (CLAUDE.md §7):
 | `/api/webhook/payments` | Payment gateway webhook (verify signature on raw body; the webhook is the source of truth for payment state) |
 | `/api/upload` | Image/document upload (session + `Origin` check; compress, magic-byte validation) |
 | `/api/images/[prefix]/[filename]` | Stream public images (portfolio, services) with immutable cache |
-| `/api/realtime/*` | Chat / notifications transport (WebSocket or SSE, if not handled by an external service) |
+| `/api/realtime/*` | Chat / notifications transport — **Pusher Channels**; only `POST /api/realtime/auth` (private-channel signatures) lives here ([realtime-feature.md](realtime-feature.md)) |
 
 Verification documents (ID, certificates) are **private**: presigned short-lived URLs, admin-only.
 

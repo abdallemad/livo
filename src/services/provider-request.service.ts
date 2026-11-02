@@ -6,6 +6,7 @@ import type { ProviderRequestListQuery } from "@/schemas/provider.schema"
 import type { ProviderOption, ProviderRequestCard, ProviderRequestList } from "@/types/provider"
 import { API_ROUTES } from "@/constants/api-routes"
 import { ConflictError, NotFoundError } from "@/lib/errors"
+import { pushNotification } from "@/lib/pusher"
 import { providerRequestRepository as detailRepo, type ProviderRequestDetailRow } from "@/repositories/provider-request.repository"
 import type { ProviderQuoteValues } from "@/schemas/provider.schema"
 import { signedPreview } from "@/services/file-upload.service"
@@ -217,7 +218,7 @@ export async function sendQuote(providerId: string, requestId: string, values: P
   const ctx = await loadProviderContext(providerId)
   if (!ctx) throw new NotFoundError("That request doesn't exist.")
 
-  return detailRepo.transaction(async (tx) => {
+  const sent = await detailRepo.transaction(async (tx) => {
     const r = await detailRepo.findDetail(requestId, providerId, tx)
     if (!r || !canView(r, ctx, now)) throw new NotFoundError("That request doesn't exist.")
     const blocked = quoteSendBlockedReason(sendCheck(r, ctx, providerId, now))
@@ -253,8 +254,17 @@ export async function sendQuote(providerId: string, requestId: string, values: P
       },
       tx,
     )
-    return { id, status: "PENDING", mode }
+    return { dto: { id, status: "PENDING" as const, mode }, customerId: r.customerId, title: r.title }
   })
+
+  // After the commit: a live toast for the customer wherever they are in their dashboard (docs/realtime-feature.md).
+  await pushNotification(sent.customerId, {
+    type: "QUOTE_RECEIVED",
+    title: sent.dto.mode === "UPDATE" ? `A provider updated their quote on "${sent.title}"` : `New quote on "${sent.title}"`,
+    body: `${formatPrice(values.price)}${values.durationDays ? ` · ${values.durationDays} ${values.durationDays === 1 ? "day" : "days"}` : ""}`,
+    href: `/account/requests/${requestId}`,
+  })
+  return sent.dto
 }
 
 /** `GET /api/provider/requests/[id]/photos/[fileId]` — a 5-minute signed link, only for someone who may open the request. */

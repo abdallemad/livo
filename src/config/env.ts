@@ -15,6 +15,11 @@ const serverEnvSchema = z.object({
   // `getStripeEnv()` refuses with 503 when they're missing.
   STRIPE_SECRET: z.string().min(1).optional(),
   STRIPE_WEBHOOK_SECRET: z.string().min(1).optional(),
+  // Pusher Channels (docs/realtime-feature.md). Optional: without them nothing is pushed and pages fall back to polling.
+  PUSHER_APP_ID: z.string().min(1).optional(),
+  PUSHER_SECRET: z.string().min(1).optional(),
+  NEXT_PUBLIC_PUSHER_KEY: z.string().min(1).optional(),
+  NEXT_PUBLIC_PUSHER_CLUSTER: z.string().min(1).optional(),
 })
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>
@@ -30,4 +35,11 @@ export function getServerEnv(): ServerEnv {
 export function getStripeEnv(): { secret: string; webhookSecret: string | null } | null {
   const env = getServerEnv()
   return env.STRIPE_SECRET ? { secret: env.STRIPE_SECRET, webhookSecret: env.STRIPE_WEBHOOK_SECRET ?? null } : null
+}
+
+/** Pusher server credentials, or `null` when real-time isn't configured (publishing becomes a no-op). */
+export function getPusherEnv(): { appId: string; key: string; secret: string; cluster: string } | null {
+  const env = getServerEnv()
+  if (!env.PUSHER_APP_ID || !env.PUSHER_SECRET || !env.NEXT_PUBLIC_PUSHER_KEY || !env.NEXT_PUBLIC_PUSHER_CLUSTER) return null
+  return { appId: env.PUSHER_APP_ID, key: env.NEXT_PUBLIC_PUSHER_KEY, secret: env.PUSHER_SECRET, cluster: env.NEXT_PUBLIC_PUSHER_CLUSTER }
 }

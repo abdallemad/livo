@@ -3,6 +3,7 @@ import type { Prisma } from "@prisma/client"
 import { ConflictError, NotFoundError } from "@/lib/errors"
 import { auditRepository } from "@/repositories/audit.repository"
 import { customerBookingRepository as repo, type CustomerBookingDetailRow } from "@/repositories/customer-booking.repository"
+import { customerRequestRepository } from "@/repositories/customer-request.repository"
 import { ledgerRepository } from "@/repositories/ledger.repository"
 import type { CustomerBookingStatusValues } from "@/schemas/customer-account.schema"
 import { expireOpenSession, refundOnStripe } from "@/services/booking-checkout.service"
@@ -157,6 +158,9 @@ export async function updateMyBookingStatus(customerId: string, id: string, inpu
         if (c.status === "REFUNDED") refunds.push({ paymentId: p.id, gatewayPayload: p.gatewayPayload, amount: p.amount - p.refundedAmount })
       }
       refund = plan.refund
+      // A quote booking was the request's outcome: cancelling it closes the request (its other quotes were already
+      // declined when this one was accepted — docs/customer-request-detail-feature.md).
+      if (b.source === "QUOTE" && b.requestId) await customerRequestRepository.cancelAcceptedRequest(b.requestId, customerId, tx)
     }
 
     await auditRepository.createAuditLog(

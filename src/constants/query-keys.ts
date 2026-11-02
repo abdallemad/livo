@@ -23,6 +23,7 @@ export const customerKeys = {
   dashboard: () => [...customerKeys.all, "dashboard"] as const,
   requests: () => [...customerKeys.all, "requests"] as const,
   requestList: (query: object) => [...customerKeys.requests(), "list", query] as const,
+  request: (id: string) => [...customerKeys.requests(), "detail", id] as const,
   settings: () => [...customerKeys.all, "settings"] as const,
   addresses: () => [...customerKeys.all, "addresses"] as const,
   bookingList: (query: object) => [...customerKeys.all, "bookings", query] as const,

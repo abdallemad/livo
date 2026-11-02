@@ -24,8 +24,11 @@ export async function generateMetadata({ params }: PageProps<"/account/bookings/
   return { title: booking ? `Booking ${booking.number}` : "Booking not found" }
 }
 
-export default async function AccountBookingDetailPage({ params }: PageProps<"/account/bookings/[id]">) {
-  const booking = await load((await params).id)
+export default async function AccountBookingDetailPage({ params, searchParams }: PageProps<"/account/bookings/[id]">) {
+  const [{ id }, query] = await Promise.all([params, searchParams])
+  const booking = await load(id)
   if (!booking) notFound()
-  return <MyBookingDetail initialData={booking} />
+  // `?checkout=success|cancelled`: back from Stripe for a quote booking (docs/customer-request-detail-feature.md).
+  const checkout = query.checkout === "success" || query.checkout === "cancelled" ? query.checkout : null
+  return <MyBookingDetail initialData={booking} checkout={checkout} />
 }

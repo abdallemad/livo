@@ -1,7 +1,9 @@
 "use client"
 
+import { useEffect } from "react"
 import Link from "next/link"
-import { AlertTriangle, ArrowLeft, Check, Lock, MessageSquare, Phone, ShieldCheck, Star } from "lucide-react"
+import { useQueryClient } from "@tanstack/react-query"
+import { AlertTriangle, ArrowLeft, Check, Clock, Lock, MessageSquare, Phone, ShieldCheck, Star } from "lucide-react"
 import { DetailField } from "@/components/admin/shared/DetailField"
 import { PayNowButton } from "@/components/booking/PayNowButton"
 import { BookingStatusBadge, PageHeader } from "@/components/shared"
@@ -9,6 +11,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { customerKeys } from "@/constants/query-keys"
+import { useBookingConfirmation } from "@/hooks/use-booking"
 import { useMyBooking } from "@/hooks/use-customer-account"
 import { cn } from "@/lib/utils"
 import type { CustomerBookingDetail } from "@/types/customer-account"
@@ -31,8 +35,17 @@ const CLOSED_TITLE: Record<NonNullable<CustomerBookingDetail["closedBy"]>, strin
  * once they accept), the money (what Livo holds, refunds) and the dated history. First snapshot from the server;
  * refetches after every action.
  */
-export function MyBookingDetail({ initialData }: { initialData: CustomerBookingDetail }) {
+export function MyBookingDetail({ initialData, checkout = null }: { initialData: CustomerBookingDetail; checkout?: "success" | "cancelled" | null }) {
   const { data: b } = useMyBooking(initialData.id, initialData)
+  const queryClient = useQueryClient()
+  // Back from Stripe (quote bookings): poll the confirmation endpoint, which reconciles with Stripe, until it's paid.
+  const waiting = checkout === "success" && initialData.status === "PENDING_PAYMENT"
+  const confirmation = useBookingConfirmation(b.id, true, waiting)
+  const settled = confirmation.data && confirmation.data.status !== "PENDING_PAYMENT"
+  useEffect(() => {
+    if (settled) queryClient.invalidateQueries({ queryKey: customerKeys.booking(b.id) })
+  }, [settled, queryClient, b.id])
+  const settling = waiting && b.status === "PENDING_PAYMENT" && confirmation.stillSettling
   const stages = bookingStages(b.status, b.paymentMethod)
   const closed = b.status === "CANCELLED" || b.status === "REJECTED"
   const hasActions = b.canPay || b.actions.length > 0 || b.canReview || b.canReportProblem
@@ -67,6 +80,19 @@ export function MyBookingDetail({ initialData }: { initialData: CustomerBookingD
         </ol>
       ) : null}
 
+      {settling ? (
+        <Alert>
+          <Clock aria-hidden />
+          <AlertTitle>Confirming your payment…</AlertTitle>
+          <AlertDescription>This usually takes a few seconds.</AlertDescription>
+        </Alert>
+      ) : checkout === "cancelled" && b.status === "PENDING_PAYMENT" ? (
+        <Alert>
+          <AlertTitle>Payment cancelled</AlertTitle>
+          <AlertDescription>Your booking is saved; the provider sees it once it&apos;s paid.</AlertDescription>
+        </Alert>
+      ) : null}
+
       {b.dispute ? (
         <Alert variant={b.dispute.status === "RESOLVED" ? "default" : "destructive"}>
           <AlertTriangle aria-hidden />
@@ -92,7 +118,7 @@ export function MyBookingDetail({ initialData }: { initialData: CustomerBookingD
           <p className="text-base font-medium">{b.nextStep}</p>
           {hasActions ? (
             <div className="flex flex-wrap gap-3">
-              {b.canPay ? <PayNowButton bookingId={b.id} /> : null}
+              {b.canPay && !settling ? <PayNowButton bookingId={b.id} /> : null}
               <MyBookingActions booking={b} />
               {b.canReview ? (
                 <Button size="lg" variant="outline" render={<Link href={`/account/bookings/${b.id}/review`} />}>

@@ -10,6 +10,9 @@ export const API_ROUTES = {
   customer: {
     dashboard: "/api/me/dashboard",
     requests: "/api/me/requests",
+    /** One request with its quotes (GET); accept a quote → booking (POST …/booking) — docs/customer-request-detail-feature.md. */
+    request: (id: string) => `/api/me/requests/${encodeURIComponent(id)}`,
+    requestBooking: (id: string) => `/api/me/requests/${encodeURIComponent(id)}/booking`,
     requestStatus: (id: string) => `/api/me/requests/${encodeURIComponent(id)}/status`,
     /** Photos for a new quote request (CU-03): POST to upload, DELETE an unsent one. */
     requestImages: "/api/me/requests/images",

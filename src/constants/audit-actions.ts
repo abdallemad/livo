@@ -24,6 +24,7 @@ export const AUDIT_ACTION_LABEL: Record<string, string> = {
   "service.restore": "Restored the service",
   "request.cancel": "Closed the request",
   "request.cancel_by_customer": "The customer cancelled the request",
+  "request.accept_quote": "The customer accepted a quote",
   "booking.cancel": "Cancelled the booking",
   "dispute.resolve": "Resolved the dispute",
   "review.hide": "Hid the review",

@@ -95,6 +95,8 @@ No schema change and no migration.
 ## Not done / follow-ups
 
 - `/provider/requests/[id]` — sending or editing a quote (PR-07); the quote cards link there.
+- Customers accept quotes on `/account/requests/[id]` ([customer-request-detail-feature.md](customer-request-detail-feature.md)),
+  which creates the `QUOTE` booking (other quotes → *Not chosen*).
 - Customer side: confirm completion (CU-09) and cancel-before-acceptance are built
   ([customer-booking-detail-feature.md](customer-booking-detail-feature.md)). Still open: the auto-release job when
   `autoReleaseAt` passes (BR-08) and the cancellation policy after acceptance (BR-06).

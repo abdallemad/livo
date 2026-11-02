@@ -72,7 +72,7 @@ Both call `requireUser()`. Not public: no storefront revalidation.
 | Hook | `useMyBooking`, `useUpdateMyBookingStatus` in `src/hooks/use-customer-account.ts` (key `customerKeys.booking`) |
 | Constants | `API_ROUTES.customer.booking / bookingStatus`; audit labels `booking.customer_confirm`, `booking.customer_cancel`, `payment.refund_failed` |
 | UI | `src/components/customer/bookings/{MyBookingDetail,MyBookingActions}.tsx`; reuses `PayNowButton` |
-| Page | `src/app/(app)/account/bookings/[id]/page.tsx` |
+| Page | `src/app/(app)/account/bookings/[id]/page.tsx` (`?checkout=success\|cancelled` after Stripe for quote bookings: polls until paid) |
 
 No schema change and no migration.
 

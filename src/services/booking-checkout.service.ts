@@ -98,7 +98,8 @@ export async function getBookServiceFormData(userId: string, serviceId: string, 
 // Create the booking
 // ---------------------------------------------------------------------------
 
-async function commissionFor(category: { id: string; parentId: string | null }) {
+/** The commission rate a new booking freezes (BR-01): category → parent → global. Shared with quote bookings. */
+export async function commissionFor(category: { id: string; parentId: string | null }) {
   const [global, overrides] = await Promise.all([
     repo.findGlobalCommission(),
     repo.findCommissionOverrides([category.id, ...(category.parentId ? [category.parentId] : [])]),
@@ -207,6 +208,15 @@ export async function createServiceBooking(userId: string, values: CreateService
   }
 }
 
+/** The next `LV-<year>-NNNNNN` number, read inside the caller's transaction (retry the transaction on a P2002 clash). */
+export async function allocateBookingNumber(tx: Prisma.TransactionClient, now = new Date()) {
+  const year = Number(zonedIsoDay(now).slice(0, 4))
+  const last = await repo.findLastNumber(`LV-${year}-`, tx)
+  return nextBookingNumber(last?.number ?? null, year)
+}
+
+export { isUniqueViolation }
+
 // ---------------------------------------------------------------------------
 // Stripe Checkout
 // ---------------------------------------------------------------------------
@@ -217,7 +227,7 @@ function toCheckoutError(e: unknown) {
   return new ServiceUnavailableError("We couldn't open the payment page. Try again, or choose cash.")
 }
 
-async function openCheckoutSession(input: {
+export async function openCheckoutSession(input: {
   bookingId: string
   number: string
   paymentId: string
@@ -229,7 +239,12 @@ async function openCheckoutSession(input: {
 }): Promise<Stripe.Checkout.Session> {
   const stripe = getStripe()
   const back = (state: "success" | "cancelled") =>
-    absoluteUrl(input.serviceId ? `/account/book/${encodeURIComponent(input.serviceId)}?booking=${encodeURIComponent(input.bookingId)}&checkout=${state}` : "/account/bookings")
+    // Service bookings come back to the wizard's confirmation step; quote bookings to the booking page.
+    absoluteUrl(
+      input.serviceId
+        ? `/account/book/${encodeURIComponent(input.serviceId)}?booking=${encodeURIComponent(input.bookingId)}&checkout=${state}`
+        : `/account/bookings/${encodeURIComponent(input.bookingId)}?checkout=${state}`,
+    )
   const metadata = { kind: "booking", bookingId: input.bookingId, paymentId: input.paymentId, bookingNumber: input.number }
 
   const session = await stripe.checkout.sessions.create(

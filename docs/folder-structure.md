@@ -24,7 +24,7 @@ src/
     auth-callback/
     api/             me/, auth/sync/, onboarding/, admin/ (dashboard, providers, users, files, disputes, categories, services,
                      requests, bookings, reviews),
-                     health/, webhooks/ — every server endpoint
+                     health/, webhook/stripe/ (Stripe), webhooks/ — every server endpoint
     robots.ts sitemap.ts not-found.tsx
   components/
     ui/              shadcn (base-nova, Base UI)
@@ -34,6 +34,7 @@ src/
                      AccountControls (Sign in link / AccountMenu dropdown — dark mode lives here,
                      not as a header button), ThemeToggle (onboarding header + preview only)
     onboarding/      wizard, steps, RoleCard, FirstServiceForm, ServicePreviewCard, SuccessScreen
+    booking/         BookServiceWizard, BookingConfirmation, PayNowButton (docs/booking-checkout-feature.md)
     service/ provider/ request/ chat/   domain components (ServiceCard, ProviderCard, QuoteCard, ChatBubble…)
     design-system/   style-guide sections
     providers/       query-provider, theme-provider
@@ -47,7 +48,7 @@ src/
   services/          <feature>.service.ts (business rules, auth guards)
   repositories/      <feature>.repository.ts (only place Prisma is used)
   schemas/           <feature>.schema.ts (Zod, shared by form + API route)
-  lib/               db, api-route, api-client, api-guard, errors, r2, query-client, site-url, storefront-cache,
+  lib/               db, api-route, api-client, api-guard, errors, r2, stripe, query-client, site-url, storefront-cache,
                      zone-guard (layout-level role gate), utils
   utils/             pure helpers (slug, format, zone-access, seo-metadata, structured-data)
   constants/         site, api-routes, query-keys, nav (+ customer-nav, provider-nav, admin-nav), status, upload
@@ -71,4 +72,5 @@ Feature docs: `docs/api-conventions.md`, `docs/onboarding-feature.md`, `docs/adm
 `docs/landing-page.md`,
 `docs/customer-new-request-feature.md`,
 `docs/provider-profile-feature.md`,
-`docs/navigation.md`. Page map: `docs/page-map.md`.
+`docs/navigation.md`,
+`docs/booking-checkout-feature.md`. Page map: `docs/page-map.md`.

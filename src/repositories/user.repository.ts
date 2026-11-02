@@ -98,6 +98,12 @@ class UserRepository {
     const { count } = await client.user.updateMany({ where: { id, status: from }, data: { status: to } })
     return count
   }
+
+  /** Conditional promotion in one UPDATE: only an ACTIVE, non-admin account changes. Returns the row count. */
+  async promoteToAdmin(id: string, client: Client) {
+    const { count } = await client.user.updateMany({ where: { id, status: "ACTIVE", role: { not: "ADMIN" } }, data: { role: "ADMIN" } })
+    return count
+  }
 }
 
 export const userRepository = new UserRepository()

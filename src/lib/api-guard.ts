@@ -5,7 +5,8 @@
  * Pure and dependency-free so it can be unit tested.
  */
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"])
-const EXEMPT_PREFIXES = ["/api/webhooks/"]
+// `/api/webhook/stripe` is the Stripe endpoint (docs/booking-checkout-feature.md); `/api/webhooks/*` other gateways.
+const EXEMPT_PREFIXES = ["/api/webhooks/", "/api/webhook/"]
 
 export interface GuardInput {
   method: string

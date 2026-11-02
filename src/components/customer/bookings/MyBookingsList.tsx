@@ -1,5 +1,6 @@
 "use client"
 
+import { PayNowButton } from "@/components/booking/PayNowButton"
 import Link from "next/link"
 import { AlertCircle, CalendarCheck, CalendarClock, MapPin, Phone, SearchX, Star, Wallet } from "lucide-react"
 import { ListPagination } from "@/components/admin/shared/ListPagination"
@@ -82,9 +83,14 @@ function BookingCard({ b }: { b: CustomerBookingListItem }) {
             Leave a review
           </Button>
         ) : null}
-        <Button className="ms-auto" variant={urgent ? "default" : "ghost"} render={<Link href={href} />}>
-          {b.status === "PENDING_PAYMENT" ? "Pay now" : b.status === "AWAITING_CONFIRMATION" ? "Confirm the job" : "Details"}
-        </Button>
+        {b.status === "PENDING_PAYMENT" ? (
+          // Opens Stripe Checkout directly (docs/booking-checkout-feature.md).
+          <PayNowButton bookingId={b.id} variant="default" className="ms-auto" />
+        ) : (
+          <Button className="ms-auto" variant={urgent ? "default" : "ghost"} render={<Link href={href} />}>
+            {b.status === "AWAITING_CONFIRMATION" ? "Confirm the job" : "Details"}
+          </Button>
+        )}
       </CardFooter>
     </Card>
   )

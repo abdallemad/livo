@@ -13,7 +13,7 @@ Component → hook (TanStack Query) → api-client → /api/... route.ts → ser
 |---|---|---|
 | `/api/health` | anyone | none (no DB) |
 | `GET /api/services`, `GET /api/images/services/[id]`, `GET /api/images/portfolio/[id]` | anyone — the public catalog, live services' photos, public providers' portfolio photos (`docs/catalog-feature.md`, `docs/landing-page.md`) | none; only public data |
-| `/api/me`, `/api/me/*` | the signed-in user's own data — today also `GET /api/me/dashboard`, `GET /api/me/requests`, `PATCH /api/me/requests/[id]/status` (`docs/customer-dashboard-requests-feature.md`), `POST /api/me/requests`, `POST /api/me/requests/images`, `DELETE /api/me/requests/images/[id]`, `GET /api/me/files/[id]` (owner-only 307 to a signed link) (`docs/customer-new-request-feature.md`), `/api/me/{bookings,payments,addresses,settings}*` (`docs/customer-account-feature.md`) | `requireUser()` / `getViewer()` |
+| `/api/me`, `/api/me/*` | the signed-in user's own data — today also `GET /api/me/dashboard`, `GET /api/me/requests`, `PATCH /api/me/requests/[id]/status` (`docs/customer-dashboard-requests-feature.md`), `POST /api/me/requests`, `POST /api/me/requests/images`, `DELETE /api/me/requests/images/[id]`, `GET /api/me/files/[id]` (owner-only 307 to a signed link) (`docs/customer-new-request-feature.md`), `/api/me/{bookings,payments,addresses,settings}*` (`docs/customer-account-feature.md`), `POST /api/me/bookings`, `POST /api/me/bookings/[id]/checkout`, `GET /api/me/bookings/[id]/confirmation` (`docs/booking-checkout-feature.md`) | `requireUser()` / `getViewer()` |
 | `/api/auth/sync` | first sign-in | Clerk session |
 | `/api/<feature>` | public reads / customer writes | per route |
 | `/api/provider/<feature>` | providers (and admins) | `requireProvider()` — today `GET /api/provider/dashboard`, `GET /api/provider/requests` (`docs/provider-dashboard-requests-feature.md`); `GET /api/provider/quotes`, `PATCH /api/provider/quotes/[id]/status`, `GET /api/provider/bookings`, `GET /api/provider/bookings/[id]`, `PATCH /api/provider/bookings/[id]/status` (`docs/provider-quotes-bookings-feature.md`); `/api/provider/services*`, `/api/provider/portfolio*`, `GET /api/provider/files/[id]` (`docs/provider-services-portfolio-feature.md`); `GET|PUT /api/provider/schedule`, `GET /api/provider/reviews`, `PUT|DELETE /api/provider/reviews/[id]/reply` (`docs/provider-schedule-reviews-feature.md`); `GET /api/provider/earnings`, `GET|POST /api/provider/payouts` (`docs/provider-earnings-payouts-feature.md`); `/api/provider/verification*`, `/api/provider/settings*` (`docs/provider-verification-settings-feature.md`) |
@@ -21,7 +21,7 @@ Component → hook (TanStack Query) → api-client → /api/... route.ts → ser
 
 Admin endpoints today: `GET /api/admin/dashboard`, `GET /api/admin/providers`, `GET /api/admin/providers/[id]`,
 `PATCH /api/admin/providers/[id]/status`, `GET /api/admin/files/[id]`, `GET /api/admin/users`, `GET /api/admin/users/[id]`,
-`PATCH /api/admin/users/[id]/status`, `PATCH /api/admin/disputes/[id]/status`, `GET|POST /api/admin/categories`,
+`PATCH /api/admin/users/[id]/status`, `PATCH /api/admin/users/[id]/role` (make admin), `PATCH /api/admin/disputes/[id]/status`, `GET|POST /api/admin/categories`,
 `GET|PATCH|DELETE /api/admin/categories/[id]`, `PATCH /api/admin/categories/[id]/status`, `GET /api/admin/services`,
 `PATCH /api/admin/services/[id]/status`, `GET /api/admin/requests`, `GET /api/admin/requests/[id]`,
 `PATCH /api/admin/requests/[id]/status`, `GET /api/admin/bookings`, `GET /api/admin/bookings/[id]`,
@@ -33,7 +33,8 @@ Admin endpoints today: `GET /api/admin/dashboard`, `GET /api/admin/providers`, `
 
 `requireUser()` (and so `requireRole`/`requireProvider`/`requireAdmin`) also rejects accounts whose
 `User.status` isn't `ACTIVE` with **403** (AD-03 suspension).
-| `/api/webhooks/<provider>` | payment gateway etc. | signature over raw body |
+| `/api/webhook/stripe` | Stripe Checkout events (`docs/booking-checkout-feature.md`) | Stripe signature over the raw body |
+| `/api/webhooks/<provider>` | other gateways | signature over raw body |
 
 Collections: `GET` (list, paginated via `?page&perPage`) and `POST` (create) in `route.ts`.
 Items: `GET`, `PATCH`, `DELETE` in `[id]/route.ts`. State transitions as sub-resources:
@@ -72,7 +73,7 @@ Hooks call `api.get/post/put/patch/delete` from `src/lib/api-client.ts`. It retu
 
 ## Security
 
-- CSRF: `src/proxy.ts` rejects cross-origin `POST/PUT/PATCH/DELETE` to `/api/*` (except webhooks).
+- CSRF: `src/proxy.ts` rejects cross-origin `POST/PUT/PATCH/DELETE` to `/api/*` (except `/api/webhook/*` and `/api/webhooks/*`).
 - The user id comes from the Clerk session, never from the body/query/URL.
 - Responses that contain per-user data are `cache-control: private, no-store`.
 - Mutations are never `GET`.

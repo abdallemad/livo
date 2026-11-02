@@ -429,6 +429,8 @@ Hosted page; no card data touches the app. Order placement creates a Checkout se
 a convenience.** A Stripe price is immutable: reuse the cached `stripePriceId` only while `unit_amount`
 matches; otherwise mint a new price on the *same* product. Pin the Stripe API version in `lib/stripe.ts`.
 One metadata key can branch the webhook per order type (files / online services / hardware).
+**Livo:** the Stripe webhook lives at `POST /api/webhook/stripe` (CSRF-exempt in `lib/api-guard.ts`) and books are paid
+through `markCheckoutPaid()` in `services/booking-checkout.service.ts` — see `docs/booking-checkout-feature.md`.
 
 ---
 

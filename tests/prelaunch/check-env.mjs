@@ -34,6 +34,13 @@ if (env.NODE_ENV === "production" && env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.star
   problems.push("Clerk development key used for a production build (use pk_live_/sk_live_)")
 }
 
+// Online payment (docs/booking-checkout-feature.md): optional, but a secret without its webhook secret means
+// bookings are charged and never marked paid.
+if (env.STRIPE_SECRET && !env.STRIPE_WEBHOOK_SECRET) problems.push("STRIPE_SECRET is set but STRIPE_WEBHOOK_SECRET is missing")
+if (env.NODE_ENV === "production" && env.STRIPE_SECRET?.startsWith("sk_test_")) {
+  problems.push("Stripe test key used for a production build (use sk_live_)")
+}
+
 if (problems.length) {
   console.error(`[check-env] ${problems.join("\n[check-env] ")}`)
   process.exit(1)

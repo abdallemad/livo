@@ -25,6 +25,11 @@ test("webhooks are exempt and non-API paths ignored", () => {
   assert.equal(isCrossSiteApiWrite({ ...base, pathname: "/about", method: "POST", origin: null }), false)
 })
 
+test("the Stripe webhook is exempt, but /api/webhook-lookalikes are not", () => {
+  assert.equal(isCrossSiteApiWrite({ ...base, pathname: "/api/webhook/stripe", method: "POST", origin: null }), false)
+  assert.equal(isCrossSiteApiWrite({ ...base, pathname: "/api/webhookx", method: "POST", origin: null }), true)
+})
+
 test("explicitly allowed origins pass", () => {
   assert.equal(
     isCrossSiteApiWrite({

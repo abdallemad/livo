@@ -1,5 +1,6 @@
 import { z } from "zod"
 import { ADDRESS_LABEL_MAX } from "@/utils/address-book"
+import { CUSTOMER_CANCEL_REASON_MAX } from "@/utils/customer-booking-actions"
 import { paginationQuerySchema } from "./common.schema"
 import { addressStepSchema, interestsStepSchema } from "./onboarding.schema"
 
@@ -41,3 +42,21 @@ export const customerPaymentQuerySchema = paginationQuerySchema.extend({
   perPage: z.coerce.number().int().min(1).max(50).default(15),
 })
 export type CustomerPaymentQuery = z.infer<typeof customerPaymentQuerySchema>
+
+/**
+ * `PATCH /api/me/bookings/[id]/status` (docs/customer-booking-detail-feature.md): confirm the job is done (CU-09), or
+ * cancel before the provider accepts (CU-11) with an optional reason the provider sees.
+ */
+export const customerBookingStatusSchema = z.discriminatedUnion("status", [
+  z.object({ status: z.literal("COMPLETED") }),
+  z.object({
+    status: z.literal("CANCELLED"),
+    reason: z
+      .string()
+      .trim()
+      .max(CUSTOMER_CANCEL_REASON_MAX, `Keep it under ${CUSTOMER_CANCEL_REASON_MAX} characters.`)
+      .optional()
+      .transform((v) => v || undefined),
+  }),
+])
+export type CustomerBookingStatusValues = z.output<typeof customerBookingStatusSchema>

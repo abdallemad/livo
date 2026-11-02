@@ -52,9 +52,9 @@ Sidebar shell, dynamic, `noindex`. Signed-in `CUSTOMER` with onboarding finished
 | `/account/book/[serviceId]` | Book the service | Date & time → address → notes → payment (Stripe Checkout or cash) → confirmation ([booking-checkout-feature.md](booking-checkout-feature.md)) | built | CU-02, CU-07 |
 | `/account/requests` | My requests | Active / Booked / Closed, quotes + lowest price, booking link, cancel (draft / open) | built | CU-13, CU-11 |
 | `/account/requests/new` | New quote request | Quote category, title, description (no contact details), size, private photos, address or area, budget, preferred date; opens + notifies matching providers ([customer-new-request-feature.md](customer-new-request-feature.md)) | built | CU-03 |
-| `/account/requests/[id]` | Request details | Request stages, quotes received, accept one | placeholder | CU-04, CU-05, CU-08 |
+| `/account/requests/[id]` | Request details | Progress, the request, quotes to compare (price, duration, rating, jobs done; sort) and accept — online or cash — which creates the booking ([customer-request-detail-feature.md](customer-request-detail-feature.md)) | built | CU-04, CU-05, CU-08 |
 | `/account/bookings` | My bookings | Current / Finished / Cancelled, next step, provider phone once confirmed, review link ([customer-account-feature.md](customer-account-feature.md)) | built | CU-13 |
-| `/account/bookings/[id]` | Booking details | Stages, payment, confirm completion, cancel, dispute | placeholder | CU-09…CU-12 |
+| `/account/bookings/[id]` | Booking details | Progress, next step + actions (pay, confirm the job, cancel before acceptance, review, report a problem), provider (phone after acceptance), payment & refunds, history ([customer-booking-detail-feature.md](customer-booking-detail-feature.md)) | built | CU-09…CU-12 |
 | `/account/bookings/[id]/review` | Rate the service | Stars and a comment, after completion | placeholder | CU-10 |
 | `/account/bookings/[id]/dispute` | Open a dispute | Reason plus photos or documents | placeholder | CU-12 |
 | `/account/messages` | Messages | Chats for confirmed bookings | placeholder | CU-06 |
@@ -77,7 +77,7 @@ Sidebar shell, dynamic, `noindex`. Signed-in `PROVIDER` with onboarding finished
 | `/provider/services/new` | Add a service | Title, category, description, price, duration, photos, live preview | built | PR-05 |
 | `/provider/services/[id]/edit` | Edit service | Same form; slug never changes; hidden-by-Livo banner | built | PR-05 |
 | `/provider/requests` | Available requests | Matching engine (approved only; city, categories + sub-categories, my areas or whole city); tabs New / Quoted, filters, sort | built | PR-06, SY-01 |
-| `/provider/requests/[id]` | Request details | Details + send a quote | placeholder | PR-07 |
+| `/provider/requests/[id]` | Request details | The job (area only, contact masked), photos, budget, date, quotes so far; send / change / withdraw / re-send my quote; booking link once accepted ([provider-request-detail-feature.md](provider-request-detail-feature.md)) | built | PR-07 |
 | `/provider/quotes` | My quotes | Status tabs + counts, price / duration / budget, booking link, withdraw a waiting quote ([provider-quotes-bookings-feature.md](provider-quotes-bookings-feature.md)) | built | PR-07 |
 | `/provider/bookings` | My bookings | Current / Finished / Cancelled; accept, decline (reason), start, mark done | built | PR-08 |
 | `/provider/bookings/[id]` | Booking details | Next step + actions, when/where, customer (locked until accepted, notes masked), money, timeline | built | PR-08, BR-02 |

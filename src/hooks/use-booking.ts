@@ -34,11 +34,12 @@ export const CONFIRMATION_POLL_LIMIT = 20
  * The wizard's confirmation step. `waiting` polls while an online payment is still settling, at most
  * `CONFIRMATION_POLL_LIMIT` times; `stillSettling` turns false once the limit is reached so the page can offer to pay again.
  */
-export function useBookingConfirmation(id: string, waiting: boolean) {
+export function useBookingConfirmation(id: string, waiting: boolean, enabled = true) {
   const queryClient = useQueryClient()
   const query = useQuery({
     queryKey: customerKeys.bookingConfirmation(id),
     queryFn: () => api.get<BookingConfirmationDto>(API_ROUTES.customer.bookingConfirmation(id)),
+    enabled,
     refetchInterval: (q) => (waiting && q.state.data?.status === "PENDING_PAYMENT" && q.state.dataUpdateCount < CONFIRMATION_POLL_LIMIT ? CONFIRMATION_POLL_MS : false),
   })
   const polls = queryClient.getQueryState(customerKeys.bookingConfirmation(id))?.dataUpdateCount ?? 0

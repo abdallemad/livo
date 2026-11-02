@@ -1,4 +1,4 @@
-import type { BookingStatus, RequestStatus } from "@prisma/client"
+import type { BookingStatus, QuoteStatus, RequestStatus } from "@prisma/client"
 import type { WorkStatus } from "@/constants/status"
 import type { Paginated } from "./api"
 
@@ -102,4 +102,50 @@ export interface NewRequestFormData {
   today: string
   maxDate: string
   expiryDays: number
+}
+
+// --- request details (CU-04, CU-05, CU-08) — docs/customer-request-detail-feature.md ---------------------
+
+export interface CustomerQuoteDto {
+  id: string
+  price: number
+  durationDays: number | null
+  /** The provider's message with phone numbers / emails / chat links hidden (SY-04). */
+  message: string | null
+  messageMasked: boolean
+  status: QuoteStatus
+  validUntil: string | null
+  createdAt: string
+  /** The cheapest quote still waiting. */
+  isLowest: boolean
+  provider: {
+    id: string
+    name: string
+    avatarUrl: string | null
+    rating: number
+    reviewsCount: number
+    completedCount: number
+    yearsExperience: number | null
+  }
+  /** `null` = the customer can accept it now. */
+  acceptBlockedReason: string | null
+}
+
+export interface CustomerRequestDetail extends CustomerRequestCard {
+  /** Full saved address when the request used one, otherwise the area and city. */
+  place: string | null
+  photos: RequestPhotoDto[]
+  timeline: { current: WorkStatus; events: { status: WorkStatus; at: string }[] }
+  quotes: CustomerQuoteDto[]
+  onlinePaymentAvailable: boolean
+}
+
+/** Answer of `POST /api/me/requests/[id]/booking` (accept a quote). */
+export interface AcceptedQuoteDto {
+  bookingId: string
+  number: string
+  status: BookingStatus
+  /** Online payment: send the browser here. `null` for cash, or when the payment page couldn't open (pay from the booking). */
+  checkoutUrl: string | null
+  paymentError: boolean
 }

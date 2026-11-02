@@ -81,9 +81,9 @@ All `noindex`. Per-visitor UI is a client island (`AccountControls`), layouts st
 | `/account/book/[serviceId]` | **Book fixed-price service** (wizard, ≤ 5 steps) | date/time → address → notes → payment → confirm ([booking-checkout-feature.md](booking-checkout-feature.md)) | CU-02, CU-07 |
 | `/account/requests` | My requests | List with status; cancel a draft / open request | CU-13, CU-11 |
 | `/account/requests/new` | **New quote request** | description, photos, category, address, optional budget, preferred time — built, `docs/customer-new-request-feature.md` | CU-03 |
-| `/account/requests/[id]` | Request details | Timeline, received quotes, compare, accept one | CU-04, CU-05, CU-08 |
+| `/account/requests/[id]` | Request details | Timeline, received quotes, compare, accept one ([customer-request-detail-feature.md](customer-request-detail-feature.md)) | CU-04, CU-05, CU-08 |
 | `/account/bookings` | My bookings | List with next step ([customer-account-feature.md](customer-account-feature.md)) | CU-13 |
-| `/account/bookings/[id]` | Booking details | Status timeline, pay, confirm completion, review, cancel, open dispute | CU-09…CU-12 |
+| `/account/bookings/[id]` | Booking details | Status timeline, pay, confirm completion, review, cancel, open dispute ([customer-booking-detail-feature.md](customer-booking-detail-feature.md)) | CU-09…CU-12 |
 | `/account/bookings/[id]/review` | Leave review (stars + comment) | Only when `Completed` (BR-03) | CU-10 |
 | `/account/bookings/[id]/dispute` | Open dispute with reason + evidence | | CU-12 |
 | `/account/messages` | Conversations list | Only for confirmed bookings | CU-06 |
@@ -111,7 +111,7 @@ All `noindex`. Gate by verification status (see §1).
 | `/provider/services/new` | Add service | title, description, price, category, duration | PR-05 |
 | `/provider/services/[id]/edit` | Edit / deactivate service | Slug never changes; delete only without bookings ([provider-services-portfolio-feature.md](provider-services-portfolio-feature.md)) | PR-05 |
 | `/provider/requests` | **Available project requests** matching category + area | Approved providers only; no customer identity or address (BR-02) | PR-06, SY-01 |
-| `/provider/requests/[id]` | Request details + **submit quote** (price, duration, message) | Customer contact hidden | PR-07 |
+| `/provider/requests/[id]` | Request details + **submit quote** (price, duration, message) | Customer contact hidden ([provider-request-detail-feature.md](provider-request-detail-feature.md)) | PR-07 |
 | `/provider/quotes` | My quotes | Status of each; withdraw a waiting quote ([provider-quotes-bookings-feature.md](provider-quotes-bookings-feature.md)) | PR-07 |
 | `/provider/bookings` | Bookings | Accept / reject / start / finish; unpaid (`PENDING_PAYMENT`) bookings are hidden | PR-08 |
 | `/provider/bookings/[id]` | Booking details | Customer info only after confirmation (BR-02) | PR-08 |

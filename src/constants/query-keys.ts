@@ -23,10 +23,12 @@ export const customerKeys = {
   dashboard: () => [...customerKeys.all, "dashboard"] as const,
   requests: () => [...customerKeys.all, "requests"] as const,
   requestList: (query: object) => [...customerKeys.requests(), "list", query] as const,
+  request: (id: string) => [...customerKeys.requests(), "detail", id] as const,
   settings: () => [...customerKeys.all, "settings"] as const,
   addresses: () => [...customerKeys.all, "addresses"] as const,
   bookingList: (query: object) => [...customerKeys.all, "bookings", query] as const,
   payments: (query: object) => [...customerKeys.all, "payments", query] as const,
+  booking: (id: string) => [...customerKeys.all, "bookings", "detail", id] as const,
   bookingConfirmation: (id: string) => [...customerKeys.all, "bookings", "confirmation", id] as const,
 }
 
@@ -35,6 +37,7 @@ export const providerKeys = {
   dashboard: () => [...providerKeys.all, "dashboard"] as const,
   requests: () => [...providerKeys.all, "requests"] as const,
   requestList: (query: object) => [...providerKeys.requests(), "list", query] as const,
+  request: (id: string) => [...providerKeys.requests(), "detail", id] as const,
   quotes: () => [...providerKeys.all, "quotes"] as const,
   quoteList: (query: object) => [...providerKeys.quotes(), "list", query] as const,
   bookings: () => [...providerKeys.all, "bookings"] as const,

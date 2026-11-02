@@ -98,7 +98,8 @@ export async function getBookServiceFormData(userId: string, serviceId: string, 
 // Create the booking
 // ---------------------------------------------------------------------------
 
-async function commissionFor(category: { id: string; parentId: string | null }) {
+/** The commission rate a new booking freezes (BR-01): category → parent → global. Shared with quote bookings. */
+export async function commissionFor(category: { id: string; parentId: string | null }) {
   const [global, overrides] = await Promise.all([
     repo.findGlobalCommission(),
     repo.findCommissionOverrides([category.id, ...(category.parentId ? [category.parentId] : [])]),
@@ -207,6 +208,15 @@ export async function createServiceBooking(userId: string, values: CreateService
   }
 }
 
+/** The next `LV-<year>-NNNNNN` number, read inside the caller's transaction (retry the transaction on a P2002 clash). */
+export async function allocateBookingNumber(tx: Prisma.TransactionClient, now = new Date()) {
+  const year = Number(zonedIsoDay(now).slice(0, 4))
+  const last = await repo.findLastNumber(`LV-${year}-`, tx)
+  return nextBookingNumber(last?.number ?? null, year)
+}
+
+export { isUniqueViolation }
+
 // ---------------------------------------------------------------------------
 // Stripe Checkout
 // ---------------------------------------------------------------------------
@@ -217,7 +227,7 @@ function toCheckoutError(e: unknown) {
   return new ServiceUnavailableError("We couldn't open the payment page. Try again, or choose cash.")
 }
 
-async function openCheckoutSession(input: {
+export async function openCheckoutSession(input: {
   bookingId: string
   number: string
   paymentId: string
@@ -229,7 +239,12 @@ async function openCheckoutSession(input: {
 }): Promise<Stripe.Checkout.Session> {
   const stripe = getStripe()
   const back = (state: "success" | "cancelled") =>
-    absoluteUrl(input.serviceId ? `/account/book/${encodeURIComponent(input.serviceId)}?booking=${encodeURIComponent(input.bookingId)}&checkout=${state}` : "/account/bookings")
+    // Service bookings come back to the wizard's confirmation step; quote bookings to the booking page.
+    absoluteUrl(
+      input.serviceId
+        ? `/account/book/${encodeURIComponent(input.serviceId)}?booking=${encodeURIComponent(input.bookingId)}&checkout=${state}`
+        : `/account/bookings/${encodeURIComponent(input.bookingId)}?checkout=${state}`,
+    )
   const metadata = { kind: "booking", bookingId: input.bookingId, paymentId: input.paymentId, bookingNumber: input.number }
 
   const session = await stripe.checkout.sessions.create(
@@ -450,5 +465,50 @@ export async function handleStripeEvent(event: Stripe.Event): Promise<Outcome> {
       return markCheckoutFailed(event.data.object, "webhook", event.id)
     default:
       return "ignored"
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Refunds & closing sessions (customer cancellation — docs/customer-booking-detail-feature.md)
+// ---------------------------------------------------------------------------
+
+/** The payment intent a verified webhook / reconcile stored on the payment row (`gatewayPayload.paymentIntent`). */
+export function paymentIntentOf(gatewayPayload: unknown): string | null {
+  if (!gatewayPayload || typeof gatewayPayload !== "object") return null
+  const pi = (gatewayPayload as Record<string, unknown>).paymentIntent
+  return typeof pi === "string" && pi.startsWith("pi_") ? pi : null
+}
+
+/**
+ * Refund captured money on Stripe. Idempotent per payment row (a retry never refunds twice). Returns false when it
+ * couldn't be sent (Stripe not configured, no payment intent, API error) — the caller then asks an admin to do it.
+ */
+export async function refundOnStripe(input: { paymentId: string; gatewayPayload: unknown; amount: number; reason: string }): Promise<boolean> {
+  const paymentIntent = paymentIntentOf(input.gatewayPayload)
+  if (!paymentIntent || !isStripeConfigured() || input.amount <= 0) return false
+  try {
+    await getStripe().refunds.create(
+      { payment_intent: paymentIntent, amount: toMinorUnits(input.amount), reason: "requested_by_customer", metadata: { paymentId: input.paymentId, note: input.reason.slice(0, 450) } },
+      { idempotencyKey: `livo-refund-${input.paymentId}` },
+    )
+    return true
+  } catch (e) {
+    console.error("[refund] Stripe refund failed", { paymentId: input.paymentId }, e)
+    return false
+  }
+}
+
+/**
+ * Close a still-open Checkout session so a cancelled booking can't be paid afterwards. Best effort: if the customer
+ * paid in the meantime, the webhook's "paid after close" path flags it for a refund.
+ */
+export async function expireOpenSession(sessionId: string): Promise<void> {
+  if (!isStripeConfigured() || !sessionId.startsWith("cs_")) return
+  try {
+    const stripe = getStripe()
+    const session = await stripe.checkout.sessions.retrieve(sessionId)
+    if (session.status === "open") await stripe.checkout.sessions.expire(sessionId)
+  } catch (e) {
+    console.error("[checkout] couldn't expire session", { sessionId }, e)
   }
 }

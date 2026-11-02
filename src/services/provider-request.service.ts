@@ -1,10 +1,19 @@
 import "server-only"
-import type { Prisma } from "@prisma/client"
+import { Prisma } from "@prisma/client"
 import { providerDashboardRepository as ctxRepo } from "@/repositories/provider-dashboard.repository"
 import { requestRepository, type ProviderRequestRow } from "@/repositories/request.repository"
 import type { ProviderRequestListQuery } from "@/schemas/provider.schema"
 import type { ProviderOption, ProviderRequestCard, ProviderRequestList } from "@/types/provider"
-import { expandCategoryIds, type RequestScope } from "@/utils/request-matching"
+import { API_ROUTES } from "@/constants/api-routes"
+import { ConflictError, NotFoundError } from "@/lib/errors"
+import { providerRequestRepository as detailRepo, type ProviderRequestDetailRow } from "@/repositories/provider-request.repository"
+import type { ProviderQuoteValues } from "@/schemas/provider.schema"
+import { signedPreview } from "@/services/file-upload.service"
+import type { ProviderQuoteSentDto, ProviderRequestDetail } from "@/types/provider"
+import { maskContactDetails } from "@/utils/contact-mask"
+import { formatPrice } from "@/utils/format"
+import { quoteSendBlockedReason, quoteSendMode, quoteValidUntil, quoteWithdrawBlockedReason } from "@/utils/provider-quote"
+import { expandCategoryIds, requestMatchesProvider, type RequestScope } from "@/utils/request-matching"
 import { zonedDaysBetween } from "@/utils/zoned-time"
 
 /**
@@ -121,4 +130,138 @@ export async function listRequestsForProvider(providerId: string, query: Provide
     eligibility: "OK",
     ...base,
   }
+}
+
+// ---------------------------------------------------------------------------
+// One request + sending a quote (PR-07) — docs/provider-request-detail-feature.md
+// ---------------------------------------------------------------------------
+
+/**
+ * Who may open a request: a provider who already quoted it (any status — it's their history), or an APPROVED provider
+ * it matches (rules 1–4; areas are ignored, like the "whole city" scope, so a link from the list always opens).
+ * Everyone else gets a 404 — a request's existence isn't confirmed to strangers.
+ */
+function canView(r: ProviderRequestDetailRow, ctx: ProviderContext, now: Date) {
+  if (r.quotes.length > 0) return true
+  return requestMatchesProvider(
+    { status: r.status, expiresAt: r.expiresAt, cityId: r.cityId, categoryId: r.categoryId, areaId: r.areaId },
+    { verificationStatus: ctx.profile.verificationStatus, cityId: ctx.profile.cityId, categoryIds: ctx.categoryIds, areaIds: ctx.areaIds },
+    ctx.categoryIds,
+    now,
+    "city",
+  )
+}
+
+const sendCheck = (r: ProviderRequestDetailRow, ctx: ProviderContext, providerId: string, now: Date) => ({
+  approved: ctx.profile.verificationStatus === "APPROVED",
+  requestStatus: r.status,
+  requestExpired: !!r.expiresAt && r.expiresAt <= now,
+  existing: r.quotes[0]?.status ?? null,
+  ownRequest: r.customerId === providerId,
+})
+
+function toDetail(r: ProviderRequestDetailRow, ctx: ProviderContext, providerId: string, now: Date): ProviderRequestDetail {
+  const q = r.quotes[0] ?? null
+  const description = maskContactDetails(r.description)
+  return {
+    id: r.id,
+    title: r.title,
+    description: description.text,
+    descriptionMasked: description.masked,
+    category: label(r.category),
+    parentCategory: r.category.parent ? label(r.category.parent) : null,
+    area: r.area ? label(r.area) : null,
+    city: label(r.city),
+    budget: r.budget ? num(r.budget) : null,
+    preferredDate: r.preferredDate?.toISOString() ?? null,
+    status: r.status,
+    createdAt: r.createdAt.toISOString(),
+    expiresAt: r.expiresAt?.toISOString() ?? null,
+    postedDaysAgo: Math.max(0, -zonedDaysBetween(now, r.createdAt)),
+    expiresInDays: r.expiresAt ? zonedDaysBetween(now, r.expiresAt) : null,
+    photoCount: r._count.media,
+    quoteCount: r._count.quotes,
+    outsideMyAreas: ctx.areaIds.length > 0 && r.areaId !== null && !ctx.areaIds.includes(r.areaId),
+    photos: r.media.map((f) => ({ id: f.id, url: API_ROUTES.provider.requestPhoto(r.id, f.id) })),
+    myQuote: q
+      ? {
+          id: q.id,
+          price: num(q.price),
+          durationDays: q.durationDays,
+          status: q.status,
+          createdAt: q.createdAt.toISOString(),
+          message: q.message,
+          validUntil: q.validUntil?.toISOString() ?? null,
+          booking: q.booking,
+        }
+      : null,
+    sendBlockedReason: quoteSendBlockedReason(sendCheck(r, ctx, providerId, now)),
+    sendMode: quoteSendMode(q?.status ?? null),
+    withdrawBlockedReason: q ? quoteWithdrawBlockedReason(q.status, r.status) : "No quote to withdraw.",
+  }
+}
+
+/** `GET /api/provider/requests/[id]` and the page's first snapshot; `null` → 404. */
+export async function getRequestForProvider(providerId: string, id: string, now = new Date()): Promise<ProviderRequestDetail | null> {
+  const [ctx, r] = await Promise.all([loadProviderContext(providerId), detailRepo.findDetail(id, providerId)])
+  if (!ctx || !r || !canView(r, ctx, now)) return null
+  return toDetail(r, ctx, providerId, now)
+}
+
+/**
+ * `PUT /api/provider/requests/[id]/quote` (PR-07): send a quote, edit my waiting one, or send again after withdrawing /
+ * expiry (same row — one quote per provider per request). The customer is notified (QUOTE_RECEIVED). Quotes move no money,
+ * so they aren't audited (same as withdrawing).
+ */
+export async function sendQuote(providerId: string, requestId: string, values: ProviderQuoteValues, now = new Date()): Promise<ProviderQuoteSentDto> {
+  const ctx = await loadProviderContext(providerId)
+  if (!ctx) throw new NotFoundError("That request doesn't exist.")
+
+  return detailRepo.transaction(async (tx) => {
+    const r = await detailRepo.findDetail(requestId, providerId, tx)
+    if (!r || !canView(r, ctx, now)) throw new NotFoundError("That request doesn't exist.")
+    const blocked = quoteSendBlockedReason(sendCheck(r, ctx, providerId, now))
+    if (blocked) throw new ConflictError(blocked)
+
+    const existing = r.quotes[0] ?? null
+    const mode = quoteSendMode(existing?.status ?? null)
+    const data = { price: values.price, durationDays: values.durationDays ?? null, message: values.message ?? null, validUntil: quoteValidUntil(now, values.validDays) }
+    let id: string
+    if (!existing) {
+      try {
+        id = (await detailRepo.createQuote({ ...data, requestId, providerId, status: "PENDING" }, tx)).id
+      } catch (e) {
+        if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") throw new ConflictError("You already sent a quote on this request. Reload to see it.")
+        throw e
+      }
+    } else {
+      const from = mode === "UPDATE" ? "PENDING" : { in: ["WITHDRAWN", "EXPIRED"] as ("WITHDRAWN" | "EXPIRED")[] }
+      const extra = mode === "RESEND" ? { status: "PENDING" as const, createdAt: now } : {}
+      if ((await detailRepo.updateQuote(existing.id, providerId, from, { ...data, ...extra }, tx)) === 0) {
+        throw new ConflictError("Your quote or this request just changed. Reload to see the latest.")
+      }
+      id = existing.id
+    }
+
+    await detailRepo.createNotification(
+      {
+        userId: r.customerId,
+        type: "QUOTE_RECEIVED",
+        title: mode === "UPDATE" ? `A provider updated their quote on "${r.title}"` : `New quote on "${r.title}"`,
+        body: `${formatPrice(values.price)}${values.durationDays ? ` · ${values.durationDays} ${values.durationDays === 1 ? "day" : "days"}` : ""}. Compare quotes and choose one.`,
+        payload: { requestId, quoteId: id },
+      },
+      tx,
+    )
+    return { id, status: "PENDING", mode }
+  })
+}
+
+/** `GET /api/provider/requests/[id]/photos/[fileId]` — a 5-minute signed link, only for someone who may open the request. */
+export async function getRequestPhotoUrlForProvider(providerId: string, requestId: string, fileId: string, now = new Date()): Promise<string> {
+  const [ctx, r] = await Promise.all([loadProviderContext(providerId), detailRepo.findDetail(requestId, providerId)])
+  if (!ctx || !r || !canView(r, ctx, now)) throw new NotFoundError("Photo not found.")
+  const file = await detailRepo.findRequestPhoto(requestId, fileId)
+  if (!file) throw new NotFoundError("Photo not found.")
+  return signedPreview(file.key, file.mimeType)
 }

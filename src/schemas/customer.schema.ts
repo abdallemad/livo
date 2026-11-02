@@ -1,5 +1,6 @@
 import { z } from "zod"
 import { contactProblem, REQUEST_BUDGET_MAX, REQUEST_BUDGET_MIN, REQUEST_DESCRIPTION_MAX, REQUEST_DESCRIPTION_MIN, REQUEST_MAX_PHOTOS, REQUEST_SIZE_MAX, REQUEST_TITLE_MAX, REQUEST_TITLE_MIN } from "@/utils/new-request"
+import { BOOKING_PAYMENT_METHODS } from "@/utils/booking-checkout"
 import { paginationQuerySchema } from "./common.schema"
 
 /** Customer dashboard & requests (CU-08, CU-11, CU-13) — docs/customer-dashboard-requests-feature.md. */
@@ -70,3 +71,10 @@ export const newRequestSchema = z
   })
 export type NewRequestInput = z.input<typeof newRequestSchema>
 export type NewRequestValues = z.output<typeof newRequestSchema>
+
+/** `POST /api/me/requests/[id]/booking` — accept one quote (CU-05); docs/customer-request-detail-feature.md. */
+export const acceptQuoteSchema = z.object({
+  quoteId: z.string().trim().min(1, "Choose a quote.").max(64),
+  paymentMethod: z.enum(BOOKING_PAYMENT_METHODS, { error: "Choose how you'll pay." }),
+})
+export type AcceptQuoteValues = z.infer<typeof acceptQuoteSchema>

@@ -8,6 +8,7 @@ import type {
   ProviderBookingListQuery,
   ProviderBookingStatusValues,
   ProviderQuoteListQuery,
+  ProviderQuoteValues,
   ProviderRequestListQuery,
 } from "@/schemas/provider.schema"
 import type {
@@ -16,6 +17,8 @@ import type {
   ProviderBookingStatusDto,
   ProviderDashboardDto,
   ProviderQuoteList,
+  ProviderQuoteSentDto,
+  ProviderRequestDetail,
   ProviderRequestList,
 } from "@/types/provider"
 
@@ -85,6 +88,22 @@ export function useUpdateProviderBooking() {
   return useMutation({
     mutationFn: ({ id, ...values }: ProviderBookingStatusValues & { id: string }) =>
       api.patch<ProviderBookingStatusDto>(API_ROUTES.provider.bookingStatus(id), values),
+    onSuccess: invalidate,
+  })
+}
+
+// --- one request + my quote (PR-07) — docs/provider-request-detail-feature.md ---------------------
+
+/** The server page passes the first snapshot. */
+export function useProviderRequest(id: string, initialData: ProviderRequestDetail) {
+  return useQuery({ queryKey: providerKeys.request(id), queryFn: () => api.get<ProviderRequestDetail>(API_ROUTES.provider.request(id)), initialData })
+}
+
+/** Send, edit or re-send my quote; refreshes every provider list (home counts, requests, quotes). */
+export function useSendQuote(requestId: string) {
+  const invalidate = useInvalidateProvider()
+  return useMutation({
+    mutationFn: (values: ProviderQuoteValues) => api.put<ProviderQuoteSentDto>(API_ROUTES.provider.requestQuote(requestId), values),
     onSuccess: invalidate,
   })
 }

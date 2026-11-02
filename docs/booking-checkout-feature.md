@@ -129,5 +129,5 @@ New dependency: `stripe`. No schema change and no migration (Booking, Payment, N
   Same for **payouts** to providers.
 - Expiring the Stripe session when an admin cancels an unpaid booking (today a late payment is caught and flagged for refund).
 - Slot locking is check-then-insert; two simultaneous bookings for the same minute could both pass. The provider can decline the clash.
-- Booking detail page `/account/bookings/[id]` is still a placeholder (the confirmation step links to My bookings).
+- Booking detail page `/account/bookings/[id]` is built ([customer-booking-detail-feature.md](customer-booking-detail-feature.md)); a customer cancel before acceptance is refunded on Stripe automatically.
 - Quote bookings (accepting a quote) don't create bookings yet; when they do, they can reuse `startCheckout` unchanged.

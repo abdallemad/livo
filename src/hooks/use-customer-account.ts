@@ -4,8 +4,8 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tansta
 import { API_ROUTES } from "@/constants/api-routes"
 import { customerKeys } from "@/constants/query-keys"
 import { api } from "@/lib/api-client"
-import type { AddressValues, CustomerBookingListQuery, CustomerPaymentQuery, InterestsSettingsValues, PersonalSettingsValues } from "@/schemas/customer-account.schema"
-import type { CustomerAddresses, CustomerBookingList, CustomerPayments, CustomerSettings } from "@/types/customer-account"
+import type { AddressValues, CustomerBookingListQuery, CustomerBookingStatusValues, CustomerPaymentQuery, InterestsSettingsValues, PersonalSettingsValues } from "@/schemas/customer-account.schema"
+import type { CustomerAddresses, CustomerBookingDetail, CustomerBookingList, CustomerBookingStatusDto, CustomerPayments, CustomerSettings } from "@/types/customer-account"
 
 /**
  * `/account/settings`, `/account/addresses`, `/account/bookings`, `/account/payments` —
@@ -58,4 +58,18 @@ export function useMyBookings(query: CustomerBookingListQuery) {
 
 export function useMyPayments(query: CustomerPaymentQuery) {
   return useQuery({ queryKey: customerKeys.payments(query), queryFn: () => api.get<CustomerPayments>(API_ROUTES.customer.payments, query), placeholderData: keepPreviousData })
+}
+
+/** `/account/bookings/[id]` — the server page passes the first snapshot (docs/customer-booking-detail-feature.md). */
+export function useMyBooking(id: string, initialData: CustomerBookingDetail) {
+  return useQuery({ queryKey: customerKeys.booking(id), queryFn: () => api.get<CustomerBookingDetail>(API_ROUTES.customer.booking(id)), initialData })
+}
+
+/** Confirm the job is done (CU-09) or cancel before the provider accepts (CU-11). */
+export function useUpdateMyBookingStatus(id: string) {
+  const invalidate = useInvalidateCustomer()
+  return useMutation({
+    mutationFn: (values: CustomerBookingStatusValues) => api.patch<CustomerBookingStatusDto>(API_ROUTES.customer.bookingStatus(id), values),
+    onSuccess: invalidate,
+  })
 }

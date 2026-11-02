@@ -12,8 +12,8 @@ step. Same layering as the admin areas: Server Component page → client island 
 | `/provider` | **Account status** (PR-03) when the provider isn't active yet: Incomplete / Under review / Rejected (with the admin's reason) / Suspended, linking to `/provider/verification`. A warning when the profile is under review for low ratings (BR-04). **Four numbers** (PR-14), each a link: new requests (+ quotes still waiting), bookings to accept (+ confirmed / in progress), earned this month (+ wallet balance), rating (+ reviews, jobs done). A **setup checklist** while specialties, areas or a fixed-price service are missing. **New requests for you** (5 newest matching, "See all N") and **Today's bookings** (time in Cairo, title, customer first name, place, number, status). First snapshot rendered on the server. |
 | `/provider/requests` | Tabs **New for you** (matching requests not quoted yet) and **Quoted** (every request I sent a quote on, with my quote's price, days and status), with counts. Filters in the URL: specialty (my categories and their sub-categories), sort (newest / closing soon / highest budget), search (title and description), and where — **my areas** (default) or **the whole city**. Each card: category, area, posted N days ago, description, budget, wanted-on date, quotes so far, photo count, closing countdown (highlighted in the last 2 days), "Outside your areas" when browsing the whole city, and **View & send a quote** / **View your quote**. 10 per page, real links. |
 
-Both cards link to `/provider/requests/[id]`, where the quote is sent (PR-07). **That page is still a
-placeholder**: it was outside this change's scope.
+Both cards link to `/provider/requests/[id]`, where the quote is sent (PR-07) —
+[provider-request-detail-feature.md](provider-request-detail-feature.md).
 
 ## Matching rules (SY-01) — `src/utils/request-matching.ts` (pure, 6 tests)
 
@@ -90,8 +90,6 @@ No schema change and no migration.
 
 ## Not done / follow-ups
 
-- `/provider/requests/[id]` — request details and **sending a quote** (PR-07). When it lands, invalidate
-  `providerKeys.all` after a quote so both pages update.
 - The provider layout's `VerificationBanner` is still hard-coded to "Under review" for every provider (a
   TODO in `(provider)/layout.tsx`, outside this change). The home page shows the real status.
 - Notifications for new matching requests (SY-02, Flow 2 step 2) aren't sent yet.

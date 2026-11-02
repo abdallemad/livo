@@ -184,3 +184,32 @@ export interface ProviderBookingStatusDto {
   id: string
   status: BookingStatus
 }
+
+// --- request details + sending a quote (PR-07) — docs/provider-request-detail-feature.md ---------------------
+
+export interface ProviderRequestDetail extends Omit<ProviderRequestCard, "myQuote"> {
+  /** `true` when the description had contact details that were hidden (SY-04). */
+  descriptionMasked: boolean
+  /** Provider-scoped photo links (`/api/provider/requests/[id]/photos/[fileId]`, 307 to a 5-minute signed link). */
+  photos: { id: string; url: string }[]
+  myQuote:
+    | (ProviderMyQuote & {
+        message: string | null
+        validUntil: string | null
+        /** The booking once the customer accepted it. */
+        booking: { id: string; number: string; status: BookingStatus } | null
+      })
+    | null
+  /** `null` = the form is shown (send, edit or send again). */
+  sendBlockedReason: string | null
+  sendMode: "CREATE" | "UPDATE" | "RESEND"
+  /** `null` = the waiting quote can be withdrawn. */
+  withdrawBlockedReason: string | null
+}
+
+/** Answer of `PUT /api/provider/requests/[id]/quote`. */
+export interface ProviderQuoteSentDto {
+  id: string
+  status: QuoteStatus
+  mode: "CREATE" | "UPDATE" | "RESEND"
+}

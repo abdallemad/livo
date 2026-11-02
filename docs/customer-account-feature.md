@@ -85,7 +85,7 @@ No schema change and no migration.
 
 ## Not done / follow-ups
 
-- The booking detail and review pages the cards link to (`/account/bookings/[id]`, `/review`, `/dispute`) are still
-  placeholders, so **Confirm the job** leads there. **Pay now** opens Stripe Checkout directly
+- The booking detail page is built ([customer-booking-detail-feature.md](customer-booking-detail-feature.md)); **Confirm the
+  job** leads there. The review and dispute pages (`/review`, `/dispute`) are still placeholders. **Pay now** opens Stripe Checkout directly
   ([booking-checkout-feature.md](booking-checkout-feature.md)).
 - PDF invoices (SY-07); self-service account deletion (AU-07); map pins for addresses (SY-06).

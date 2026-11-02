@@ -4,8 +4,8 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tansta
 import { API_ROUTES } from "@/constants/api-routes"
 import { customerKeys } from "@/constants/query-keys"
 import { api, apiUpload } from "@/lib/api-client"
-import type { CustomerRequestListQuery, NewRequestInput } from "@/schemas/customer.schema"
-import type { CustomerDashboardDto, CustomerRequestList, RequestPhotoDto } from "@/types/customer"
+import type { AcceptQuoteValues, CustomerRequestListQuery, NewRequestInput } from "@/schemas/customer.schema"
+import type { AcceptedQuoteDto, CustomerDashboardDto, CustomerRequestDetail, CustomerRequestList, RequestPhotoDto } from "@/types/customer"
 
 /**
  * `/account` (CU-08) and `/account/requests` (CU-11, CU-13) — docs/customer-dashboard-requests-feature.md.
@@ -54,4 +54,20 @@ export function useUploadRequestPhoto() {
 
 export function useDeleteRequestPhoto() {
   return useMutation({ mutationFn: (id: string) => api.delete<void>(API_ROUTES.customer.requestImage(id)) })
+}
+
+// --- request details (CU-04, CU-05) — docs/customer-request-detail-feature.md ---------------------
+
+/** The server page passes the first snapshot. */
+export function useMyRequest(id: string, initialData: CustomerRequestDetail) {
+  return useQuery({ queryKey: customerKeys.request(id), queryFn: () => api.get<CustomerRequestDetail>(API_ROUTES.customer.request(id)), initialData })
+}
+
+/** Accept one quote → the booking (online: then go to `checkoutUrl`). */
+export function useAcceptQuote(requestId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (values: AcceptQuoteValues) => api.post<AcceptedQuoteDto>(API_ROUTES.customer.requestBooking(requestId), values),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: customerKeys.all }),
+  })
 }

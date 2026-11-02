@@ -46,8 +46,8 @@ PENDING_PROVIDER ──accept──▶ CONFIRMED ──start──▶ IN_PROGRES
 
 `PATCH /api/provider/quotes/[id]/status { status: "WITHDRAWN" }` — only a `PENDING` quote on an `OPEN`
 request; a conditional update, so a quote the customer accepted a moment ago can't be withdrawn (409).
-Not audited (no money moves). Note: `Quote` is unique per (request, provider), so sending a *new* quote on the
-same request after withdrawing needs the future `/provider/requests/[id]` page to reuse the row.
+Not audited (no money moves). `Quote` is unique per (request, provider), so sending again after withdrawing reuses
+the row — `/provider/requests/[id]` does that ([provider-request-detail-feature.md](provider-request-detail-feature.md)).
 
 ## Privacy (BR-02, SY-04, business analysis R1)
 
@@ -94,9 +94,13 @@ No schema change and no migration.
 
 ## Not done / follow-ups
 
-- `/provider/requests/[id]` — sending or editing a quote (PR-07); the quote cards link there.
-- Customer side: confirm completion (CU-09), auto-release job when `autoReleaseAt` passes (BR-08), cancellation
-  policy (BR-06, CU-11).
+- `/provider/requests/[id]` (send, edit, re-send a quote — reusing the row after withdrawing) is built:
+  [provider-request-detail-feature.md](provider-request-detail-feature.md).
+- Customers accept quotes on `/account/requests/[id]` ([customer-request-detail-feature.md](customer-request-detail-feature.md)),
+  which creates the `QUOTE` booking (other quotes → *Not chosen*).
+- Customer side: confirm completion (CU-09) and cancel-before-acceptance are built
+  ([customer-booking-detail-feature.md](customer-booking-detail-feature.md)). Still open: the auto-release job when
+  `autoReleaseAt` passes (BR-08) and the cancellation policy after acceptance (BR-06).
 - Recording cash collection on a cash job (the payment row stays `PENDING` until something marks it paid).
 - Chat (`/provider/messages/[bookingId]`, PR-09) — the detail page links to it once contact is unlocked.
 - Gateway refunds for declined online bookings.

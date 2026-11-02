@@ -10,6 +10,9 @@ export const API_ROUTES = {
   customer: {
     dashboard: "/api/me/dashboard",
     requests: "/api/me/requests",
+    /** One request with its quotes (GET); accept a quote → booking (POST …/booking) — docs/customer-request-detail-feature.md. */
+    request: (id: string) => `/api/me/requests/${encodeURIComponent(id)}`,
+    requestBooking: (id: string) => `/api/me/requests/${encodeURIComponent(id)}/booking`,
     requestStatus: (id: string) => `/api/me/requests/${encodeURIComponent(id)}/status`,
     /** Photos for a new quote request (CU-03): POST to upload, DELETE an unsent one. */
     requestImages: "/api/me/requests/images",
@@ -24,6 +27,9 @@ export const API_ROUTES = {
     addressDefault: (id: string) => `/api/me/addresses/${encodeURIComponent(id)}/default`,
     /** GET my bookings; POST books a fixed-price service (CU-02, docs/booking-checkout-feature.md). */
     bookings: "/api/me/bookings",
+    /** One booking (GET) and the customer's confirm / cancel (PATCH …/status) — docs/customer-booking-detail-feature.md. */
+    booking: (id: string) => `/api/me/bookings/${encodeURIComponent(id)}`,
+    bookingStatus: (id: string) => `/api/me/bookings/${encodeURIComponent(id)}/status`,
     /** Stripe Checkout link for an unpaid booking (Pay now / retry). */
     bookingCheckout: (id: string) => `/api/me/bookings/${encodeURIComponent(id)}/checkout`,
     /** The booking wizard's confirmation step, polled while the payment settles. */
@@ -51,6 +57,10 @@ export const API_ROUTES = {
   provider: {
     dashboard: "/api/provider/dashboard",
     requests: "/api/provider/requests",
+    /** One request (GET), my quote on it (PUT …/quote), its photos — docs/provider-request-detail-feature.md. */
+    request: (id: string) => `/api/provider/requests/${encodeURIComponent(id)}`,
+    requestQuote: (id: string) => `/api/provider/requests/${encodeURIComponent(id)}/quote`,
+    requestPhoto: (id: string, fileId: string) => `/api/provider/requests/${encodeURIComponent(id)}/photos/${encodeURIComponent(fileId)}`,
     quotes: "/api/provider/quotes",
     quoteStatus: (id: string) => `/api/provider/quotes/${encodeURIComponent(id)}/status`,
     bookings: "/api/provider/bookings",

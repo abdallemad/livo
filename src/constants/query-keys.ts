@@ -27,6 +27,7 @@ export const customerKeys = {
   addresses: () => [...customerKeys.all, "addresses"] as const,
   bookingList: (query: object) => [...customerKeys.all, "bookings", query] as const,
   payments: (query: object) => [...customerKeys.all, "payments", query] as const,
+  booking: (id: string) => [...customerKeys.all, "bookings", "detail", id] as const,
   bookingConfirmation: (id: string) => [...customerKeys.all, "bookings", "confirmation", id] as const,
 }
 

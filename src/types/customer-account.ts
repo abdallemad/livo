@@ -1,6 +1,7 @@
-import type { BookingSource, BookingStatus, PaymentMethod, PaymentStatus } from "@prisma/client"
+import type { BookingSource, BookingStatus, DisputeStatus, PaymentMethod, PaymentStatus } from "@prisma/client"
 import type { Paginated } from "./api"
 import type { CustomerPaymentTotals } from "@/utils/customer-booking"
+import type { CustomerBookingAction } from "@/utils/customer-booking-actions"
 
 /** Customer settings, addresses, bookings, payments (AU-06, CU-13, CU-14, SY-07) — docs/customer-account-feature.md. */
 
@@ -94,4 +95,42 @@ export interface CustomerPayments {
   payments: Paginated<CustomerPaymentDto> | null
   invoices: Paginated<CustomerInvoiceDto> | null
   invoiceCount: number
+}
+
+/** `/account/bookings/[id]` — one of the customer's bookings (docs/customer-booking-detail-feature.md). */
+export interface CustomerBookingDetail extends CustomerBookingListItem {
+  serviceId: string | null
+  requestId: string | null
+  provider: {
+    id: string
+    name: string
+    avatarUrl: string | null
+    /** Only while a confirmed booking is live (BR-02); same value as `providerPhone`. */
+    phone: string | null
+  }
+  notes: string | null
+  payments: { id: string; method: PaymentMethod; status: PaymentStatus; amount: number; refundedAmount: number; label: string; paidAt: string | null }[]
+  /** Online money Livo still holds for this booking (BR-08). */
+  held: number
+  refunded: number
+  autoReleaseAt: string | null
+  completedAt: string | null
+  events: { key: string; label: string; at: string; upcoming?: boolean }[]
+  dispute: { status: DisputeStatus; reason: string } | null
+  cancelReason: string | null
+  /** Who closed it, in the customer's words. */
+  closedBy: "YOU" | "PROVIDER" | "LIVO" | null
+  actions: CustomerBookingAction[]
+  canPay: boolean
+  canReportProblem: boolean
+  canMessage: boolean
+  reviewed: boolean
+}
+
+/** Answer of `PATCH /api/me/bookings/[id]/status`. */
+export interface CustomerBookingStatusDto {
+  id: string
+  status: BookingStatus
+  /** Refunded by a cancellation (EGP). */
+  refunded: number
 }

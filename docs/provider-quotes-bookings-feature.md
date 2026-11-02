@@ -95,8 +95,9 @@ No schema change and no migration.
 ## Not done / follow-ups
 
 - `/provider/requests/[id]` — sending or editing a quote (PR-07); the quote cards link there.
-- Customer side: confirm completion (CU-09), auto-release job when `autoReleaseAt` passes (BR-08), cancellation
-  policy (BR-06, CU-11).
+- Customer side: confirm completion (CU-09) and cancel-before-acceptance are built
+  ([customer-booking-detail-feature.md](customer-booking-detail-feature.md)). Still open: the auto-release job when
+  `autoReleaseAt` passes (BR-08) and the cancellation policy after acceptance (BR-06).
 - Recording cash collection on a cash job (the payment row stays `PENDING` until something marks it paid).
 - Chat (`/provider/messages/[bookingId]`, PR-09) — the detail page links to it once contact is unlocked.
 - Gateway refunds for declined online bookings.

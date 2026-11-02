@@ -54,7 +54,7 @@ Sidebar shell, dynamic, `noindex`. Signed-in `CUSTOMER` with onboarding finished
 | `/account/requests/new` | New quote request | Quote category, title, description (no contact details), size, private photos, address or area, budget, preferred date; opens + notifies matching providers ([customer-new-request-feature.md](customer-new-request-feature.md)) | built | CU-03 |
 | `/account/requests/[id]` | Request details | Request stages, quotes received, accept one | placeholder | CU-04, CU-05, CU-08 |
 | `/account/bookings` | My bookings | Current / Finished / Cancelled, next step, provider phone once confirmed, review link ([customer-account-feature.md](customer-account-feature.md)) | built | CU-13 |
-| `/account/bookings/[id]` | Booking details | Stages, payment, confirm completion, cancel, dispute | placeholder | CU-09…CU-12 |
+| `/account/bookings/[id]` | Booking details | Progress, next step + actions (pay, confirm the job, cancel before acceptance, review, report a problem), provider (phone after acceptance), payment & refunds, history ([customer-booking-detail-feature.md](customer-booking-detail-feature.md)) | built | CU-09…CU-12 |
 | `/account/bookings/[id]/review` | Rate the service | Stars and a comment, after completion | placeholder | CU-10 |
 | `/account/bookings/[id]/dispute` | Open a dispute | Reason plus photos or documents | placeholder | CU-12 |
 | `/account/messages` | Messages | Chats for confirmed bookings | placeholder | CU-06 |

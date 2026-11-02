@@ -24,6 +24,9 @@ export const API_ROUTES = {
     addressDefault: (id: string) => `/api/me/addresses/${encodeURIComponent(id)}/default`,
     /** GET my bookings; POST books a fixed-price service (CU-02, docs/booking-checkout-feature.md). */
     bookings: "/api/me/bookings",
+    /** One booking (GET) and the customer's confirm / cancel (PATCH …/status) — docs/customer-booking-detail-feature.md. */
+    booking: (id: string) => `/api/me/bookings/${encodeURIComponent(id)}`,
+    bookingStatus: (id: string) => `/api/me/bookings/${encodeURIComponent(id)}/status`,
     /** Stripe Checkout link for an unpaid booking (Pay now / retry). */
     bookingCheckout: (id: string) => `/api/me/bookings/${encodeURIComponent(id)}/checkout`,
     /** The booking wizard's confirmation step, polled while the payment settles. */

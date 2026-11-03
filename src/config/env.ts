@@ -1,5 +1,6 @@
 import "server-only"
 import { z } from "zod"
+import { parseGeminiModels } from "@/utils/ai-assistant"
 
 /**
  * Server env, validated on first use (not at import) so `next build` and tests
@@ -47,11 +48,12 @@ export function getPusherEnv(): { appId: string; key: string; secret: string; cl
   return { appId: env.PUSHER_APP_ID, key: env.NEXT_PUBLIC_PUSHER_KEY, secret: env.PUSHER_SECRET, cluster: env.NEXT_PUBLIC_PUSHER_CLUSTER }
 }
 
-/** Default Gemini model; override with `GEMINI_MODEL` (an alias that tracks Google's current Flash model). */
-export const DEFAULT_GEMINI_MODEL = "gemini-flash-latest"
-
-/** Gemini credentials, or `null` when the AI assistant isn't configured (the chat route answers 503). */
-export function getGeminiEnv(): { apiKey: string; model: string } | null {
+/**
+ * Gemini credentials and the models to try in order, or `null` when the AI assistant isn't configured (the chat route
+ * answers 503). `GEMINI_MODEL` may be one model or a comma-separated fallback list; the default is the free-tier
+ * Flash-Lite models (docs/ai-assistant-feature.md).
+ */
+export function getGeminiEnv(): { apiKey: string; models: string[] } | null {
   const env = getServerEnv()
-  return env.GEMINI_API_KEY ? { apiKey: env.GEMINI_API_KEY, model: env.GEMINI_MODEL ?? DEFAULT_GEMINI_MODEL } : null
+  return env.GEMINI_API_KEY ? { apiKey: env.GEMINI_API_KEY, models: parseGeminiModels(env.GEMINI_MODEL) } : null
 }

@@ -32,7 +32,8 @@ AssistantLauncher (client island, marketing layout)
 - **Open to guests, rate limited.** The assistant lives on public pages, so the route doesn't require sign-in. A per-visitor
   in-memory limit (8/min, 60/h, keyed by user id, else IP) protects the Gemini quota. It is per process — move it to a shared
   store if the app runs on more than one instance. Suspended accounts get 403. Same-origin only via the proxy CSRF check.
-- **Honest failures.** A Gemini error, timeout (20 s) or malformed output → `503` with a friendly message (logged server-side);
+- **Model fallback.** Each configured model is tried in order; a busy (503), rate-limited (429), timed-out (12 s) or unknown (404) model falls through to the next.
+- **Honest failures.** When every model fails, or on a non-retryable error (bad key) or malformed output → `503` with a friendly message (logged server-side);
   the UI shows it and puts the text back in the box. There is no canned "fake" answer.
 - **Nothing stored.** The conversation lives in the panel's state; closing the tab forgets it. Voice in/out uses the browser's
   Speech APIs and never touches our server (buttons hide where unsupported).
@@ -44,7 +45,7 @@ AssistantLauncher (client island, marketing layout)
 | Var | |
 |---|---|
 | `GEMINI_API_KEY` | Server only. Optional: without it the route answers 503 and the panel says the assistant is unavailable. |
-| `GEMINI_MODEL` | Optional. Default `gemini-flash-latest` (an alias that tracks Google's current Flash model). Pin a specific model if you need stable behaviour. |
+| `GEMINI_MODEL` | Optional. One model or a comma-separated fallback list. Default `gemini-3.5-flash-lite,gemini-3.1-flash-lite` — free-tier models with a much larger free daily quota than Flash. Avoid `gemini-flash-latest`: it tracks the newest Flash, which is often overloaded (503) and has a tiny free quota. |
 
 ## Files
 

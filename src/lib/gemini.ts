@@ -14,9 +14,9 @@ export function isGeminiConfigured(): boolean {
   return getGeminiEnv() !== null
 }
 
-export function getGemini(): { client: GoogleGenAI; model: string } {
+export function getGemini(): { client: GoogleGenAI; models: string[] } {
   const env = getGeminiEnv()
   if (!env) throw new ServiceUnavailableError("The Livo assistant isn't available right now. Try again later.")
   client ??= new GoogleGenAI({ apiKey: env.apiKey })
-  return { client, model: env.model }
+  return { client, models: env.models }
 }

@@ -8,7 +8,7 @@ import { catalogRepository } from "@/repositories/catalog.repository"
 import { assistantModelReplySchema, type AssistantChatValues } from "@/schemas/ai-assistant.schema"
 import { VISIBLE_SERVICE } from "@/services/admin-catalog.service"
 import type { AssistantReply } from "@/types/ai-assistant"
-import { buildSystemInstruction, toAssistantReply, toGeminiContents, type AssistantCategory, type AssistantViewer } from "@/utils/ai-assistant"
+import { buildSystemInstruction, isRetryableGeminiError, toAssistantReply, toGeminiContents, type AssistantCategory, type AssistantViewer } from "@/utils/ai-assistant"
 
 /**
  * Livo AI Assistant (docs/ai-assistant-feature.md). Answers a visitor's question with Google Gemini, grounded in the
@@ -16,7 +16,8 @@ import { buildSystemInstruction, toAssistantReply, toGeminiContents, type Assist
  * JSON that is re-validated and mapped to safe links here; it never builds a URL itself. Nothing is stored.
  */
 
-const TIMEOUT_MS = 20_000
+/** Per-model timeout; with the fallback the whole turn stays under ~25 s. */
+const TIMEOUT_MS = 12_000
 const CONTEXT_TTL_MS = 10 * 60_000
 
 /** 8 messages a minute and 60 an hour per visitor (user id, else IP) keep one tab from draining the Gemini quota. */
@@ -65,28 +66,34 @@ async function loadCatalogContext(): Promise<AssistantCategory[]> {
 export async function askAssistant(input: AssistantChatValues, visitor: { key: string; viewer: AssistantViewer }): Promise<AssistantReply> {
   if (!perMinute.hit(visitor.key) || !perHour.hit(visitor.key)) throw new RateLimitError()
 
-  const { client, model } = getGemini()
+  const { client, models } = getGemini()
   const categories = await loadCatalogContext()
+  const systemInstruction = buildSystemInstruction({ siteName: SITE_NAME, city: LAUNCH_CITY, categories, viewer: visitor.viewer })
 
+  // Try each configured model in order: a busy (503) or rate-limited (429) model falls through to the next one.
   let text: string | undefined
-  try {
-    const response = await client.models.generateContent({
-      model,
-      contents: toGeminiContents(input.messages),
-      config: {
-        systemInstruction: buildSystemInstruction({ siteName: SITE_NAME, city: LAUNCH_CITY, categories, viewer: visitor.viewer }),
-        responseMimeType: "application/json",
-        responseSchema: RESPONSE_SCHEMA,
-        temperature: 0.4,
-        maxOutputTokens: 1024,
-        abortSignal: AbortSignal.timeout(TIMEOUT_MS),
-      },
-    })
-    text = response.text
-  } catch (error) {
-    // Overloaded (503), quota (429), timeout or a bad key: log the cause, tell the visitor to retry.
-    console.error("[ai-assistant] Gemini request failed", error)
-    throw new ServiceUnavailableError("The Livo assistant is busy right now. Try again in a moment.")
+  for (const [i, model] of models.entries()) {
+    try {
+      const response = await client.models.generateContent({
+        model,
+        contents: toGeminiContents(input.messages),
+        config: {
+          systemInstruction,
+          responseMimeType: "application/json",
+          responseSchema: RESPONSE_SCHEMA,
+          temperature: 0.4,
+          maxOutputTokens: 1024,
+          abortSignal: AbortSignal.timeout(TIMEOUT_MS),
+        },
+      })
+      text = response.text
+      break
+    } catch (error) {
+      const retry = isRetryableGeminiError(error) && i < models.length - 1
+      console.warn(`[ai-assistant] ${model} failed${retry ? ", trying the next model" : ""}:`, error instanceof Error ? error.message : error)
+      // Bad key, blocked prompt, or every model busy: tell the visitor to retry (the cause is in the log above).
+      if (!retry) throw new ServiceUnavailableError("The Livo assistant is busy right now. Try again in a moment.")
+    }
   }
 
   let json: unknown

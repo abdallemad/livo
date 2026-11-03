@@ -4,6 +4,8 @@ import { VerifiedBadge } from "@/components/shared"
 import { POLICIES_PATH } from "@/constants/site"
 import { WHY_TRUST } from "@/constants/trust"
 import { TRUST_ICONS } from "./trust-icons"
+import { AnimatedTitle } from "@/components/motion/AnimatedTitle"
+import { StaggerItem, StaggerList } from "@/components/motion/Reveal"
 
 /**
  * Why trust Livo (docs/landing-page.md §5) — the page's core section, so it gets the strongest visual weight. Every
@@ -15,16 +17,14 @@ export function WhyTrust({ policiesPublished }: { policiesPublished: boolean }) 
     <section id="trust" aria-labelledby="trust-title" className="bg-primary text-primary-foreground">
       <div className="mx-auto max-w-6xl space-y-8 px-4 py-16 md:px-6 md:py-20">
         <div className="max-w-2xl space-y-3">
-          <h2 id="trust-title" className="text-3xl font-semibold md:text-4xl">
-            {WHY_TRUST.title}
-          </h2>
+          <AnimatedTitle id="trust-title" className="text-3xl font-semibold md:text-4xl" text={WHY_TRUST.title} />
           <p className="text-lg opacity-90">{WHY_TRUST.intro}</p>
         </div>
-        <ul className="grid gap-4 md:grid-cols-2">
+        <StaggerList className="grid gap-4 md:grid-cols-2">
           {WHY_TRUST.cards.map((card) => {
             const Icon = TRUST_ICONS[card.icon]
             return (
-              <li key={card.title} className="rounded-2xl bg-card p-6 text-card-foreground shadow-sm">
+              <StaggerItem key={card.title} lift className="rounded-2xl bg-card p-6 text-card-foreground shadow-sm">
                 <span className="mb-4 flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
                   <Icon className="size-6" aria-hidden />
                 </span>
@@ -35,10 +35,10 @@ export function WhyTrust({ policiesPublished }: { policiesPublished: boolean }) 
                     Look for this badge: <VerifiedBadge />
                   </p>
                 ) : null}
-              </li>
+              </StaggerItem>
             )
           })}
-        </ul>
+        </StaggerList>
         <p className="flex flex-wrap items-center gap-2 text-base">
           <LockKeyhole className="size-5 shrink-0" aria-hidden />
           <span>{WHY_TRUST.privacyNote}</span>

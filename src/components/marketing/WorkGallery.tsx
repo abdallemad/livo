@@ -1,5 +1,7 @@
 import { PublicImage } from "@/components/shared/public-image"
 import type { GalleryImage } from "@/types/landing"
+import { AnimatedTitle } from "@/components/motion/AnimatedTitle"
+import { StaggerItem, StaggerList } from "@/components/motion/Reveal"
 
 /**
  * Real work gallery (docs/landing-page.md §7): providers' own portfolio photos, labelled with the provider's specialty
@@ -11,12 +13,12 @@ export function WorkGallery({ images }: { images: GalleryImage[] }) {
     <section aria-labelledby="gallery-title" className="defer-render bg-muted/40">
       <div className="mx-auto max-w-6xl space-y-6 px-4 py-14 md:px-6">
         <div className="space-y-1">
-          <h2 id="gallery-title" className="text-2xl font-semibold md:text-3xl">Real work by our providers</h2>
+          <AnimatedTitle id="gallery-title" className="text-2xl font-semibold md:text-3xl" text="Real work by our providers" />
           <p className="text-muted-foreground">Photos uploaded by the providers themselves.</p>
         </div>
-        <ul className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <StaggerList className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {images.map((img) => (
-            <li key={img.id}>
+            <StaggerItem key={img.id} lift>
               <figure className="overflow-hidden rounded-xl border bg-card">
                 <PublicImage src={img.url} alt={img.title} width={400} height={300} sizes="(min-width: 768px) 25vw, 50vw" className="aspect-[4/3] w-full object-cover" />
                 <figcaption className="space-y-0.5 p-2.5">
@@ -24,9 +26,9 @@ export function WorkGallery({ images }: { images: GalleryImage[] }) {
                   {img.label ? <span className="block text-xs text-muted-foreground">{img.label}</span> : null}
                 </figcaption>
               </figure>
-            </li>
+            </StaggerItem>
           ))}
-        </ul>
+        </StaggerList>
       </div>
     </section>
   )

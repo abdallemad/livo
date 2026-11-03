@@ -1,13 +1,14 @@
 import { cache } from "react"
-import Image from "next/image"
 import Link from "next/link"
 import { MARKETING_NAV_GROUPS } from "@/constants/nav"
-import { SITE_LOGO, SITE_NAME } from "@/constants/site"
+import { BrandWordmark } from "@/components/shared/brand-logo"
 import { getNavCategories } from "@/services/catalog.service"
 import { buildNavGroups } from "@/utils/nav"
+import { NotificationBell } from "@/components/notifications/NotificationBell"
 import { AccountControls } from "./AccountControls"
 import { MobileMenu } from "./MobileMenu"
 import { NavMenu } from "./NavMenu"
+import { RealtimeNotifications } from "./RealtimeNotifications"
 
 /**
  * Category links for the Services dropdown, read at build / ISR regeneration time (never per request — CLAUDE.md §4.1
@@ -33,12 +34,14 @@ export async function AppHeader() {
     <header className="sticky top-0 z-40 border-b bg-background">
       <div className="mx-auto flex h-16 max-w-6xl items-center gap-2 px-4 md:gap-8 md:px-6">
         <MobileMenu groups={groups} />
-        <Link href="/" className="flex items-center gap-2 font-heading text-lg font-semibold">
-          <Image src={SITE_LOGO} alt="" width={32} height={32} />
-          {SITE_NAME}
+        <Link href="/" className="flex items-center rounded-md focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none">
+          <BrandWordmark height={36} priority />
         </Link>
         <NavMenu groups={groups} />
         <div className="ms-auto flex items-center gap-1">
+          {/* Client islands: render nothing for signed-out visitors, so this static header stays static. */}
+          <RealtimeNotifications />
+          <NotificationBell />
           <AccountControls />
         </div>
       </div>

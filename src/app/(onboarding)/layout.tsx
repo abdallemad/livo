@@ -1,8 +1,7 @@
 import type { Metadata } from "next"
-import Image from "next/image"
 import Link from "next/link"
 import { ThemeToggle } from "@/components/layout/ThemeToggle"
-import { SITE_LOGO, SITE_NAME } from "@/constants/site"
+import { BrandWordmark } from "@/components/shared/brand-logo"
 
 /**
  * Minimal shell for the onboarding wizard: logo, theme toggle, centred
@@ -17,9 +16,8 @@ export default function OnboardingLayout({ children }: { children: React.ReactNo
     <div className="flex min-h-dvh flex-col">
       <header className="border-b bg-card">
         <div className="mx-auto flex h-16 w-full max-w-3xl items-center justify-between px-4">
-          <Link href="/" className="flex items-center gap-2 font-heading text-lg font-semibold">
-            <Image src={SITE_LOGO} alt="" width={32} height={32} />
-            {SITE_NAME}
+          <Link href="/" className="flex items-center rounded-md focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none">
+            <BrandWordmark height={36} priority />
           </Link>
           <ThemeToggle />
         </div>

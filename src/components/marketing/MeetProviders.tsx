@@ -6,6 +6,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card } from "@/components/ui/card"
 import type { FeaturedProvider } from "@/types/landing"
 import { formatNumber } from "@/utils/format"
+import { AnimatedTitle } from "@/components/motion/AnimatedTitle"
+import { StaggerItem, StaggerList } from "@/components/motion/Reveal"
 
 const initials = (name: string) => name.trim().split(/\s+/).slice(0, 2).map((p) => p[0]?.toUpperCase() ?? "").join("") || "?"
 
@@ -20,12 +22,12 @@ export function MeetProviders({ providers }: { providers: FeaturedProvider[] }) 
     <section aria-labelledby="providers-title" className="defer-render">
       <div className="mx-auto max-w-6xl space-y-6 px-4 py-14 md:px-6">
         <div className="space-y-1">
-          <h2 id="providers-title" className="text-2xl font-semibold md:text-3xl">Meet our providers</h2>
+          <AnimatedTitle id="providers-title" className="text-2xl font-semibold md:text-3xl" text="Meet our providers" />
           <p className="text-muted-foreground">Real people, checked by our team before their first job.</p>
         </div>
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StaggerList className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {providers.map((p) => (
-            <li key={p.id}>
+            <StaggerItem key={p.id} lift>
               <Card className="h-full gap-0 overflow-hidden py-0">
                 <Link href={`/providers/${p.id}`} className="flex h-full flex-col focus-visible:outline-none">
                   <div className="relative aspect-[4/3] bg-muted">
@@ -60,9 +62,9 @@ export function MeetProviders({ providers }: { providers: FeaturedProvider[] }) 
                   </div>
                 </Link>
               </Card>
-            </li>
+            </StaggerItem>
           ))}
-        </ul>
+        </StaggerList>
       </div>
     </section>
   )

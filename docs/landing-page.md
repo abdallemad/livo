@@ -22,8 +22,38 @@ Static / ISR (`revalidate = 3600`), built and verified with `npm run build` agai
 | 12 | Final CTA — repeats Book a service | `FinalCta.tsx` | constants | — |
 | 13 | Footer — About, Contact, FAQ, Terms, Privacy, Policies, Services, Categories…, support phone / WhatsApp, social links, © | `layout/AppFooter.tsx` | constants | phone / WhatsApp / social **render only when set** |
 
-Below-the-fold bands use `defer-render` (`content-visibility: auto`, in `globals.css`). No `motion` is used — the page has no
-animation beyond CSS transitions, which keeps it light. All layout uses logical utilities (`ms-`, `pe-`, `text-start`).
+Below-the-fold bands use `defer-render` (`content-visibility: auto`, in `globals.css`). All layout uses logical utilities
+(`ms-`, `pe-`, `text-start`). The page is animated — see [Motion](#motion).
+
+## Motion
+
+The landing page is the one place with expressive animation (the `motion` package — formerly Framer Motion — plus a little
+CSS); the rest of the app follows the calm rule in [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md) §10.
+
+| Where | Animation | How |
+|---|---|---|
+| Hero `<h1>` | words rise in one after another (blur → sharp) at first paint | **CSS** `word-in` keyframes via `SplitWords` — it's the LCP element, so it must not wait for hydration, and it starts at opacity 0.15 so the browser counts its first paint |
+| Hero subtitle, buttons, search | rise in, 350 / 500 / 650 ms after | CSS `rise-in` |
+| Hero background | two soft violet / amber glows drifting slowly | `HeroBackdrop` (`m.div`, 14–17 s loops), `aria-hidden` |
+| Every section `<h2>` | word-by-word rise when it scrolls into view (once) | `AnimatedTitle` |
+| Trust strip, popular services / categories, why-trust cards, providers, work gallery, provider benefits | cards appear one after another; services, categories, trust cards, providers and photos lift a little on hover | `StaggerList` / `StaggerItem` |
+| How it works (tabs), money flow, FAQ | the whole block fades and rises in | `Reveal` (the tabs' hidden panel would never trigger per-item animation) |
+| Final CTA | fades and zooms in gently | `Reveal scale` |
+| Social proof numbers | count up from 0 when seen | `CountUp` (server HTML holds the real number) |
+
+Rules kept:
+
+- **Content is in the server HTML** — titles are real text (words split into spans, `aria-label` with the full sentence for
+  screen readers), numbers are the real values; animation only changes style. Crawlers and screen readers see it all.
+- **Reduced motion**: `MotionProvider` sets `MotionConfig reducedMotion="user"` (no movement, fades only) and the CSS
+  keyframes are off under `prefers-reduced-motion`; `CountUp` shows the final number.
+- **Weight**: `LazyMotion` + `domAnimation` with `m.*` components (`strict`), so only the needed features ship. The page
+  itself stays a static / ISR Server Component; the motion pieces are small client islands.
+- Below-the-fold content starts hidden until it scrolls in, which needs JavaScript; without JS it stays at its initial
+  (faded) style but is still in the HTML.
+
+Files: `src/components/motion/{MotionProvider,AnimatedTitle,Reveal,CountUp,HeroBackdrop}.tsx`, `split-words.tsx`;
+keyframes `word-in` / `rise-in` in `src/app/globals.css`; wired in `src/components/marketing/*` and `(marketing)/page.tsx`.
 
 ## Data sources & visibility
 

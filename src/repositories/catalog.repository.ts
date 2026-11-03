@@ -44,6 +44,11 @@ class CatalogRepository {
     return db.$transaction([db.service.findMany({ where, orderBy, skip, take, select: cardSelect }), db.service.count({ where })])
   }
 
+  /** Live fixed prices per category — the AI assistant's price grounding (docs/ai-assistant-feature.md). */
+  priceStatsByCategory(visible: Prisma.ServiceWhereInput) {
+    return db.service.groupBy({ by: ["categoryId"], where: visible, _count: { _all: true }, _min: { price: true }, _max: { price: true } })
+  }
+
   async priceBounds(visible: Prisma.ServiceWhereInput) {
     const agg = await db.service.aggregate({ where: visible, _min: { price: true }, _max: { price: true } })
     return agg._min.price && agg._max.price ? { min: Number(agg._min.price.toString()), max: Number(agg._max.price.toString()) } : null

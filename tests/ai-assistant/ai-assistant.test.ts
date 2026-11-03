@@ -89,3 +89,19 @@ test("rate limiter counts per key and resets after the window", () => {
   assert.equal(rl.hit("b", 20), true)
   assert.equal(rl.hit("a", 1000), true)
 })
+
+test("model list defaults to the free Flash-Lite models and accepts a comma-separated override", async () => {
+  const { parseGeminiModels, DEFAULT_GEMINI_MODELS } = await import("@/utils/ai-assistant")
+  assert.deepEqual(parseGeminiModels(undefined), [...DEFAULT_GEMINI_MODELS])
+  assert.deepEqual(parseGeminiModels(" , "), [...DEFAULT_GEMINI_MODELS])
+  assert.deepEqual(parseGeminiModels("a, b ,a"), ["a", "b"])
+})
+
+test("busy, rate-limited, timed-out and unknown models are retried; bad requests are not", async () => {
+  const { isRetryableGeminiError } = await import("@/utils/ai-assistant")
+  const err = (status: number) => Object.assign(new Error("x"), { status })
+  for (const s of [503, 500, 429, 404]) assert.equal(isRetryableGeminiError(err(s)), true)
+  for (const s of [400, 401, 403]) assert.equal(isRetryableGeminiError(err(s)), false)
+  assert.equal(isRetryableGeminiError(Object.assign(new Error("t"), { name: "TimeoutError" })), true)
+  assert.equal(isRetryableGeminiError("nope"), false)
+})

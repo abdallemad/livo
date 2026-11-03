@@ -21,6 +21,25 @@ export const ASSISTANT_LIMITS = {
   chipMax: 80,
 } as const
 
+/**
+ * Free-tier Gemini models, tried in order. Flash-Lite has a far larger free daily quota than Flash and is
+ * rarely "overloaded" (503); the second one is the fallback when the first is busy or rate limited.
+ */
+export const DEFAULT_GEMINI_MODELS = ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite"] as const
+
+/** `GEMINI_MODEL` ("a" or "a, b") → the ordered, de-duplicated model list; empty → the free defaults. */
+export function parseGeminiModels(raw: string | undefined): string[] {
+  const list = [...new Set((raw ?? "").split(",").map((m) => m.trim()).filter(Boolean))]
+  return list.length ? list : [...DEFAULT_GEMINI_MODELS]
+}
+
+/** Gemini errors worth retrying on the next model: overloaded, rate limited, server error, timeout, unknown model. */
+export function isRetryableGeminiError(error: unknown): boolean {
+  if (error instanceof Error && (error.name === "AbortError" || error.name === "TimeoutError")) return true
+  const status = (error as { status?: unknown } | null)?.status
+  return typeof status === "number" ? status === 404 || status === 408 || status === 429 || status >= 500 : false
+}
+
 export const NEW_REQUEST_PATH = "/account/requests/new"
 
 export type AssistantCategoryType = "FIXED" | "QUOTE" | "BOTH"

@@ -7,6 +7,8 @@ export const API_ROUTES = {
   me: "/api/me",
   /** Public catalog (MK-02): filtered LIVE services. */
   services: "/api/services",
+  /** Livo AI Assistant (Gemini): POST one chat turn — docs/ai-assistant-feature.md. */
+  assistantChat: "/api/assistant/chat",
   customer: {
     dashboard: "/api/me/dashboard",
     requests: "/api/me/requests",

@@ -20,6 +20,9 @@ const serverEnvSchema = z.object({
   PUSHER_SECRET: z.string().min(1).optional(),
   NEXT_PUBLIC_PUSHER_KEY: z.string().min(1).optional(),
   NEXT_PUBLIC_PUSHER_CLUSTER: z.string().min(1).optional(),
+  // Livo AI Assistant (docs/ai-assistant-feature.md). Optional: without a key the chat endpoint answers 503.
+  GEMINI_API_KEY: z.string().min(1).optional(),
+  GEMINI_MODEL: z.string().min(1).optional(),
 })
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>
@@ -42,4 +45,13 @@ export function getPusherEnv(): { appId: string; key: string; secret: string; cl
   const env = getServerEnv()
   if (!env.PUSHER_APP_ID || !env.PUSHER_SECRET || !env.NEXT_PUBLIC_PUSHER_KEY || !env.NEXT_PUBLIC_PUSHER_CLUSTER) return null
   return { appId: env.PUSHER_APP_ID, key: env.NEXT_PUBLIC_PUSHER_KEY, secret: env.PUSHER_SECRET, cluster: env.NEXT_PUBLIC_PUSHER_CLUSTER }
+}
+
+/** Default Gemini model; override with `GEMINI_MODEL` (an alias that tracks Google's current Flash model). */
+export const DEFAULT_GEMINI_MODEL = "gemini-flash-latest"
+
+/** Gemini credentials, or `null` when the AI assistant isn't configured (the chat route answers 503). */
+export function getGeminiEnv(): { apiKey: string; model: string } | null {
+  const env = getServerEnv()
+  return env.GEMINI_API_KEY ? { apiKey: env.GEMINI_API_KEY, model: env.GEMINI_MODEL ?? DEFAULT_GEMINI_MODEL } : null
 }

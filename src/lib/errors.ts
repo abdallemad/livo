@@ -60,3 +60,10 @@ export class ServiceUnavailableError extends AppError {
     super(message, "UNAVAILABLE", 503)
   }
 }
+
+/** Too many requests from one visitor in a short window (e.g. the AI assistant's per-visitor limit). */
+export class RateLimitError extends AppError {
+  constructor(message = "You're sending messages too quickly. Wait a moment and try again.") {
+    super(message, "RATE_LIMITED", 429)
+  }
+}

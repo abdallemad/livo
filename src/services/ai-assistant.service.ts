@@ -1,0 +1,104 @@
+import "server-only"
+import { Type, type Schema } from "@google/genai"
+import { LAUNCH_CITY, SITE_NAME } from "@/constants/site"
+import { RateLimitError, ServiceUnavailableError } from "@/lib/errors"
+import { getGemini } from "@/lib/gemini"
+import { createRateLimiter } from "@/lib/rate-limit"
+import { catalogRepository } from "@/repositories/catalog.repository"
+import { assistantModelReplySchema, type AssistantChatValues } from "@/schemas/ai-assistant.schema"
+import { VISIBLE_SERVICE } from "@/services/admin-catalog.service"
+import type { AssistantReply } from "@/types/ai-assistant"
+import { buildSystemInstruction, toAssistantReply, toGeminiContents, type AssistantCategory, type AssistantViewer } from "@/utils/ai-assistant"
+
+/**
+ * Livo AI Assistant (docs/ai-assistant-feature.md). Answers a visitor's question with Google Gemini, grounded in the
+ * LIVE catalog (active categories + real listed prices) so it points only at pages that exist. The model returns
+ * JSON that is re-validated and mapped to safe links here; it never builds a URL itself. Nothing is stored.
+ */
+
+const TIMEOUT_MS = 20_000
+const CONTEXT_TTL_MS = 10 * 60_000
+
+/** 8 messages a minute and 60 an hour per visitor (user id, else IP) keep one tab from draining the Gemini quota. */
+const perMinute = createRateLimiter({ limit: 8, windowMs: 60_000 })
+const perHour = createRateLimiter({ limit: 60, windowMs: 60 * 60_000 })
+
+const RESPONSE_SCHEMA: Schema = {
+  type: Type.OBJECT,
+  properties: {
+    reply: { type: Type.STRING, description: "The answer shown to the visitor, plain text." },
+    action: { type: Type.STRING, enum: ["book_service", "request_quote", "browse", "none"] },
+    categorySlug: { type: Type.STRING, nullable: true, description: "One of the listed category slugs, or null." },
+    estimatedPrice: { type: Type.STRING, nullable: true, description: 'Rough price in EGP, e.g. "250–400 EGP", or null.' },
+    tips: { type: Type.ARRAY, items: { type: Type.STRING } },
+    quickReplies: { type: Type.ARRAY, items: { type: Type.STRING } },
+  },
+  required: ["reply", "action", "tips", "quickReplies"],
+  propertyOrdering: ["reply", "action", "categorySlug", "estimatedPrice", "tips", "quickReplies"],
+}
+
+let cachedContext: { at: number; categories: AssistantCategory[] } | undefined
+
+/** Active categories with their live price range; cached in memory for 10 min (the catalog changes rarely). */
+async function loadCatalogContext(): Promise<AssistantCategory[]> {
+  if (cachedContext && Date.now() - cachedContext.at < CONTEXT_TTL_MS) return cachedContext.categories
+  const [rows, stats] = await Promise.all([catalogRepository.findActiveCategories(), catalogRepository.priceStatsByCategory(VISIBLE_SERVICE)])
+  const byId = new Map(stats.map((s) => [s.categoryId, s]))
+  const nameById = new Map(rows.map((r) => [r.id, r.nameEn ?? r.nameAr]))
+  const categories = rows.map((r): AssistantCategory => {
+    const s = byId.get(r.id)
+    return {
+      slug: r.slug,
+      name: r.nameEn ?? r.nameAr,
+      description: r.description,
+      type: r.type,
+      parentName: r.parentId ? (nameById.get(r.parentId) ?? null) : null,
+      serviceCount: s?._count._all ?? 0,
+      priceRange:
+        s?._min.price && s._max.price ? { min: Number(s._min.price.toString()), max: Number(s._max.price.toString()) } : null,
+    }
+  })
+  cachedContext = { at: Date.now(), categories }
+  return categories
+}
+
+export async function askAssistant(input: AssistantChatValues, visitor: { key: string; viewer: AssistantViewer }): Promise<AssistantReply> {
+  if (!perMinute.hit(visitor.key) || !perHour.hit(visitor.key)) throw new RateLimitError()
+
+  const { client, model } = getGemini()
+  const categories = await loadCatalogContext()
+
+  let text: string | undefined
+  try {
+    const response = await client.models.generateContent({
+      model,
+      contents: toGeminiContents(input.messages),
+      config: {
+        systemInstruction: buildSystemInstruction({ siteName: SITE_NAME, city: LAUNCH_CITY, categories, viewer: visitor.viewer }),
+        responseMimeType: "application/json",
+        responseSchema: RESPONSE_SCHEMA,
+        temperature: 0.4,
+        maxOutputTokens: 1024,
+        abortSignal: AbortSignal.timeout(TIMEOUT_MS),
+      },
+    })
+    text = response.text
+  } catch (error) {
+    // Overloaded (503), quota (429), timeout or a bad key: log the cause, tell the visitor to retry.
+    console.error("[ai-assistant] Gemini request failed", error)
+    throw new ServiceUnavailableError("The Livo assistant is busy right now. Try again in a moment.")
+  }
+
+  let json: unknown
+  try {
+    json = JSON.parse(text ?? "")
+  } catch {
+    json = undefined
+  }
+  const parsed = assistantModelReplySchema.safeParse(json)
+  if (!parsed.success) {
+    console.error("[ai-assistant] Unexpected model output", text?.slice(0, 500))
+    throw new ServiceUnavailableError("The Livo assistant couldn't answer that. Try rephrasing your question.")
+  }
+  return toAssistantReply(parsed.data, categories)
+}

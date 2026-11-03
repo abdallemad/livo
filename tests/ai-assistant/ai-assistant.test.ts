@@ -90,8 +90,9 @@ test("rate limiter counts per key and resets after the window", () => {
   assert.equal(rl.hit("a", 1000), true)
 })
 
-test("model list defaults to the free Flash-Lite models and accepts a comma-separated override", async () => {
+test("model list defaults to gemini-3-flash-preview first and accepts a comma-separated override", async () => {
   const { parseGeminiModels, DEFAULT_GEMINI_MODELS } = await import("@/utils/ai-assistant")
+  assert.equal(DEFAULT_GEMINI_MODELS[0], "gemini-3-flash-preview")
   assert.deepEqual(parseGeminiModels(undefined), [...DEFAULT_GEMINI_MODELS])
   assert.deepEqual(parseGeminiModels(" , "), [...DEFAULT_GEMINI_MODELS])
   assert.deepEqual(parseGeminiModels("a, b ,a"), ["a", "b"])

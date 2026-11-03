@@ -50,8 +50,8 @@ export function getPusherEnv(): { appId: string; key: string; secret: string; cl
 
 /**
  * Gemini credentials and the models to try in order, or `null` when the AI assistant isn't configured (the chat route
- * answers 503). `GEMINI_MODEL` may be one model or a comma-separated fallback list; the default is the free-tier
- * Flash-Lite models (docs/ai-assistant-feature.md).
+ * answers 503). `GEMINI_MODEL` may be one model or a comma-separated fallback list; the default is
+ * `gemini-3-flash-preview` with Flash-Lite fallbacks (docs/ai-assistant-feature.md).
  */
 export function getGeminiEnv(): { apiKey: string; models: string[] } | null {
   const env = getServerEnv()

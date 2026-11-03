@@ -45,7 +45,7 @@ AssistantLauncher (client island, marketing layout)
 | Var | |
 |---|---|
 | `GEMINI_API_KEY` | Server only. Optional: without it the route answers 503 and the panel says the assistant is unavailable. |
-| `GEMINI_MODEL` | Optional. One model or a comma-separated fallback list. Default `gemini-3.5-flash-lite,gemini-3.1-flash-lite` — free-tier models with a much larger free daily quota than Flash. Avoid `gemini-flash-latest`: it tracks the newest Flash, which is often overloaded (503) and has a tiny free quota. |
+| `GEMINI_MODEL` | Optional. One model or a comma-separated fallback list. Default `gemini-3-flash-preview,gemini-3.5-flash-lite,gemini-3.1-flash-lite` — `gemini-3-flash-preview` answers; the Flash-Lite models are fallbacks when it is busy (503) or rate limited (429). Avoid `gemini-flash-latest`: it tracks the newest Flash and can change under you. |
 
 ## Files
 

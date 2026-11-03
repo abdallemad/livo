@@ -22,12 +22,12 @@ export const ASSISTANT_LIMITS = {
 } as const
 
 /**
- * Free-tier Gemini models, tried in order. Flash-Lite has a far larger free daily quota than Flash and is
- * rarely "overloaded" (503); the second one is the fallback when the first is busy or rate limited.
+ * Gemini models, tried in order. `gemini-3-flash-preview` answers every request; the Flash-Lite models are only
+ * fallbacks for when it is busy (503) or rate limited (429), so the assistant degrades instead of failing.
  */
-export const DEFAULT_GEMINI_MODELS = ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite"] as const
+export const DEFAULT_GEMINI_MODELS = ["gemini-3-flash-preview", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite"] as const
 
-/** `GEMINI_MODEL` ("a" or "a, b") → the ordered, de-duplicated model list; empty → the free defaults. */
+/** `GEMINI_MODEL` ("a" or "a, b") → the ordered, de-duplicated model list; empty → the defaults. */
 export function parseGeminiModels(raw: string | undefined): string[] {
   const list = [...new Set((raw ?? "").split(",").map((m) => m.trim()).filter(Boolean))]
   return list.length ? list : [...DEFAULT_GEMINI_MODELS]

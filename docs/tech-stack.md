@@ -13,6 +13,7 @@
 | Storage | Cloudflare R2 (private bucket) via AWS S3 SDK |
 | Real-time | **Pusher Channels** (`pusher` server, `pusher-js` browser), private channels signed by `POST /api/realtime/auth` — [realtime-feature.md](realtime-feature.md) |
 | Payments | **Stripe Checkout** (`stripe`, API version pinned in `src/lib/stripe.ts`), EGP, webhook `POST /api/webhook/stripe` — [booking-checkout-feature.md](booking-checkout-feature.md). Other gateways' webhooks go in `/api/webhooks/<provider>` |
+| AI assistant | **Google Gemini** (`@google/genai`, model `GEMINI_MODEL`, default `gemini-flash-latest`), JSON-schema output, `POST /api/assistant/chat` — [ai-assistant-feature.md](ai-assistant-feature.md) |
 | Analytics | GA4 via `@next/third-parties`, production only |
 | Tests | Node built-in test runner |
 | Deploy | Docker (node:22-alpine) → VPS via GitHub Actions |

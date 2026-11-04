@@ -251,7 +251,7 @@ export function CategoryForm({ category, parents }: CategoryFormProps) {
                           role="radio"
                           aria-checked={selected}
                           aria-label={key.replace("-", " ")}
-                          className={cn(selected && "border-primary bg-primary/10 text-primary")}
+                          className={cn(selected && "border-primary bg-violet/10 text-violet dark:bg-primary/15 dark:text-primary")}
                           onClick={() => field.onChange(key)}
                         >
                           <Icon />

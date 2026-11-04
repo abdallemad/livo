@@ -1,7 +1,8 @@
 import type { Metadata } from "next"
 import { ClerkProvider } from "@clerk/nextjs"
 import { GoogleAnalytics } from "@next/third-parties/google"
-import { IBM_Plex_Sans, Readex_Pro } from "next/font/google"
+import { DM_Sans, Sora } from "next/font/google"
+import localFont from "next/font/local"
 import { QueryProvider } from "@/components/providers/query-provider"
 import { ThemeProvider } from "@/components/providers/theme-provider"
 import { DirectionProvider } from "@/components/ui/direction"
@@ -24,20 +25,32 @@ import "./globals.css"
  * (no auth(), cookies(), headers()) — that would make every page dynamic.
  * `<ClerkProvider>` stays static: never pass it the `dynamic` prop.
  */
-/** Body / UI text (docs/DESIGN-SYSTEM.md §3). */
-const fontBody = IBM_Plex_Sans({
+/** Body / UI text (docs/DESIGN-SYSTEM.md §3) — DM Sans, as on the marketing website. */
+const fontBody = DM_Sans({
   variable: "--font-body",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 })
 
-/** Headings / display. */
-const fontDisplay = Readex_Pro({
+/** Headings / display — Sora. */
+const fontDisplay = Sora({
   variable: "--font-display",
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
+  subsets: ["latin", "latin-ext"],
+  weight: ["500", "600", "700", "800"],
   display: "swap",
+})
+
+/**
+ * Outlined "ghost" words behind section titles (`ghost-text` utility): Sora ExtraBold with overlapping contours merged,
+ * so the stroke draws clean outlines. Decorative only, so it never blocks text rendering.
+ */
+const fontGhost = localFont({
+  src: "./fonts/sora-ghost.woff2",
+  variable: "--font-ghost-face",
+  weight: "800",
+  display: "swap",
+  preload: false,
 })
 
 export const metadata: Metadata = {
@@ -56,7 +69,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <html
         lang={SITE_LANG}
         dir={SITE_DIR}
-        className={`${fontBody.variable} ${fontDisplay.variable} antialiased`}
+        className={`${fontBody.variable} ${fontDisplay.variable} ${fontGhost.variable} antialiased`}
         suppressHydrationWarning
       >
         <body className="flex min-h-dvh flex-col bg-background text-foreground">

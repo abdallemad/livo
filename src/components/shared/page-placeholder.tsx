@@ -12,6 +12,8 @@ interface PagePlaceholderProps {
   reqs?: string[]
   /** Optional preview of the main action (e.g. a disabled Button). */
   actions?: React.ReactNode
+  /** Skip the title block when the page already renders its own hero (marketing pages use `PageHero`). */
+  hideHeader?: boolean
 }
 
 /**
@@ -19,12 +21,12 @@ interface PagePlaceholderProps {
  * is built (DESIGN-SYSTEM.md §14 Phase C). Delete the usage — not this file —
  * when the real page lands; delete this file when nothing imports it.
  */
-export function PagePlaceholder({ title, description, route, reqs = [], actions }: PagePlaceholderProps) {
+export function PagePlaceholder({ title, description, route, reqs = [], actions, hideHeader = false }: PagePlaceholderProps) {
   return (
     <div className="space-y-6">
-      <PageHeader title={title} description={description} actions={actions} />
-      <Card className="items-center gap-3 border-dashed px-6 py-12 text-center shadow-none">
-        <span className="flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
+      {hideHeader ? null : <PageHeader title={title} description={description} actions={actions} />}
+      <Card className="items-center gap-3 rounded-3xl border-2 border-dashed px-6 py-12 text-center shadow-none">
+        <span className="flex size-14 items-center justify-center rounded-2xl bg-brand-gradient text-white shadow-glow">
           <Construction className="size-6" aria-hidden />
         </span>
         <p className="font-heading text-lg font-semibold">This page is still under construction</p>

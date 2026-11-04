@@ -4,7 +4,7 @@
 |---|---|
 | Framework | Next.js 16.4 (App Router, `next build --webpack`, `output: "standalone"`) |
 | UI | React 19, Tailwind CSS v4 (`@tailwindcss/postcss`), shadcn/ui `base-nova` on Base UI, LTR (logical utilities only) |
-| Fonts | IBM Plex Sans (body), Readex Pro (headings), system mono |
+| Fonts | DM Sans (body), Sora (headings), Sora Ghost (outlined section words, local), system mono |
 | Auth | Clerk (`@clerk/nextjs`) — phone + OTP per SRS AU-01 |
 | Server endpoints | Route Handlers in `src/app/api` (no Server Actions) — see `api-conventions.md` |
 | Client data | TanStack Query v5 + `src/lib/api-client.ts` |

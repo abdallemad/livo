@@ -1,7 +1,7 @@
 import { ArrowDown, ArrowRight } from "lucide-react"
 import { MONEY_FLOW } from "@/constants/trust"
-import { AnimatedTitle } from "@/components/motion/AnimatedTitle"
 import { Reveal } from "@/components/motion/Reveal"
+import { SectionHeading } from "./SectionHeading"
 
 /**
  * "Where your money is" (docs/landing-page.md §9): a static five-step timeline — plain markup, no chart library.
@@ -10,20 +10,20 @@ import { Reveal } from "@/components/motion/Reveal"
 export function MoneyFlow() {
   return (
     <section aria-labelledby="money-title" className="defer-render">
-      <div className="mx-auto max-w-6xl space-y-6 px-4 py-14 md:px-6">
-        <AnimatedTitle id="money-title" className="text-2xl font-semibold md:text-3xl" text={MONEY_FLOW.title} />
+      <div className="mx-auto max-w-6xl space-y-6 px-4 py-14 md:px-6 md:py-20">
+        <SectionHeading id="money-title" ghost="Payments" title={MONEY_FLOW.title} className="mb-8" />
         <Reveal>
           <ol className="flex flex-col items-stretch gap-2 md:flex-row md:items-center">
             {MONEY_FLOW.steps.map((step, i) => (
               <li key={step} className="contents">
-                <span className={`flex flex-1 items-center gap-3 rounded-xl border p-4 ${i === 1 ? "border-primary bg-primary/8 font-semibold" : "bg-card"}`}>
-                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold tabular-nums" aria-hidden>
+                <span className={`flex flex-1 items-center gap-3 rounded-3xl border p-4 shadow-soft ${i === 1 ? "border-transparent bg-brand-navy font-semibold text-white" : "bg-card"}`}>
+                  <span className={`flex size-9 shrink-0 items-center justify-center rounded-full font-heading text-sm font-bold tabular-nums ${i === 1 ? "bg-white text-navy" : "bg-brand-gradient text-white"}`} aria-hidden>
                     {i + 1}
                   </span>
                   {step}
                 </span>
                 {i < MONEY_FLOW.steps.length - 1 ? (
-                  <span className="flex justify-center text-muted-foreground" aria-hidden>
+                  <span className="flex justify-center text-coral" aria-hidden>
                     <ArrowDown className="size-5 md:hidden" />
                     <ArrowRight className="hidden size-5 md:block rtl:-scale-x-100" />
                   </span>
@@ -32,7 +32,7 @@ export function MoneyFlow() {
             ))}
           </ol>
         </Reveal>
-        <p className="text-sm text-muted-foreground">{MONEY_FLOW.footnote}</p>
+        <p className="text-center text-sm text-muted-foreground">{MONEY_FLOW.footnote}</p>
       </div>
     </section>
   )

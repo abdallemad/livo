@@ -20,9 +20,13 @@ export function StatCard({ label, value, icon: Icon, change, hint, className }: 
     <Card className={cn("gap-2 p-4 md:p-5", className)}>
       <div className="flex items-center justify-between gap-2 text-sm text-muted-foreground">
         <span>{label}</span>
-        {Icon ? <Icon className="size-4" aria-hidden /> : null}
+        {Icon ? (
+          <span className="flex size-9 items-center justify-center rounded-xl bg-soft text-violet dark:bg-muted dark:text-primary">
+            <Icon className="size-4" aria-hidden />
+          </span>
+        ) : null}
       </div>
-      <p className="font-heading text-2xl font-semibold tabular-nums md:text-3xl">{value}</p>
+      <p className="font-heading text-2xl font-bold tabular-nums md:text-3xl">{value}</p>
       {change !== undefined || hint ? (
         <p className="flex items-center gap-1 text-xs text-muted-foreground">
           {change !== undefined ? (

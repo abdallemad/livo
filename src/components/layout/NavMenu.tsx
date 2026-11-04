@@ -66,9 +66,9 @@ export function NavMenu({ groups }: { groups: ResolvedNavGroup[] }) {
                 aria-current={active === g.id ? "true" : undefined}
                 onClick={() => (isOpen ? setOpen(null) : show(g.id))}
                 className={cn(
-                  "flex h-11 items-center gap-1 rounded-md px-3 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
-                  (isOpen || active === g.id) && "text-foreground",
-                  active === g.id && "font-medium",
+                  "flex h-11 items-center gap-1.5 rounded-full px-3.5 text-[15px] font-medium text-foreground transition-colors hover:bg-soft hover:text-violet focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none dark:hover:bg-muted dark:hover:text-primary",
+                  isOpen && "bg-soft text-violet dark:bg-muted dark:text-primary",
+                  active === g.id && "text-violet dark:text-primary",
                 )}
               >
                 {g.label}
@@ -83,7 +83,7 @@ export function NavMenu({ groups }: { groups: ResolvedNavGroup[] }) {
                   isOpen ? "visible translate-y-0 opacity-100" : "pointer-events-none invisible -translate-y-1 opacity-0",
                 )}
               >
-                <div className={cn("grid gap-4 rounded-xl border bg-popover p-3 text-popover-foreground shadow-lg", wide ? "w-[36rem] grid-cols-[1fr_13rem]" : "w-80")}>
+                <div className={cn("grid gap-4 rounded-3xl border bg-popover p-3 text-popover-foreground shadow-pop", wide ? "w-[36rem] grid-cols-[1fr_13rem]" : "w-80")}>
                   <ul className="grid content-start gap-1">
                     {g.items.map((item) => (
                       <li key={item.href}>
@@ -91,9 +91,9 @@ export function NavMenu({ groups }: { groups: ResolvedNavGroup[] }) {
                           href={item.href}
                           onClick={() => setOpen(null)}
                           aria-current={pathname === item.href ? "page" : undefined}
-                          className="block rounded-lg px-3 py-2 hover:bg-accent focus-visible:bg-accent focus-visible:outline-none aria-[current=page]:bg-accent"
+                          className="group/item block rounded-2xl px-3 py-2.5 transition-colors hover:bg-soft focus-visible:bg-soft focus-visible:outline-none aria-[current=page]:bg-soft dark:hover:bg-muted dark:focus-visible:bg-muted dark:aria-[current=page]:bg-muted"
                         >
-                          <span className="block font-medium">{item.label}</span>
+                          <span className="block font-semibold transition-colors group-hover/item:text-violet dark:group-hover/item:text-primary">{item.label}</span>
                           {item.description ? <span className="block text-sm text-muted-foreground">{item.description}</span> : null}
                         </Link>
                       </li>
@@ -109,7 +109,7 @@ export function NavMenu({ groups }: { groups: ResolvedNavGroup[] }) {
                               href={c.href}
                               onClick={() => setOpen(null)}
                               aria-current={pathname === c.href ? "page" : undefined}
-                              className="flex h-9 items-center rounded-md px-2 text-sm hover:bg-accent focus-visible:bg-accent focus-visible:outline-none aria-[current=page]:bg-accent aria-[current=page]:font-medium"
+                              className="flex h-9 items-center rounded-xl px-2.5 text-sm font-medium transition-colors hover:bg-soft hover:text-violet focus-visible:bg-soft focus-visible:outline-none aria-[current=page]:bg-soft aria-[current=page]:text-violet dark:hover:bg-muted dark:hover:text-primary dark:aria-[current=page]:bg-muted"
                             >
                               {c.label}
                             </Link>

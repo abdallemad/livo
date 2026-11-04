@@ -31,11 +31,11 @@ const loadNavCategories = cache(async () => {
 export async function AppHeader() {
   const groups = buildNavGroups(MARKETING_NAV_GROUPS, await loadNavCategories())
   return (
-    <header className="sticky top-0 z-40 border-b bg-background">
-      <div className="mx-auto flex h-16 max-w-6xl items-center gap-2 px-4 md:gap-8 md:px-6">
+    <header className="sticky top-0 z-40 border-b bg-card/95 shadow-[0_12px_30px_-24px_rgb(4_18_58/0.55)] backdrop-blur supports-[backdrop-filter]:bg-card/90">
+      <div className="mx-auto flex h-[72px] max-w-7xl items-center gap-2 px-4 md:gap-6 md:px-6">
         <MobileMenu groups={groups} />
         <Link href="/" className="flex items-center rounded-md focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none">
-          <BrandWordmark height={36} priority />
+          <BrandWordmark height={40} priority />
         </Link>
         <NavMenu groups={groups} />
         <div className="ms-auto flex items-center gap-1">

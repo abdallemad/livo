@@ -6,97 +6,116 @@
  * Livo design tokens — the ONLY place colours, radii and fonts are defined.
  * Spec: docs/DESIGN-SYSTEM.md §2–§4. Living reference: /design-system-preview.
  *
- * Naming trap: shadcn's `accent` is the hover/selected surface, NOT a brand
- * accent. The brand's warm amber is `commit` and is reserved for commitment
- * actions (book, accept, pay, release money) and rating stars.
+ * Source of the look: the LIVO marketing website — navy ink (#04123A) + the logo gradient
+ * violet → magenta → coral, Sora headings, DM Sans body, soft lavender surfaces, pill buttons
+ * and generously rounded cards with long navy-tinted shadows.
  *
- * `.light` repeats the light tokens so the style guide can show a light panel
- * next to a dark one, whatever the page theme is.
+ * Naming trap: shadcn's `accent` is the hover/selected surface, NOT a brand accent.
+ * `commit` marks commitment actions (book, accept, pay, release money): the Button `commit`
+ * variant paints it with the brand gradient; the solid token is a warm gold used by rating stars.
+ *
+ * `.light` repeats the light tokens so the style guide can show a light panel next to a dark
+ * one, whatever the page theme is.
  */
 
 @custom-variant dark (&:is(.dark *));
 
 :root,
 .light {
-  --background: #f4f6f5;
-  --foreground: #14232f;
+  /* Brand palette (website livo.css). */
+  --navy: #04123a;
+  --navy-2: #0a1f5c;
+  --violet: #7b2ff7;
+  --magenta: #c42b9b;
+  --coral: #ff3d5a;
+  --silver: #a9aeb8;
+  --soft: #f3f4fb;
+  --brand-gradient: linear-gradient(110deg, #7b2ff7 0%, #c42b9b 55%, #ff3d5a 100%);
+  --brand-gradient-navy: linear-gradient(135deg, #04123a, #0a1f5c 55%, #7b2ff7);
+  --page-gradient: linear-gradient(135deg, #eef1fa 0%, #f4eefb 50%, #ffedf1 100%);
+
+  --background: #f7f8fd;
+  --foreground: #04123a;
   --card: #ffffff;
-  --card-foreground: #14232f;
+  --card-foreground: #04123a;
   --popover: #ffffff;
-  --popover-foreground: #14232f;
-  --primary: #6b2fc4;
+  --popover-foreground: #04123a;
+  --primary: #04123a;
   --primary-foreground: #ffffff;
-  --secondary: #e6ebea;
-  --secondary-foreground: #14232f;
-  --muted: #e6ebea;
-  --muted-foreground: #53636b;
-  --accent: #dde7e6;
-  --accent-foreground: #14232f;
-  --commit: #f2b01e;
-  --commit-foreground: #14232f;
-  --destructive: #b3261e;
-  --success: #1e7a4c;
-  --warning: #8a5a00;
-  --info: #1f5f99;
-  --border: #d5dddb;
-  --input: #d5dddb;
-  --ring: #6b2fc4;
-  --chart-1: #6b2fc4;
-  --chart-2: #f2b01e;
-  --chart-3: #1f5f99;
-  --chart-4: #1e7a4c;
-  --chart-5: #53636b;
-  --radius: 0.5rem;
+  --secondary: #f3f4fb;
+  --secondary-foreground: #04123a;
+  --muted: #f3f4fb;
+  --muted-foreground: #4b5680;
+  --accent: #f1ecff;
+  --accent-foreground: #04123a;
+  --commit: #f5a524;
+  --commit-foreground: #ffffff;
+  --destructive: #d61f45;
+  --success: #12805c;
+  --warning: #9a5b00;
+  --info: #2f5bd3;
+  --border: #e2e5f3;
+  --input: #e2e5f3;
+  --ring: #7b2ff7;
+  --chart-1: #7b2ff7;
+  --chart-2: #ff3d5a;
+  --chart-3: #0a1f5c;
+  --chart-4: #c42b9b;
+  --chart-5: #a9aeb8;
+  --radius: 0.875rem;
 
   /* Sidebar (dashboard shells) — derived from the palette above. */
   --sidebar: #ffffff;
-  --sidebar-foreground: #14232f;
-  --sidebar-primary: #6b2fc4;
+  --sidebar-foreground: #04123a;
+  --sidebar-primary: #7b2ff7;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #dde7e6;
-  --sidebar-accent-foreground: #14232f;
-  --sidebar-border: #d5dddb;
-  --sidebar-ring: #6b2fc4;
+  --sidebar-accent: #f1ecff;
+  --sidebar-accent-foreground: #04123a;
+  --sidebar-border: #e2e5f3;
+  --sidebar-ring: #7b2ff7;
 }
 
 .dark {
-  --background: #0e1a22;
-  --foreground: #eaf0ee;
-  --card: #14232f;
-  --card-foreground: #eaf0ee;
-  --popover: #14232f;
-  --popover-foreground: #eaf0ee;
-  --primary: #b37afd;
-  --primary-foreground: #1c0a3a;
-  --secondary: #1d3040;
-  --secondary-foreground: #eaf0ee;
-  --muted: #1d3040;
-  --muted-foreground: #9bb0b5;
-  --accent: #1d3040;
-  --accent-foreground: #eaf0ee;
-  --commit: #f2b01e;
-  --commit-foreground: #14232f;
-  --destructive: #f2766e;
-  --success: #4cc38a;
-  --warning: #e0b04a;
-  --info: #6fb0e8;
-  --border: #25363f;
-  --input: #25363f;
-  --ring: #b37afd;
-  --chart-1: #b37afd;
-  --chart-2: #f2b01e;
-  --chart-3: #6fb0e8;
-  --chart-4: #4cc38a;
-  --chart-5: #9bb0b5;
+  --soft: #0d1a4d;
+  --page-gradient: linear-gradient(135deg, #050d2b 0%, #0d0b2e 50%, #1a0b24 100%);
 
-  --sidebar: #14232f;
-  --sidebar-foreground: #eaf0ee;
-  --sidebar-primary: #b37afd;
-  --sidebar-primary-foreground: #1c0a3a;
-  --sidebar-accent: #1d3040;
-  --sidebar-accent-foreground: #eaf0ee;
-  --sidebar-border: #25363f;
-  --sidebar-ring: #b37afd;
+  --background: #030b24;
+  --foreground: #eef0fb;
+  --card: #0a1846;
+  --card-foreground: #eef0fb;
+  --popover: #0a1846;
+  --popover-foreground: #eef0fb;
+  --primary: #a77bff;
+  --primary-foreground: #04123a;
+  --secondary: #132260;
+  --secondary-foreground: #eef0fb;
+  --muted: #101e55;
+  --muted-foreground: #a9b1d6;
+  --accent: #1a2a6c;
+  --accent-foreground: #eef0fb;
+  --commit: #ffc24a;
+  --commit-foreground: #04123a;
+  --destructive: #ff6b81;
+  --success: #45d29a;
+  --warning: #f2bd55;
+  --info: #7ea2ff;
+  --border: #1c2c66;
+  --input: #22336f;
+  --ring: #a77bff;
+  --chart-1: #a77bff;
+  --chart-2: #ff6b81;
+  --chart-3: #7ea2ff;
+  --chart-4: #e05cbc;
+  --chart-5: #a9b1d6;
+
+  --sidebar: #071339;
+  --sidebar-foreground: #eef0fb;
+  --sidebar-primary: #a77bff;
+  --sidebar-primary-foreground: #04123a;
+  --sidebar-accent: #1a2a6c;
+  --sidebar-accent-foreground: #eef0fb;
+  --sidebar-border: #1c2c66;
+  --sidebar-ring: #a77bff;
 }
 
 @theme inline {
@@ -137,19 +156,37 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
+  /* Brand colours as utilities: bg-navy, text-violet, border-coral… */
+  --color-navy: var(--navy);
+  --color-navy-2: var(--navy-2);
+  --color-violet: var(--violet);
+  --color-magenta: var(--magenta);
+  --color-coral: var(--coral);
+  --color-silver: var(--silver);
+  --color-soft: var(--soft);
+
   /* Fonts are loaded in src/app/layout.tsx (next/font). Mono = system stack. */
   --font-sans: var(--font-body);
   --font-heading: var(--font-display);
+  --font-ghost: var(--font-ghost-face), var(--font-display);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  /* Radius by hierarchy (§4): controls md, cards lg, dialogs/sheets xl. */
-  --radius-sm: calc(var(--radius) - 2px);
+  /* Radius by hierarchy (§4): controls md, cards lg–2xl, dialogs/sheets xl, brand bands 3xl–4xl. */
+  --radius-sm: calc(var(--radius) - 4px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 2px);
   --radius-xl: calc(var(--radius) + 6px);
   --radius-2xl: calc(var(--radius) + 10px);
   --radius-3xl: calc(var(--radius) + 14px);
-  --radius-4xl: calc(var(--radius) + 18px);
+  --radius-4xl: calc(var(--radius) + 22px);
+
+  /* Website shadows: long, soft, navy-tinted. */
+  --shadow-soft: 0 10px 24px -18px rgb(4 18 58 / 0.6);
+  --shadow-card: 0 24px 40px -26px rgb(4 18 58 / 0.55);
+  --shadow-pop: 0 34px 60px -30px rgb(4 18 58 / 0.45);
+  --shadow-glow: 0 18px 30px -16px rgb(196 43 155 / 0.7);
+
+  --ease-brand: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 @layer base {
@@ -158,18 +195,142 @@
   }
   html {
     @apply font-sans;
+    scrollbar-color: var(--violet) var(--soft);
   }
   body {
     @apply bg-background text-foreground antialiased;
-    line-height: 1.75;
+    line-height: 1.6;
   }
   h1,
   h2,
   h3,
   h4 {
     @apply font-heading;
-    letter-spacing: 0;
+    letter-spacing: -0.01em;
   }
+  ::selection {
+    background: var(--violet);
+    color: #fff;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Brand utilities (from the marketing website). Prefer these to hand-written gradients.
+ * ------------------------------------------------------------------------- */
+
+/* The logo gradient as a fill: CTAs, step badges, avatars, accent bars. */
+@utility bg-brand-gradient {
+  background-image: var(--brand-gradient);
+}
+/* Navy → violet: brand panels, promo cards, profile banners. */
+@utility bg-brand-navy {
+  background-image: var(--brand-gradient-navy);
+}
+/* Soft lavender → blush page wash behind marketing content. */
+@utility bg-page-gradient {
+  background-image: var(--page-gradient);
+}
+/* Gradient text — stats, the highlighted word of a headline. */
+@utility text-brand-gradient {
+  background-image: var(--brand-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+/* Coral → pink highlight for words on dark heroes. */
+@utility text-hero-highlight {
+  background-image: linear-gradient(100deg, #ff3d5a, #ff9bb0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+/* Big outlined word behind a section title (website `.sh .gh`). Decorative: always aria-hidden. */
+@utility ghost-text {
+  font-family: var(--font-ghost);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 1.5px color-mix(in oklab, var(--foreground) 14%, transparent);
+  user-select: none;
+  pointer-events: none;
+}
+/* Light sweep across gradient / navy buttons (website `.btn::after`). */
+@utility btn-shine {
+  position: relative;
+  overflow: hidden;
+  &::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    width: 40%;
+    background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.34), transparent);
+    transform: translateX(-150%) skewX(-20deg);
+    animation: livo-shine 4.5s ease-in-out infinite;
+    pointer-events: none;
+  }
+}
+@keyframes livo-shine {
+  0%,
+  55% {
+    transform: translateX(-150%) skewX(-20deg);
+  }
+  100% {
+    transform: translateX(325%) skewX(-20deg);
+  }
+}
+/* Pulsing coral dot in eyebrow chips (website `.stag`). */
+@keyframes livo-pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  70%,
+  100% {
+    transform: scale(3.5);
+    opacity: 0;
+  }
+}
+@utility pulse-ring {
+  animation: livo-pulse-ring 2s infinite;
+}
+/* Slow drifting background orbs (website `.orb`). */
+@keyframes livo-drift {
+  to {
+    transform: translate(9vw, 7vh) scale(1.18);
+  }
+}
+@utility drift {
+  animation: livo-drift 24s ease-in-out infinite alternate;
+}
+/* Hero photo zoom-out (website `.sl-bg`). */
+@keyframes livo-kenburns {
+  from {
+    transform: scale(1.09);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@utility ken-burns {
+  animation: livo-kenburns 11s ease-out both;
+}
+
+/* Website scrollbar (Chromium / Safari). */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background: var(--soft);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #7b2ff7, #c42b9b, #ff3d5a);
+  border-radius: 99px;
+  border: 3px solid var(--soft);
 }
 
 /* Below-the-fold landing bands: skip paint until scrolled near. Keep spacing
@@ -224,7 +385,11 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .word-in,
-  .rise-in {
+  .rise-in,
+  .btn-shine::after,
+  .pulse-ring,
+  .drift,
+  .ken-burns {
     animation: none;
   }
 }

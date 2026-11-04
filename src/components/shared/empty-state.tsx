@@ -15,11 +15,11 @@ export function EmptyState({ title, description, action, icon: Icon = Inbox, cla
   return (
     <div
       className={cn(
-        "flex flex-col items-center gap-3 rounded-lg border border-dashed bg-card/50 px-6 py-12 text-center",
+        "flex flex-col items-center gap-3 rounded-3xl border-2 border-dashed bg-card/70 px-6 py-12 text-center",
         className
       )}
     >
-      <span className="flex size-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
+      <span className="flex size-14 items-center justify-center rounded-2xl bg-brand-gradient text-white shadow-glow">
         <Icon className="size-6" aria-hidden />
       </span>
       <p className="font-heading text-lg font-semibold">{title}</p>

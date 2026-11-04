@@ -81,7 +81,7 @@ export function CustomerDashboard({ initialData }: { initialData: CustomerDashbo
                 return (
                   <li key={`${a.kind}-${a.id}`}>
                     <Link href={a.href} className="flex min-h-16 items-center gap-3 py-3 hover:bg-accent/40">
-                      <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-violet/10 text-violet dark:bg-primary/15 dark:text-primary">
                         <Icon className="size-5" aria-hidden />
                       </span>
                       <span className="min-w-0 flex-1">

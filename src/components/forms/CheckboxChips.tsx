@@ -40,7 +40,7 @@ export function CheckboxChips({ id, legend, options, value, onChange, max, inval
               className={cn(
                 "flex min-h-11 cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-base transition-colors select-none",
                 "has-focus-visible:ring-2 has-focus-visible:ring-ring has-focus-visible:ring-offset-2",
-                checked ? "border-primary bg-primary/10 text-primary" : "bg-card hover:bg-accent",
+                checked ? "border-primary bg-violet/10 text-violet dark:bg-primary/15 dark:text-primary" : "bg-card hover:bg-accent",
                 disabled && "cursor-not-allowed opacity-50",
                 invalid && !checked && "border-destructive/50"
               )}

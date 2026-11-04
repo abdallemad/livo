@@ -6,8 +6,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card } from "@/components/ui/card"
 import type { FeaturedProvider } from "@/types/landing"
 import { formatNumber } from "@/utils/format"
-import { AnimatedTitle } from "@/components/motion/AnimatedTitle"
 import { StaggerItem, StaggerList } from "@/components/motion/Reveal"
+import { SectionHeading } from "./SectionHeading"
 
 const initials = (name: string) => name.trim().split(/\s+/).slice(0, 2).map((p) => p[0]?.toUpperCase() ?? "").join("") || "?"
 
@@ -20,15 +20,12 @@ export function MeetProviders({ providers }: { providers: FeaturedProvider[] }) 
   if (!providers.length) return null
   return (
     <section aria-labelledby="providers-title" className="defer-render">
-      <div className="mx-auto max-w-6xl space-y-6 px-4 py-14 md:px-6">
-        <div className="space-y-1">
-          <AnimatedTitle id="providers-title" className="text-2xl font-semibold md:text-3xl" text="Meet our providers" />
-          <p className="text-muted-foreground">Real people, checked by our team before their first job.</p>
-        </div>
+      <div className="mx-auto max-w-6xl px-4 py-14 md:px-6 md:py-20">
+        <SectionHeading id="providers-title" ghost="Pros" title="Meet our providers" lead="Real people, checked by our team before their first job." className="mb-8 md:mb-10" />
         <StaggerList className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {providers.map((p) => (
             <StaggerItem key={p.id} lift>
-              <Card className="h-full gap-0 overflow-hidden py-0">
+              <Card className="h-full gap-0 overflow-hidden rounded-3xl py-0 transition-[border-color,box-shadow] hover:border-coral hover:shadow-card">
                 <Link href={`/providers/${p.id}`} className="flex h-full flex-col focus-visible:outline-none">
                   <div className="relative aspect-[4/3] bg-muted">
                     {p.portfolioImage ? (
@@ -41,12 +38,12 @@ export function MeetProviders({ providers }: { providers: FeaturedProvider[] }) 
                   </div>
                   <div className="flex flex-1 flex-col gap-2 p-4">
                     <div className="flex items-center gap-3">
-                      <Avatar className="size-11">
+                      <Avatar className="size-12 ring-2 ring-violet/40 ring-offset-2 ring-offset-card">
                         {p.avatarUrl ? <AvatarImage src={p.avatarUrl} alt="" /> : null}
-                        <AvatarFallback>{initials(p.name)}</AvatarFallback>
+                        <AvatarFallback className="bg-brand-gradient font-heading font-bold text-white">{initials(p.name)}</AvatarFallback>
                       </Avatar>
                       <div className="min-w-0">
-                        <p className="truncate font-semibold">{p.name}</p>
+                        <p className="truncate font-heading font-semibold">{p.name}</p>
                         {p.specialty ? <p className="text-sm text-muted-foreground">{p.specialty}</p> : null}
                       </div>
                     </div>

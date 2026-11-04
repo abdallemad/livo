@@ -14,7 +14,7 @@ export function Crumbs({ crumbs }: { crumbs: { name: string; path: string }[] })
                 {c.name}
               </span>
             ) : (
-              <Link href={c.path} className="hover:text-foreground hover:underline">
+              <Link href={c.path} className="transition-colors hover:text-violet dark:hover:text-primary">
                 {c.name}
               </Link>
             )}

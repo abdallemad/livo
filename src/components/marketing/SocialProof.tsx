@@ -12,13 +12,14 @@ import { CountUp } from "@/components/motion/CountUp"
 export function SocialProof({ proof }: { proof: ProofItem[] }) {
   return (
     <section aria-label="Livo today" className="defer-render">
-      <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-12 md:flex-row md:items-center md:justify-between md:px-6">
+      <div className="mx-auto max-w-6xl px-4 py-12 md:px-6">
+        <div className="flex flex-col gap-6 rounded-[36px] border bg-card p-6 shadow-card md:flex-row md:items-center md:justify-between md:p-10">
         <div className="flex items-start gap-3">
-          <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-            <MapPin className="size-5" aria-hidden />
+          <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-brand-gradient text-white shadow-glow">
+            <MapPin className="size-6" aria-hidden />
           </span>
           <div>
-            <p className="font-heading text-xl font-semibold">{SOCIAL_PROOF.launchMessage}</p>
+            <p className="font-heading text-xl font-bold md:text-2xl">{SOCIAL_PROOF.launchMessage}</p>
             <p className="text-muted-foreground">{SOCIAL_PROOF.launchBody}</p>
           </div>
         </div>
@@ -28,7 +29,7 @@ export function SocialProof({ proof }: { proof: ProofItem[] }) {
               p.kind === "rating" ? (
                 <div key="rating">
                   <dt className="text-sm text-muted-foreground">Average rating</dt>
-                  <dd className="flex items-center gap-2 font-heading text-2xl font-semibold tabular-nums">
+                  <dd className="flex items-center gap-2 font-heading text-3xl font-bold tabular-nums">
                     <CountUp value={p.value} decimals={1} /> <RatingStars value={p.value} />
                     <span className="text-sm font-normal text-muted-foreground">({formatNumber(p.count)} reviews)</span>
                   </dd>
@@ -36,7 +37,7 @@ export function SocialProof({ proof }: { proof: ProofItem[] }) {
               ) : (
                 <div key={p.kind}>
                   <dt className="text-sm text-muted-foreground">{p.kind === "providers" ? "Verified providers" : "Jobs completed"}</dt>
-                  <dd className="font-heading text-2xl font-semibold tabular-nums">
+                  <dd className="text-brand-gradient font-heading text-[clamp(30px,3.4vw,46px)] leading-none font-bold tabular-nums">
                     <CountUp value={p.value} />
                   </dd>
                 </div>
@@ -44,6 +45,7 @@ export function SocialProof({ proof }: { proof: ProofItem[] }) {
             )}
           </dl>
         ) : null}
+        </div>
       </div>
     </section>
   )

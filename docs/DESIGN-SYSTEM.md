@@ -6,7 +6,8 @@
 
 - Stack: Tailwind CSS v4 (CSS-first, no `tailwind.config.js`), shadcn/ui **base-nova style on Base UI (`@base-ui/react`), not Radix**, `class-variance-authority`, `lucide-react`, `next-themes`.
 - Language/direction: **English, LTR** (`<html lang="en" dir="ltr">`). All UI copy is English. Switched from Arabic/RTL on 2026-10-31; the logical-utility rules in §6 stay so the UI can go back to RTL without a rewrite.
-- This file **overrides** `CLAUDE.md` §9 on two points only: fonts (IBM Plex Sans + Readex Pro instead of Geist) and default theme (light instead of dark). Everything else in §9 still applies.
+- This file **overrides** `CLAUDE.md` §9 on two points only: fonts (Sora + DM Sans instead of Geist) and default theme (light instead of dark). Everything else in §9 still applies.
+- **2026-11-04 rebrand:** the visual language now comes from the LIVO marketing website (navy + the logo gradient violet → magenta → coral, Sora / DM Sans, pill buttons, big rounded cards, outlined "ghost" section words). Tokens and components were restyled only; no flow, copy rule or feature changed.
 
 ---
 
@@ -19,11 +20,11 @@
 - *Providers:* tradespeople, mostly non-technical, usually on a phone with a weak connection. They need **big, obvious, few-step screens**.
 - *Admins:* staff who need **dense, scannable tables**.
 
-**Personality:** calm, sober, dependable, closer to a good spirit level than to a flashy app. It looks like a trustworthy tradesperson's tools: matte, precise, plain.
+**Personality:** confident, friendly and dependable. Deep navy ink carries the trust; the logo gradient (violet → magenta → coral) adds energy at the moments that matter.
 
-**One memorable thing (spend boldness only here):** a single warm **marker-amber** colour reserved for *commitment moments*, meaning the action that books, accepts, pays or releases money, plus rating stars. Everything else is quiet violet (primary), ink and plaster-grey. If amber appears anywhere else, it is a bug.
+**One memorable thing:** the **brand gradient** (`bg-brand-gradient`, `#7B2FF7 → #C42B9B → #FF3D5A`). As a button fill it is reserved for *commitment moments* (the `commit` variant: book, accept, pay, release money); it also marks brand accents such as icon tiles, step discs and stat numbers. Everyday actions are navy pills; rating stars use the gold `commit` token.
 
-**What we deliberately avoid:** cream + terracotta, near-black + neon accent, identical rounded cards with the same soft shadow on everything, gradient washes, ALL-CAPS eyebrow labels, "→" on every link, scroll-triggered fade-ups on every section.
+**What we deliberately avoid:** raw hex in feature components (use the tokens / brand utilities in `globals.css`), more than one gradient commit button per screen, gradient text on body copy, "→" on every link.
 
 ---
 
@@ -31,55 +32,68 @@
 
 Semantic tokens only. Components use `bg-background`, `text-foreground`, `bg-primary`, etc., never raw hex.
 
-> **Naming trap:** in shadcn, `accent` means "hover/selected surface", not a brand accent. Our amber is therefore a separate token called **`commit`**.
+> **Naming trap:** in shadcn, `accent` means "hover/selected surface", not a brand accent. The commitment colour is therefore a separate token called **`commit`** (gold, for stars); the `commit` *button* paints the brand gradient.
+
+### Brand palette (website)
+
+| Name | Hex | Utility |
+|---|---|---|
+| Navy (ink) | `#04123A` | `bg-navy`, `text-navy` |
+| Navy 2 | `#0A1F5C` | `bg-navy-2` |
+| Violet | `#7B2FF7` | `text-violet`, `bg-violet/10` — links, hover, focus |
+| Magenta | `#C42B9B` | `bg-magenta` |
+| Coral | `#FF3D5A` | `text-coral`, `border-coral` — hover borders, highlights |
+| Soft | `#F3F4FB` | `bg-soft` — quiet fills, hover surfaces |
+| Brand gradient | violet → magenta → coral, 110° | `bg-brand-gradient`, `text-brand-gradient` |
+| Navy gradient | navy → navy 2 → violet, 135° | `bg-brand-navy` |
+| Page wash | `#EEF1FA → #F4EEFB → #FFEDF1` | `bg-page-gradient` |
+
+Shadows (`shadow-soft`, `shadow-card`, `shadow-pop`, `shadow-glow`) are long and navy-tinted, as on the website.
+Other brand utilities: `ghost-text` (outlined section word), `text-hero-highlight`, `btn-shine`, `pulse-ring`, `drift`, `ken-burns`.
 
 ### Palette (light, default)
 
 | Token | Hex | Use |
 |---|---|---|
-| `background` | `#F4F6F5` | page ("plaster") |
-| `foreground` | `#14232F` | text ("ink") |
+| `background` | `#F7F8FD` | page |
+| `foreground` | `#04123A` | text (navy ink) |
 | `card` / `popover` | `#FFFFFF` | surfaces |
-| `primary` | `#6B2FC4` | general primary actions, links, active nav (deep violet: brand `#B37AFD` darkened for AA on light surfaces) |
+| `primary` | `#04123A` | default (navy) buttons, active tabs |
 | `primary-foreground` | `#FFFFFF` | |
-| `secondary` | `#E6EBEA` | secondary buttons, subtle fills |
-| `secondary-foreground` | `#14232F` | |
-| `muted` | `#E6EBEA` | disabled/quiet surfaces |
-| `muted-foreground` | `#53636B` | secondary text (AA on `background`) |
-| `accent` | `#DDE7E6` | hover / selected row (shadcn meaning) |
-| `accent-foreground` | `#14232F` | |
-| `commit` | `#F2B01E` | **commitment actions + rating stars only** |
-| `commit-foreground` | `#14232F` | text on amber (never white) |
-| `border` / `input` | `#D5DDDB` | |
-| `ring` | `#6B2FC4` | focus ring |
-| `destructive` | `#B3261E` | errors, cancel, delete |
-| `success` | `#1E7A4C` | |
-| `warning` | `#8A5A00` | text-safe amber-brown; **not** the `commit` colour |
-| `info` | `#1F5F99` | |
+| `secondary` / `muted` | `#F3F4FB` | secondary buttons, quiet fills |
+| `muted-foreground` | `#4B5680` | secondary text |
+| `accent` | `#F1ECFF` | hover / selected row (shadcn meaning) |
+| `commit` | `#F5A524` | rating stars (the `commit` button uses the brand gradient) |
+| `border` / `input` | `#E2E5F3` | |
+| `ring` | `#7B2FF7` | focus ring (violet) |
+| `destructive` | `#D61F45` | errors, cancel, delete |
+| `success` | `#12805C` | |
+| `warning` | `#9A5B00` | |
+| `info` | `#2F5BD3` | |
 
 ### Palette (dark)
 
 | Token | Hex |
 |---|---|
-| `background` | `#0E1A22` |
-| `foreground` | `#EAF0EE` |
-| `card` / `popover` | `#14232F` |
-| `primary` / `primary-foreground` | `#B37AFD` / `#1C0A3A` (brand violet) |
-| `secondary` / `muted` | `#1D3040` |
-| `muted-foreground` | `#9BB0B5` |
-| `accent` | `#1D3040` |
-| `commit` / `commit-foreground` | `#F2B01E` / `#14232F` |
-| `border` / `input` | `#25363F` |
-| `ring` | `#B37AFD` |
-| `destructive` | `#F2766E` |
-| `success` | `#4CC38A` |
-| `warning` | `#E0B04A` |
-| `info` | `#6FB0E8` |
+| `background` | `#030B24` |
+| `foreground` | `#EEF0FB` |
+| `card` / `popover` | `#0A1846` |
+| `primary` / `primary-foreground` | `#A77BFF` / `#04123A` |
+| `secondary` / `muted` | `#132260` / `#101E55` |
+| `muted-foreground` | `#A9B1D6` |
+| `accent` | `#1A2A6C` |
+| `commit` / `commit-foreground` | `#FFC24A` / `#04123A` |
+| `border` / `input` | `#1C2C66` / `#22336F` |
+| `ring` | `#A77BFF` |
+| `destructive` | `#FF6B81` |
+| `success` | `#45D29A` |
+| `warning` | `#F2BD55` |
+| `info` | `#7EA2FF` |
 
-Charts (admin KPIs): `chart-1 #6B2FC4` (dark: `#B37AFD`), `chart-2 #F2B01E`, `chart-3 #1F5F99`, `chart-4 #1E7A4C`, `chart-5 #53636B`.
+Charts (admin KPIs): `chart-1 #7B2FF7`, `chart-2 #FF3D5A`, `chart-3 #0A1F5C`, `chart-4 #C42B9B`, `chart-5 #A9AEB8` (dark mode uses lighter tints).
 
 ### Colour rules
-1. **Never** use `commit` as text on a light background (fails contrast); only as a fill with `commit-foreground`, or as a filled star.
+1. The `commit` token is for filled rating stars; commitment *buttons* use `variant="commit"` (brand gradient, white text).
 2. Maximum **one `commit` button per screen/step.** Examples: *Book now*, *Accept quote*, *Confirm the job is done*, *Request a payout*.
 3. Status is never conveyed by colour alone; always icon + text label.
 4. Verify AA contrast (4.5:1 body, 3:1 large/UI) for any new pairing.
@@ -142,10 +156,11 @@ Keep the exact variable shape that `npx shadcn@latest init` generated if it diff
 
 | Role | Font | Weights | CSS var |
 |---|---|---|---|
-| Headings / display | **Readex Pro** | 500, 600, 700 | `--font-display` |
-| Body / UI | **IBM Plex Sans** | 400, 500, 600 | `--font-body` |
+| Headings / display | **Sora** | 500, 600, 700, 800 | `--font-display` |
+| Body / UI | **DM Sans** | 400, 500, 600, 700 | `--font-body` |
+| Ghost section words | **Sora Ghost** (local, `src/app/fonts/sora-ghost.woff2`) | 800 | `--font-ghost-face` |
 
-Load both with `next/font/google`, `subsets: ["latin"]`, `display: "swap"`, in `src/app/layout.tsx`, replacing Geist. Remove `Geist_Mono`; use the system mono stack for the rare code/ID display.
+Load Sora + DM Sans with `next/font/google` (`latin` + `latin-ext`, `display: "swap"`) and Sora Ghost with `next/font/local`, in `src/app/layout.tsx`. Remove `Geist_Mono`; use the system mono stack for the rare code/ID display.
 
 ### Scale (mobile → desktop)
 
@@ -172,8 +187,8 @@ Load both with `next/font/google`, `subsets: ["latin"]`, `display: "swap"`, in `
 ## 4. Spacing, radius, elevation, layout
 
 - **Base unit 4px** (Tailwind default scale). Section rhythm: `py-12 md:py-20` public, `p-4 md:p-6` inside dashboards.
-- **Radius by hierarchy, not one value everywhere:** controls (`button`, `input`, `select`) `rounded-md`; cards, popovers `rounded-lg`; dialogs, sheets, large media `rounded-xl`; avatars, status dots `rounded-full`. Never `rounded-3xl` pill cards.
-- **Elevation:** surfaces are separated by **1px border + background contrast**, not shadow. Shadows only on things that float: dropdowns, popovers, dialogs, sticky bars (`shadow-md`). Cards in lists have **no shadow**.
+- **Radius (website scale, `--radius: 0.875rem`):** buttons, badges, tabs `rounded-full` (pills); inputs/selects `rounded-md` (14px) with a 2px border; cards `rounded-2xl` (24px), marketing cards `rounded-3xl` (28px); dialogs `rounded-3xl`; brand bands `rounded-[36px]`.
+- **Elevation:** 1px border + `shadow-soft` on cards; `shadow-card` on hover / featured cards; `shadow-pop` on dropdowns, popovers and dialogs; `shadow-glow` under gradient elements.
 - **Containers:** public pages `max-w-6xl mx-auto px-4 md:px-6`; reading text `max-w-prose`; dashboards fill the shell.
 - **Touch targets ≥ 44px** high on every interactive element (see sizes in §5).
 - Use `dvh`, never `vh`, for shells (CLAUDE.md §9).
@@ -192,15 +207,15 @@ Sizes (heights): `sm 36px` (admin tables only), `default 44px`, `lg 52px` (hero,
 
 | Variant | Use |
 |---|---|
-| `default` | violet, standard primary action |
-| `commit` | **amber, commitment action. Max one per screen** (see §2) |
+| `default` | navy pill, standard primary action |
+| `commit` | **brand-gradient pill with a light sweep, commitment action. Max one per screen** (see §2) |
 | `secondary` | secondary action |
-| `outline` | tertiary, cancel |
+| `outline` | white pill with a navy outline; tertiary, cancel |
 | `ghost` | toolbar / icon buttons |
 | `destructive` | cancel booking, delete, reject |
 | `link` | inline text action |
 
-Add `commit` to the button `cva` (`bg-commit text-commit-foreground hover:bg-commit/90`). Loading state: spinner (`lucide Loader2`) + disabled + same width (no layout shift). Every async button shows it.
+All buttons are pills that lift 2px on hover (ghost/link don't). Loading state: spinner (`lucide Loader2`) + disabled + same width (no layout shift). Every async button shows it.
 
 ### Inputs & forms
 - Label **above** the field, always visible (no placeholder-as-label). Helper text below; error text replaces helper in `text-destructive` with an icon.
@@ -210,7 +225,7 @@ Add `commit` to the button `cva` (`bg-commit text-commit-foreground hover:bg-com
 - Long forms are split into **steps** (max ~5), one question group per step, with a visible progress indicator.
 
 ### Cards, tables, badges
-- Card = border + `bg-card`, `p-4 md:p-5`. No decorative gradients.
+- Card = border + `bg-card` + `shadow-soft`, `rounded-2xl`, `p-4 md:p-5`. Icon tiles inside marketing cards use `bg-brand-gradient`.
 - Tables (admin): sticky header, row hover = `bg-accent`, bulk-select, sortable headers, empty state, skeleton rows. On mobile, customer/provider lists render as **cards**, not tables.
 - `Badge` variants added: `success`, `warning`, `info`, `neutral`, `destructive`, plus `status` mapping in §8.
 
@@ -416,7 +431,7 @@ src/
 |---|---|---|
 | 1 | Default theme | **Light** (overrides CLAUDE.md's dark default); dark supported |
 | 2 | Digits | Western (0-9). Switch to Arabic-Indic only by changing `formatPrice`/`format.ts` |
-| 3 | Fonts | Readex Pro (headings) + IBM Plex Sans (body); confirm after seeing them in the style guide |
-| 4 | Brand colours | Violet `#B37AFD` (dark) / `#6B2FC4` (light) + marker-amber `#F2B01E` — changed from petrol `#0F5C5A` on 2026-10-31 |
+| 3 | Fonts | Sora (headings) + DM Sans (body), from the marketing website (2026-11-04) |
+| 4 | Brand colours | Navy `#04123A` + gradient violet `#7B2FF7` → magenta `#C42B9B` → coral `#FF3D5A`, from the marketing website (2026-11-04; previously violet `#6B2FC4` + amber `#F2B01E`) |
 | 5 | Logo & brand name | Placeholder from `constants/site.ts` |
 | 6 | Mobile navigation | Bottom tab bar for customer/provider; revise if usability testing says otherwise |

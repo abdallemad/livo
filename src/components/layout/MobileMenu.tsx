@@ -26,23 +26,23 @@ export function MobileMenu({ groups }: { groups: ResolvedNavGroup[] }) {
         <nav aria-label="Main navigation" className="space-y-5 px-2 pb-6">
           {groups.map((g) => (
             <section key={g.id} aria-labelledby={`m-nav-${g.id}`}>
-              <h2 id={`m-nav-${g.id}`} className="px-3 pb-1 text-xs font-medium tracking-wide text-muted-foreground uppercase">
+              <h2 id={`m-nav-${g.id}`} className="px-3 pb-1 text-xs font-semibold tracking-[0.08em] text-muted-foreground uppercase">
                 {g.label}
               </h2>
               <ul>
                 {g.items.map((item) => (
                   <li key={item.href}>
-                    <Link href={item.href} onClick={close} className="flex h-11 items-center rounded-md px-3 text-base hover:bg-accent">
+                    <Link href={item.href} onClick={close} className="flex h-12 items-center rounded-2xl px-3 text-base font-semibold transition-colors hover:bg-soft hover:text-violet dark:hover:bg-muted dark:hover:text-primary">
                       {item.label}
                     </Link>
                   </li>
                 ))}
               </ul>
               {g.categories.length ? (
-                <ul className="mt-1 grid grid-cols-2 gap-x-1">
+                <ul className="mt-1 grid grid-cols-2 gap-1">
                   {g.categories.map((c) => (
                     <li key={c.href}>
-                      <Link href={c.href} onClick={close} className="flex h-10 items-center rounded-md px-3 text-sm text-muted-foreground hover:bg-accent hover:text-foreground">
+                      <Link href={c.href} onClick={close} className="flex h-10 items-center rounded-xl bg-soft px-3 text-sm font-medium text-foreground transition-colors hover:text-violet dark:bg-muted dark:hover:text-primary">
                         {c.label}
                       </Link>
                     </li>

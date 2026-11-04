@@ -1,9 +1,10 @@
 # Brand assets — logo, favicon, app icons
 
-The Livo logo is the **"LV" mark** — a lavender "L" and a "V" whose stroke rises into an arrow, on a deep-purple rounded
-square — and the **wordmark**: the mark followed by "Livo" in heavy rounded lettering. All files were generated from the
-two source images supplied with the change (transparent PNG/WebP), so re-export from new sources the same way if the logo
-changes.
+The Livo logo (from the LIVO marketing website, 2026-11-04) is the **four-tile mark** — pin, house, gear and shield tiles
+in violet, coral, violet and silver — and the **wordmark**: the mark, a divider, "LIVO" in navy with a gradient "O", and the
+tagline "All Services ... One Platform". A white copy is used on dark backgrounds. The previous "LV" files
+(`public/logo-mark.png`, `public/logo-wordmark*.png`) are no longer referenced by the app; `src/app/icon.png`,
+`apple-icon.png` and `favicon.ico` still show the old mark until they are re-exported.
 
 | File | Size | Used for |
 |---|---|---|

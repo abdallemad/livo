@@ -81,5 +81,7 @@ No schema change and no migration.
 ## Not done / follow-ups
 
 - Use the hours in the customer booking flow (offer only free slots inside them); days off / holidays.
-- Notify the customer when the provider replies; reviews the provider writes about customers (SY-05).
+- Notify the customer when the provider replies; reviews the provider writes about customers (SY-05). Customers now
+  write their reviews on `/account/bookings/[id]/review` ([customer-review-feature.md](customer-review-feature.md)) — a
+  review the provider has replied to can no longer be edited by the customer.
 - A month calendar view (the 14-day list covers the MVP need).

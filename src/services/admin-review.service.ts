@@ -4,8 +4,8 @@ import { ConflictError, NotFoundError } from "@/lib/errors"
 import { auditRepository } from "@/repositories/audit.repository"
 import { reviewRepository as repo, type AdminReviewRow } from "@/repositories/review.repository"
 import type { ReviewListQuery, ReviewModerationValues } from "@/schemas/admin.schema"
+import { refreshProviderRating } from "@/services/provider-rating.service"
 import type { AdminReviewList, AdminReviewListItem } from "@/types/admin"
-import { isLowRated, parseLowRatingThreshold, roundRating } from "@/utils/provider-rating"
 
 /**
  * AD-08 review moderation (docs/admin-disputes-reviews-feature.md). Hiding a
@@ -64,7 +64,6 @@ export async function listReviewsForAdmin(query: ReviewListQuery): Promise<Admin
 /** Hide (with a reason the reviewer sees) or show a review again; the provider's rating follows. */
 export async function moderateReview(adminId: string, id: string, input: ReviewModerationValues): Promise<{ id: string; isHidden: boolean }> {
   const hide = input.action === "HIDE"
-  const threshold = parseLowRatingThreshold(await repo.findSetting("review.lowRatingThreshold"))
 
   return repo.transaction(async (tx) => {
     const review = await repo.findForModeration(id, tx)
@@ -74,15 +73,7 @@ export async function moderateReview(adminId: string, id: string, input: ReviewM
     }
 
     // Only a provider's rating is denormalised; customers have no profile counters.
-    if (await repo.findProviderProfile(review.revieweeId, tx)) {
-      const agg = await repo.aggregateVisible(review.revieweeId, tx)
-      const ratingAvg = roundRating(agg._avg.rating)
-      await repo.updateProviderRating(
-        review.revieweeId,
-        { ratingAvg, ratingCount: agg._count, underReview: isLowRated(ratingAvg, agg._count, threshold) },
-        tx,
-      )
-    }
+    await refreshProviderRating(review.revieweeId, tx)
 
     await auditRepository.createAuditLog(
       {

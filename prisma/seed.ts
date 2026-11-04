@@ -9,7 +9,8 @@
  *
  * Two kinds of data:
  *
- * 1. REFERENCE data — cities/areas, categories, commission, site settings,
+ * 1. REFERENCE data — cities/areas (Luxembourg; Esch-sur-Alzette inactive), categories,
+ *    commission, site settings,
  *    static pages. Upserted by slug/key with `update: {}`, so re-running never
  *    overwrites what an admin edited. Safe for any environment except prod.
  *
@@ -49,7 +50,7 @@ const HOUR = 60 * 60 * 1000
 const DAY = 24 * HOUR
 /** Midnight UTC today, so "in 2 days at 10:00" is stable within a day. */
 const TODAY = new Date(new Date().toISOString().slice(0, 10) + "T00:00:00.000Z")
-/** `at(-3, 14)` = three days ago at 14:00 UTC (16:00/17:00 Cairo). */
+/** `at(-3, 14)` = three days ago at 14:00 UTC. */
 const at = (days: number, hour = 10, minute = 0) => new Date(TODAY.getTime() + days * DAY + hour * HOUR + minute * 60_000)
 
 const money = (n: number) => n.toFixed(2)
@@ -76,25 +77,26 @@ const phone = (n: number) => `+20100000${String(n).padStart(4, "0")}`
 // ----------------------------------------------------------------------------
 
 const CITIES = [
-  { slug: "cairo", nameAr: "القاهرة", nameEn: "Cairo", isActive: true },
+  { slug: "luxembourg", nameAr: "لوكسمبورغ", nameEn: "Luxembourg", isActive: true },
   // Present but inactive: shows that adding a city is data, not a deploy (NF-09).
-  { slug: "giza", nameAr: "الجيزة", nameEn: "Giza", isActive: false },
+  { slug: "esch-sur-alzette", nameAr: "إش سور ألزيت", nameEn: "Esch-sur-Alzette", isActive: false },
 ]
 
+/** `nameAr` is the Arabic label the schema keeps for an Arabic version of the site; the English UI shows `nameEn`. */
 const AREAS: Record<string, { slug: string; nameAr: string; nameEn: string }[]> = {
-  cairo: [
-    { slug: "nasr-city", nameAr: "مدينة نصر", nameEn: "Nasr City" },
-    { slug: "heliopolis", nameAr: "مصر الجديدة", nameEn: "Heliopolis" },
-    { slug: "new-cairo", nameAr: "التجمع الخامس", nameEn: "New Cairo" },
-    { slug: "maadi", nameAr: "المعادي", nameEn: "Maadi" },
-    { slug: "zamalek", nameAr: "الزمالك", nameEn: "Zamalek" },
-    { slug: "mokattam", nameAr: "المقطم", nameEn: "Mokattam" },
-    { slug: "shorouk", nameAr: "الشروق", nameEn: "El Shorouk" },
-    { slug: "downtown", nameAr: "وسط البلد", nameEn: "Downtown" },
+  luxembourg: [
+    { slug: "kirchberg", nameAr: "كيرشبرغ", nameEn: "Kirchberg" },
+    { slug: "belair", nameAr: "بيلير", nameEn: "Belair" },
+    { slug: "cloche-dor", nameAr: "كلوش دور", nameEn: "Cloche d'Or" },
+    { slug: "limpertsberg", nameAr: "ليمبرتسبرغ", nameEn: "Limpertsberg" },
+    { slug: "grund", nameAr: "غروند", nameEn: "Grund" },
+    { slug: "bonnevoie", nameAr: "بونفوا", nameEn: "Bonnevoie" },
+    { slug: "gasperich", nameAr: "غاسبريش", nameEn: "Gasperich" },
+    { slug: "ville-haute", nameAr: "المدينة العليا", nameEn: "Ville Haute" },
   ],
-  giza: [
-    { slug: "dokki", nameAr: "الدقي", nameEn: "Dokki" },
-    { slug: "sheikh-zayed", nameAr: "الشيخ زايد", nameEn: "Sheikh Zayed" },
+  "esch-sur-alzette": [
+    { slug: "esch-centre", nameAr: "وسط إش", nameEn: "Esch Centre" },
+    { slug: "belval", nameAr: "بلفال", nameEn: "Belval" },
   ],
 }
 
@@ -110,16 +112,16 @@ type CategorySeed = {
 
 /** Launch scope: 5 top-level trades (SITEMAP open decision #6), a few sub-categories. */
 const CATEGORIES: CategorySeed[] = [
-  { slug: "plumbing", nameAr: "سباكة", nameEn: "Plumbing", type: "BOTH", iconKey: "droplets", description: "تسليك، إصلاح تسريبات، تركيب سخانات وخلاطات، وتغيير مواسير." },
-  { slug: "plumbing-leaks", parent: "plumbing", nameAr: "إصلاح التسريبات", nameEn: "Leak repair", type: "FIXED", description: "كشف وإصلاح تسريب المية تحت الأحواض وفي الحمامات." },
-  { slug: "plumbing-heaters", parent: "plumbing", nameAr: "تركيب السخانات", nameEn: "Water heaters", type: "FIXED", description: "تركيب وصيانة سخانات الغاز والكهرباء." },
-  { slug: "electrical", nameAr: "كهرباء", nameEn: "Electrical", type: "BOTH", iconKey: "zap", description: "إصلاح أعطال، تركيب إنارة ونجف، وتأسيس كهرباء للشقق." },
-  { slug: "electrical-wiring", parent: "electrical", nameAr: "تأسيس كهرباء", nameEn: "Wiring", type: "QUOTE", description: "تأسيس وتغيير أسلاك الشقة ولوحة الكهرباء." },
-  { slug: "cleaning", nameAr: "تنظيف", nameEn: "Cleaning", type: "FIXED", iconKey: "sparkles", description: "تنظيف شقق، تنظيف بعد التشطيب، وتنظيف كنب وسجاد." },
-  { slug: "finishing", nameAr: "نقاشة وتشطيبات", nameEn: "Finishing", type: "QUOTE", iconKey: "paint-roller", description: "دهانات، سيراميك وبورسلين، وتشطيب حمامات ومطابخ." },
-  { slug: "finishing-painting", parent: "finishing", nameAr: "دهانات", nameEn: "Painting", type: "QUOTE", description: "دهان شقق وأوض بكل أنواع الدهانات." },
-  { slug: "finishing-tiling", parent: "finishing", nameAr: "سيراميك وبورسلين", nameEn: "Tiling", type: "QUOTE", description: "تركيب سيراميك وبورسلين للأرضيات والحوائط." },
-  { slug: "ac", nameAr: "تكييفات", nameEn: "Air conditioning", type: "BOTH", iconKey: "snowflake", description: "تركيب، صيانة، وشحن فريون لكل أنواع التكييفات." },
+  { slug: "plumbing", nameAr: "سباكة", nameEn: "Plumbing", type: "BOTH", iconKey: "droplets", description: "Unblocking drains, fixing leaks, installing water heaters and mixer taps, and replacing pipes." },
+  { slug: "plumbing-leaks", parent: "plumbing", nameAr: "إصلاح التسريبات", nameEn: "Leak repair", type: "FIXED", description: "Finding and fixing leaks under sinks and in bathrooms." },
+  { slug: "plumbing-heaters", parent: "plumbing", nameAr: "تركيب السخانات", nameEn: "Water heaters", type: "FIXED", description: "Installing and servicing gas and electric water heaters." },
+  { slug: "electrical", nameAr: "كهرباء", nameEn: "Electrical", type: "BOTH", iconKey: "zap", description: "Fault repairs, lighting and chandelier installation, and full apartment wiring." },
+  { slug: "electrical-wiring", parent: "electrical", nameAr: "تأسيس كهرباء", nameEn: "Wiring", type: "QUOTE", description: "New or replacement apartment wiring and fuse boards." },
+  { slug: "cleaning", nameAr: "تنظيف", nameEn: "Cleaning", type: "FIXED", iconKey: "sparkles", description: "Apartment cleaning, after-renovation cleaning, and sofa and carpet cleaning." },
+  { slug: "finishing", nameAr: "نقاشة وتشطيبات", nameEn: "Finishing", type: "QUOTE", iconKey: "paint-roller", description: "Painting, floor and wall tiling, and bathroom and kitchen finishing." },
+  { slug: "finishing-painting", parent: "finishing", nameAr: "دهانات", nameEn: "Painting", type: "QUOTE", description: "Painting apartments and rooms with every kind of paint." },
+  { slug: "finishing-tiling", parent: "finishing", nameAr: "سيراميك وبورسلين", nameEn: "Tiling", type: "QUOTE", description: "Ceramic and porcelain tiling for floors and walls." },
+  { slug: "ac", nameAr: "تكييفات", nameEn: "Air conditioning", type: "BOTH", iconKey: "snowflake", description: "Installation, servicing and refrigerant top-ups for every kind of air conditioner." },
 ]
 
 const GLOBAL_COMMISSION = 10
@@ -136,23 +138,23 @@ const SITE_SETTINGS: { key: string; value: Prisma.InputJsonValue }[] = [
 const STATIC_PAGES = [
   {
     slug: "about",
-    title: "من نحن",
-    body: "<p>منصة بتوصّل البيوت المصرية بمزودي خدمات صيانة وتشطيب موثّقين، بأسعار واضحة ودفع آمن.</p>",
+    title: "About us",
+    body: "<p>Livo connects homes in Luxembourg with verified maintenance and finishing providers, with clear prices and secure payment.</p>",
   },
   {
     slug: "terms",
-    title: "شروط الاستخدام",
-    body: "<h2>الحجز والدفع</h2><p>المبلغ بيفضل محجوز لحد ما العميل يأكد إتمام الشغل أو تنتهي مدة الاعتراض.</p><h2>الإلغاء</h2><p>الإلغاء مجاني قبل الميعاد بـ 24 ساعة.</p>",
+    title: "Terms of use",
+    body: "<h2>Booking and payment</h2><p>The amount stays on hold until the customer confirms the work is done or the objection period ends.</p><h2>Cancellation</h2><p>Cancelling is free up to 24 hours before the appointment.</p>",
   },
   {
     slug: "privacy",
-    title: "سياسة الخصوصية",
-    body: "<p>رقم تليفونك وعنوانك ما بيظهروش لمزود الخدمة غير بعد تأكيد الحجز.</p>",
+    title: "Privacy policy",
+    body: "<p>Your phone number and address are only shown to the provider once the booking is confirmed.</p>",
   },
   {
     slug: "faq",
-    title: "الأسئلة الشائعة",
-    body: "<h3>إمتى المزود بياخد فلوسه؟</h3><p>بعد ما تأكد إتمام الشغل، أو بعد 48 ساعة من غير اعتراض.</p><h3>أقدر ألغي الحجز؟</h3><p>أيوه، قبل ما المزود يبدأ الشغل.</p>",
+    title: "Frequently asked questions",
+    body: "<h3>When does the provider get paid?</h3><p>Once you confirm the job is done, or 48 hours after it's marked done if you don't object.</p><h3>Can I cancel a booking?</h3><p>Yes, before the provider starts the work.</p>",
   },
 ]
 
@@ -254,15 +256,15 @@ async function deleteMockData(tx: Tx) {
 // Mock data: definitions
 // ----------------------------------------------------------------------------
 
-const ADMIN = { key: "admin", name: "مدير المنصة", phone: phone(1), email: "admin@example.com" }
+const ADMIN = { key: "admin", name: "Livo Admin", phone: phone(1), email: "admin@example.com" }
 
 const CUSTOMERS = [
-  { key: "1", name: "أحمد محمود", area: "nasr-city", street: "شارع عباس العقاد", details: "عمارة 12، الدور الرابع، شقة 8" },
-  { key: "2", name: "منى عبد الله", area: "new-cairo", street: "الحي الخامس، شارع التسعين", details: "فيلا 33" },
-  { key: "3", name: "كريم حسن", area: "heliopolis", street: "شارع الحجاز", details: "عمارة 4، الدور الثاني" },
-  { key: "4", name: "سارة إبراهيم", area: "maadi", street: "شارع 9", details: "عمارة 21، الدور السادس، شقة 12" },
-  { key: "5", name: "يوسف علي", area: "mokattam", street: "الهضبة الوسطى", details: "عمارة 7، الدور الأول" },
-  { key: "6", name: "نهى مصطفى", area: "zamalek", street: "شارع 26 يوليو", details: "عمارة 3، الدور الثالث", suspended: true },
+  { key: "1", name: "Laura Schmit", area: "kirchberg", street: "Avenue John F. Kennedy 44", details: "Building B, 4th floor, apartment 8" },
+  { key: "2", name: "Marc Weber", area: "cloche-dor", street: "Boulevard F. W. Raiffeisen 12", details: "House 33" },
+  { key: "3", name: "Sophie Muller", area: "belair", street: "Avenue du X Septembre 71", details: "2nd floor" },
+  { key: "4", name: "Julien Hoffmann", area: "limpertsberg", street: "Avenue Pasteur 21", details: "6th floor, apartment 12" },
+  { key: "5", name: "Anna Wagner", area: "bonnevoie", street: "Rue de Bonnevoie 7", details: "Ground floor" },
+  { key: "6", name: "Tom Becker", area: "grund", street: "Rue Münster 3", details: "3rd floor", suspended: true },
 ]
 
 type ProviderSeed = {
@@ -278,16 +280,16 @@ type ProviderSeed = {
 }
 
 const PROVIDERS: ProviderSeed[] = [
-  { key: "1", name: "محمود عبد الرحمن", bio: "سباك بخبرة 12 سنة في الشقق والفيلات. بشتغل بخامات مضمونة وبنضّف بعد الشغل.", years: 12, status: "APPROVED", categories: ["plumbing", "plumbing-leaks", "plumbing-heaters"], areas: ["nasr-city", "heliopolis", "new-cairo"], portfolio: ["تغيير مواسير حمام كامل", "تركيب سخان غاز 10 لتر"] },
-  { key: "2", name: "أحمد سمير", bio: "كهربائي معتمد. تأسيس، إصلاح أعطال، وتركيب نجف وإنارة.", years: 9, status: "APPROVED", categories: ["electrical", "electrical-wiring"], areas: ["new-cairo", "shorouk", "nasr-city", "heliopolis"], portfolio: ["تأسيس كهرباء شقة 180م"] },
-  { key: "3", name: "حسام النور", bio: "فريق تنظيف منظّم بأدوات ومنظفات آمنة على الرخام والخشب.", years: 6, status: "APPROVED", categories: ["cleaning"], areas: ["nasr-city", "heliopolis", "new-cairo", "maadi", "zamalek", "mokattam"], portfolio: ["تنظيف شقة بعد التشطيب"] },
-  { key: "4", name: "عماد فؤاد", bio: "مقاول تشطيبات: دهانات وسيراميك وحمامات. بلتزم بالمواعيد والمقايسة.", years: 15, status: "APPROVED", categories: ["finishing", "finishing-painting", "finishing-tiling"], areas: ["new-cairo", "heliopolis", "nasr-city", "shorouk"], portfolio: ["دهان شقة 3 أوض", "تشطيب حمام كامل"] },
-  { key: "5", name: "خالد رشدي", bio: "فني تكييفات وكهرباء. صيانة، تركيب، وشحن فريون لكل الماركات.", years: 8, status: "APPROVED", categories: ["ac", "electrical"], areas: ["maadi", "mokattam", "nasr-city", "downtown"], portfolio: ["تركيب 4 تكييفات سبليت"] },
-  { key: "6", name: "مصطفى جمال", bio: "سباك شاب، شغل نضيف وسريع.", years: 3, status: "PENDING", categories: ["plumbing"], areas: ["maadi", "downtown"] },
-  { key: "7", name: "رامي عادل", bio: "كهربائي.", years: 2, status: "REJECTED", rejectionReason: "صورة البطاقة مش واضحة. ارفع صورة واضحة للوشين.", categories: ["electrical"], areas: ["downtown"] },
-  { key: "8", name: "طارق يحيى", bio: "تنظيف واجهات زجاج وشبابيك.", years: 5, status: "SUSPENDED", categories: ["cleaning"], areas: ["zamalek", "downtown"] },
-  { key: "9", name: "وليد حسني", bio: "", years: 1, status: "DRAFT", categories: ["ac"], areas: [] },
-  { key: "10", name: "سامح النقاش", bio: "نقاش ومبلّط. شغل يدوي دقيق في الدهانات والسيراميك.", years: 11, status: "APPROVED", categories: ["finishing", "finishing-painting", "finishing-tiling"], areas: ["maadi", "new-cairo", "mokattam"], portfolio: ["تركيب سيراميك مطبخ"] },
+  { key: "1", name: "Paul Klein", bio: "Plumber with 12 years in apartments and houses. I use quality parts and clean up after the job.", years: 12, status: "APPROVED", categories: ["plumbing", "plumbing-leaks", "plumbing-heaters"], areas: ["kirchberg", "belair", "cloche-dor"], portfolio: ["Full bathroom pipe replacement", "10-litre gas water heater install"] },
+  { key: "2", name: "Luc Reuter", bio: "Certified electrician. Wiring, fault repairs, and chandelier and lighting installs.", years: 9, status: "APPROVED", categories: ["electrical", "electrical-wiring"], areas: ["cloche-dor", "gasperich", "kirchberg", "belair"], portfolio: ["Wiring for a 180 m² apartment"] },
+  { key: "3", name: "Sara Costa", bio: "An organised cleaning team using products that are safe on marble and wood.", years: 6, status: "APPROVED", categories: ["cleaning"], areas: ["kirchberg", "belair", "cloche-dor", "limpertsberg", "grund", "bonnevoie"], portfolio: ["After-renovation apartment clean"] },
+  { key: "4", name: "David Thill", bio: "Finishing contractor: painting, tiling and bathrooms. On time and on budget.", years: 15, status: "APPROVED", categories: ["finishing", "finishing-painting", "finishing-tiling"], areas: ["cloche-dor", "belair", "kirchberg", "gasperich"], portfolio: ["Painting a 3-bedroom apartment", "Complete bathroom renovation"] },
+  { key: "5", name: "Nico Schroeder", bio: "Air-conditioning and electrical technician. Servicing, installation and refrigerant top-ups for every brand.", years: 8, status: "APPROVED", categories: ["ac", "electrical"], areas: ["limpertsberg", "bonnevoie", "kirchberg", "ville-haute"], portfolio: ["Installing 4 split air conditioners"] },
+  { key: "6", name: "Ben Kremer", bio: "Young plumber, quick and tidy work.", years: 3, status: "PENDING", categories: ["plumbing"], areas: ["limpertsberg", "ville-haute"] },
+  { key: "7", name: "Max Lentz", bio: "Electrician.", years: 2, status: "REJECTED", rejectionReason: "The ID photo isn't readable. Upload a clear photo of both sides.", categories: ["electrical"], areas: ["ville-haute"] },
+  { key: "8", name: "Pedro Alves", bio: "Glass facade and window cleaning.", years: 5, status: "SUSPENDED", categories: ["cleaning"], areas: ["grund", "ville-haute"] },
+  { key: "9", name: "Jeff Meyer", bio: "", years: 1, status: "DRAFT", categories: ["ac"], areas: [] },
+  { key: "10", name: "Yves Hansen", bio: "Painter and tiler. Careful handwork on paint and ceramics.", years: 11, status: "APPROVED", categories: ["finishing", "finishing-painting", "finishing-tiling"], areas: ["limpertsberg", "cloche-dor", "bonnevoie"], portfolio: ["Kitchen tiling"] },
 ]
 
 type ServiceSeed = {
@@ -302,21 +304,21 @@ type ServiceSeed = {
 }
 
 const SERVICES: ServiceSeed[] = [
-  { key: "pipe-unclogging", provider: "1", category: "plumbing", title: "تسليك مواسير المطبخ والحمام", description: "تسليك بالسوستة أو الضغط، مع فحص سبب الانسداد.", price: 250, minutes: 60 },
-  { key: "gas-heater-install", provider: "1", category: "plumbing-heaters", title: "تركيب سخان غاز", description: "تركيب السخان وتوصيل المية والغاز واختبار التسريب. السعر من غير الخامات.", price: 450, minutes: 120 },
-  { key: "sink-leak-repair", provider: "1", category: "plumbing-leaks", title: "إصلاح تسريب تحت الحوض", description: "تغيير الجلب أو الوصلات اللي فيها تسريب.", price: 200, minutes: 60 },
-  { key: "switch-replacement", provider: "2", category: "electrical", title: "تغيير مفتاح أو بريزة", description: "تغيير مفتاح أو بريزة واحدة، والسعر من غير الخامات.", price: 80, minutes: 30 },
-  { key: "chandelier-install", provider: "2", category: "electrical", title: "تركيب نجفة", description: "تركيب نجفة لحد 12 لمبة مع تأمين التعليق.", price: 200, minutes: 60 },
-  { key: "electrical-fault-repair", provider: "2", category: "electrical", title: "فحص وإصلاح عطل كهربا", description: "تحديد سبب الفصل أو القفلة وإصلاحه.", price: 300, minutes: 90 },
-  { key: "apartment-cleaning-120", provider: "3", category: "cleaning", title: "تنظيف شقة لحد 120 متر", description: "تنظيف شامل للأرضيات والحمامات والمطبخ والشبابيك من جوه.", price: 1200, minutes: 360 },
-  { key: "post-construction-cleaning", provider: "3", category: "cleaning", title: "تنظيف بعد التشطيب", description: "إزالة بقايا الدهان والأسمنت وتلميع الأرضيات.", price: 2200, minutes: 480 },
-  { key: "sofa-carpet-cleaning", provider: "3", category: "cleaning", title: "تنظيف كنب وسجاد", description: "تنظيف بالبخار لطقم كنب وسجادتين.", price: 600, minutes: 180 },
-  { key: "ac-maintenance", provider: "5", category: "ac", title: "صيانة تكييف وتنظيف فلاتر", description: "غسيل الوحدة الداخلية والخارجية وتنظيف الفلاتر.", price: 350, minutes: 90 },
-  { key: "split-ac-install", provider: "5", category: "ac", title: "تركيب تكييف سبليت", description: "تركيب تكييف لحد 3 حصان مع 3 متر مواسير.", price: 900, minutes: 180 },
+  { key: "pipe-unclogging", provider: "1", category: "plumbing", title: "Unblock kitchen and bathroom drains", description: "Drain snake or pressure jetting, plus a check of what caused the blockage.", price: 250, minutes: 60 },
+  { key: "gas-heater-install", provider: "1", category: "plumbing-heaters", title: "Gas water heater installation", description: "Fitting the heater, connecting water and gas, and a leak test. Price excludes parts.", price: 450, minutes: 120 },
+  { key: "sink-leak-repair", provider: "1", category: "plumbing-leaks", title: "Fix a leak under the sink", description: "Replacing the leaking seals or fittings.", price: 200, minutes: 60 },
+  { key: "switch-replacement", provider: "2", category: "electrical", title: "Replace a switch or socket", description: "Replacing one switch or socket; price excludes parts.", price: 80, minutes: 30 },
+  { key: "chandelier-install", provider: "2", category: "electrical", title: "Chandelier installation", description: "Installing a chandelier with up to 12 bulbs, securely hung.", price: 200, minutes: 60 },
+  { key: "electrical-fault-repair", provider: "2", category: "electrical", title: "Find and fix an electrical fault", description: "Finding why the breaker trips or the power cuts out, and fixing it.", price: 300, minutes: 90 },
+  { key: "apartment-cleaning-120", provider: "3", category: "cleaning", title: "Apartment cleaning up to 120 m²", description: "Thorough clean of floors, bathrooms, kitchen and the inside of windows.", price: 1200, minutes: 360 },
+  { key: "post-construction-cleaning", provider: "3", category: "cleaning", title: "After-renovation cleaning", description: "Removing paint and cement residue and polishing the floors.", price: 2200, minutes: 480 },
+  { key: "sofa-carpet-cleaning", provider: "3", category: "cleaning", title: "Sofa and carpet cleaning", description: "Steam cleaning of a sofa set and two carpets.", price: 600, minutes: 180 },
+  { key: "ac-maintenance", provider: "5", category: "ac", title: "Air-conditioner service and filter clean", description: "Washing the indoor and outdoor units and cleaning the filters.", price: 350, minutes: 90 },
+  { key: "split-ac-install", provider: "5", category: "ac", title: "Split air-conditioner installation", description: "Installing a unit up to 3 HP with 3 metres of piping.", price: 900, minutes: 180 },
   // Inactive: must 404 publicly (visibility rule lives in the service layer).
-  { key: "freon-recharge", provider: "5", category: "ac", title: "شحن فريون", description: "شحن فريون كامل مع كشف التسريب.", price: 700, minutes: 60, isActive: false },
+  { key: "freon-recharge", provider: "5", category: "ac", title: "Refrigerant recharge", description: "A full refrigerant recharge with a leak check.", price: 700, minutes: 60, isActive: false },
   // Belongs to a SUSPENDED provider: must be hidden even though the service itself is active.
-  { key: "glass-facade-cleaning", provider: "8", category: "cleaning", title: "تنظيف واجهات زجاج", description: "تنظيف واجهات وشبابيك من بره.", price: 800, minutes: 240 },
+  { key: "glass-facade-cleaning", provider: "8", category: "cleaning", title: "Glass facade cleaning", description: "Cleaning facades and windows from the outside.", price: 800, minutes: 240 },
 ]
 
 type RequestSeed = {
@@ -334,15 +336,15 @@ type RequestSeed = {
 }
 
 const REQUESTS: RequestSeed[] = [
-  { key: "1", customer: "1", category: "finishing-painting", area: "nasr-city", title: "دهان شقة 3 أوض وصالة", description: "شقة 140 متر محتاجة دهان كامل بلاستيك، الحوائط فيها شروخ بسيطة في الصالة.", budget: 15000, status: "OPEN", createdDay: -2, preferredDay: 10, media: 2 },
-  { key: "2", customer: "2", category: "electrical-wiring", area: "new-cairo", title: "تأسيس كهرباء شقة جديدة 150م", description: "شقة على المحارة، محتاج تأسيس كامل مع لوحة 24 خط.", budget: 25000, status: "ACCEPTED", createdDay: -14 },
-  { key: "3", customer: "3", category: "plumbing", area: "heliopolis", title: "تغيير مواسير الحمام بالكامل", description: "المواسير قديمة حديد ومحتاجة تتغير بلاستيك، الحمام 6 متر.", status: "OPEN", createdDay: -1, preferredDay: 4 },
-  { key: "4", customer: "4", category: "finishing-tiling", area: "maadi", title: "تركيب سيراميك مطبخ", description: "مطبخ 9 متر أرضيات وحوائط لحد السقف، السيراميك موجود.", budget: 9000, status: "ACCEPTED", createdDay: -25 },
-  { key: "5", customer: "1", category: "ac", area: "nasr-city", title: "صيانة 3 تكييفات", description: "3 تكييفات 1.5 حصان محتاجين غسيل وكشف فريون.", status: "EXPIRED", createdDay: -20 },
-  { key: "6", customer: "5", category: "plumbing", area: "mokattam", title: "تسريب في السقف من الشقة اللي فوق", description: "في مية بتنزل من سقف الحمام.", status: "CANCELLED", createdDay: -9 },
-  { key: "7", customer: "2", category: "finishing-painting", area: "new-cairo", title: "دهان أوضة أطفال", description: "أوضة 4×4 عايزها لونين مع رسمة بسيطة.", status: "DRAFT", createdDay: 0 },
-  { key: "8", customer: "3", category: "finishing", area: "new-cairo", title: "تشطيب حمام كامل", description: "حمام 5 متر: سيراميك، أطقم صحية، ودهان سقف.", budget: 20000, status: "ACCEPTED", createdDay: -30 },
-  { key: "9", customer: "6", category: "electrical", area: "zamalek", title: "تغيير إنارة الشقة لليد", description: "حوالي 25 سبوت ولمبة محتاجين يتغيروا ليد.", budget: 4000, status: "OPEN", createdDay: -3 },
+  { key: "1", customer: "1", category: "finishing-painting", area: "kirchberg", title: "Paint a 3-bedroom apartment and living room", description: "A 140 m² apartment needs a full coat of emulsion; the living-room walls have some small cracks.", budget: 15000, status: "OPEN", createdDay: -2, preferredDay: 10, media: 2 },
+  { key: "2", customer: "2", category: "electrical-wiring", area: "cloche-dor", title: "Wire a new 150 m² apartment", description: "The apartment is plastered; I need full wiring with a 24-circuit fuse board.", budget: 25000, status: "ACCEPTED", createdDay: -14 },
+  { key: "3", customer: "3", category: "plumbing", area: "belair", title: "Replace all bathroom pipes", description: "The old iron pipes need replacing with plastic ones; the bathroom is 6 m².", status: "OPEN", createdDay: -1, preferredDay: 4 },
+  { key: "4", customer: "4", category: "finishing-tiling", area: "limpertsberg", title: "Tile a kitchen", description: "A 9 m² kitchen, floor and walls up to the ceiling; the tiles are already here.", budget: 9000, status: "ACCEPTED", createdDay: -25 },
+  { key: "5", customer: "1", category: "ac", area: "kirchberg", title: "Service 3 air conditioners", description: "Three 1.5 HP units need a wash and a refrigerant check.", status: "EXPIRED", createdDay: -20 },
+  { key: "6", customer: "5", category: "plumbing", area: "bonnevoie", title: "Leak in the ceiling from the flat above", description: "Water is dripping from the bathroom ceiling.", status: "CANCELLED", createdDay: -9 },
+  { key: "7", customer: "2", category: "finishing-painting", area: "cloche-dor", title: "Paint a children's room", description: "A 4×4 m room in two colours with a simple mural.", status: "DRAFT", createdDay: 0 },
+  { key: "8", customer: "3", category: "finishing", area: "cloche-dor", title: "Complete bathroom renovation", description: "A 5 m² bathroom: tiles, sanitary ware and a painted ceiling.", budget: 20000, status: "ACCEPTED", createdDay: -30 },
+  { key: "9", customer: "6", category: "electrical", area: "grund", title: "Switch the apartment's lighting to LED", description: "About 25 spotlights and bulbs need replacing with LEDs.", budget: 4000, status: "OPEN", createdDay: -3 },
 ]
 
 type QuoteSeed = {
@@ -357,15 +359,15 @@ type QuoteSeed = {
 }
 
 const QUOTES: QuoteSeed[] = [
-  { key: "1a", request: "1", provider: "4", price: 14500, days: 10, message: "السعر شامل المعجون والدهان بلاستيك سايبس، وهصلّح الشروخ الأول.", status: "PENDING", createdDay: -1 },
-  { key: "1b", request: "1", provider: "10", price: 12800, days: 14, message: "السعر مصنعية بس، الخامات عليك أو أجيبها بفاتورة.", status: "PENDING", createdDay: -1 },
-  { key: "2a", request: "2", provider: "2", price: 23000, days: 12, message: "تأسيس كامل بسلك السويدي ولوحة 24 خط، على 3 مراحل.", status: "ACCEPTED", createdDay: -13 },
-  { key: "2b", request: "2", provider: "5", price: 26500, days: 10, message: "شامل الخامات والتشغيل.", status: "REJECTED", createdDay: -13 },
-  { key: "4a", request: "4", provider: "10", price: 8500, days: 4, message: "مصنعية تركيب ومونة ولحامات.", status: "ACCEPTED", createdDay: -24 },
-  { key: "5a", request: "5", provider: "5", price: 1000, days: 1, message: "الـ 3 تكييفات في يوم واحد.", status: "EXPIRED", createdDay: -19 },
-  { key: "8a", request: "8", provider: "4", price: 18000, days: 8, message: "شامل السيراميك والأطقم الصحية متوسطة.", status: "ACCEPTED", createdDay: -29 },
-  { key: "9a", request: "9", provider: "2", price: 3800, days: 2, message: "شامل اللمبات.", status: "WITHDRAWN", createdDay: -2 },
-  { key: "9b", request: "9", provider: "5", price: 3500, days: 1, message: "مصنعية بس، وأقدر أجيب اللمبات بسعر الجملة.", status: "PENDING", createdDay: -2 },
+  { key: "1a", request: "1", provider: "4", price: 14500, days: 10, message: "Price includes filler and washable emulsion; I'll repair the cracks first.", status: "PENDING", createdDay: -1 },
+  { key: "1b", request: "1", provider: "10", price: 12800, days: 14, message: "Labour only. You supply the materials, or I buy them and pass on the invoice.", status: "PENDING", createdDay: -1 },
+  { key: "2a", request: "2", provider: "2", price: 23000, days: 12, message: "Full wiring with quality cable and a 24-circuit board, in 3 stages.", status: "ACCEPTED", createdDay: -13 },
+  { key: "2b", request: "2", provider: "5", price: 26500, days: 10, message: "Materials and commissioning included.", status: "REJECTED", createdDay: -13 },
+  { key: "4a", request: "4", provider: "10", price: 8500, days: 4, message: "Labour for laying, adhesive and grouting.", status: "ACCEPTED", createdDay: -24 },
+  { key: "5a", request: "5", provider: "5", price: 1000, days: 1, message: "All 3 units in one day.", status: "EXPIRED", createdDay: -19 },
+  { key: "8a", request: "8", provider: "4", price: 18000, days: 8, message: "Includes tiles and mid-range sanitary ware.", status: "ACCEPTED", createdDay: -29 },
+  { key: "9a", request: "9", provider: "2", price: 3800, days: 2, message: "Bulbs included.", status: "WITHDRAWN", createdDay: -2 },
+  { key: "9b", request: "9", provider: "5", price: 3500, days: 1, message: "Labour only; I can get the bulbs at trade price.", status: "PENDING", createdDay: -2 },
 ]
 
 type BookingSeed = {
@@ -393,9 +395,9 @@ type BookingSeed = {
 }
 
 const BOOKINGS: BookingSeed[] = [
-  { n: 1, source: "SERVICE", customer: "1", provider: "1", service: "pipe-unclogging", status: "PENDING_PAYMENT", method: "ONLINE", day: 3, notes: "الحوض بيصفّي ببطء من أسبوع." },
+  { n: 1, source: "SERVICE", customer: "1", provider: "1", service: "pipe-unclogging", status: "PENDING_PAYMENT", method: "ONLINE", day: 3, notes: "The sink has been draining slowly for a week." },
   { n: 2, source: "SERVICE", customer: "2", provider: "3", service: "apartment-cleaning-120", status: "PENDING_PROVIDER", method: "ONLINE", day: 2, hour: 7 },
-  { n: 3, source: "SERVICE", customer: "3", provider: "2", service: "chandelier-install", status: "CONFIRMED", method: "CASH", day: 1, hour: 14, notes: "النجفة موجودة، السقف ارتفاعه 3 متر." },
+  { n: 3, source: "SERVICE", customer: "3", provider: "2", service: "chandelier-install", status: "CONFIRMED", method: "CASH", day: 1, hour: 14, notes: "I have the chandelier; the ceiling is 3 metres high." },
   { n: 4, source: "SERVICE", customer: "4", provider: "5", service: "ac-maintenance", status: "IN_PROGRESS", method: "ONLINE", day: 0, hour: 9 },
   { n: 5, source: "SERVICE", customer: "5", provider: "1", service: "gas-heater-install", status: "AWAITING_CONFIRMATION", method: "ONLINE", day: -1, hour: 11 },
   { n: 6, source: "SERVICE", customer: "1", provider: "3", service: "post-construction-cleaning", status: "COMPLETED", method: "ONLINE", day: -10, hour: 7 },
@@ -408,31 +410,38 @@ const BOOKINGS: BookingSeed[] = [
   { n: 13, source: "SERVICE", customer: "5", provider: "5", service: "split-ac-install", status: "CLOSED", method: "ONLINE", day: -30, hour: 12 },
   { n: 14, source: "SERVICE", customer: "6", provider: "3", service: "sofa-carpet-cleaning", status: "CLOSED", method: "ONLINE", day: -40, hour: 10 },
   { n: 15, source: "SERVICE", customer: "1", provider: "1", service: "gas-heater-install", status: "COMPLETED", method: "CASH", day: -5, hour: 13 },
+  // Finished and not reviewed yet, so `/account/bookings/[id]/review` has something to rate (CU-10).
+  { n: 16, source: "SERVICE", customer: "3", provider: "5", service: "ac-maintenance", status: "COMPLETED", method: "ONLINE", day: -3, hour: 10 },
+  { n: 17, source: "SERVICE", customer: "4", provider: "3", service: "apartment-cleaning-120", status: "CLOSED", method: "CASH", day: -12, hour: 9 },
 ]
 
+/**
+ * Reviews (SY-05). Bookings 16 and 17 are finished but deliberately left without a customer review so the review
+ * page (CU-10) can be tried; booking 6's review is younger than the edit window, so it can still be edited.
+ */
 const REVIEWS: { booking: number; rating: number; comment: string; reply?: string; hidden?: boolean; byProvider?: { rating: number; comment: string } }[] = [
-  { booking: 6, rating: 5, comment: "الشقة بقت تلمع، الفريق جه في ميعاده وكان محترم جدًا.", reply: "شكرًا يا أستاذ أحمد، نورتنا." },
-  { booking: 7, rating: 4, comment: "حل المشكلة بسرعة، بس اتأخر نص ساعة.", byProvider: { rating: 5, comment: "عميلة محترمة وواضحة في طلبها." } },
-  { booking: 11, rating: 4, comment: "الشغل نضيف واللحامات مظبوطة." },
-  { booking: 13, rating: 1, comment: "كلام مسيء اتشال من المراجعة.", hidden: true },
-  { booking: 14, rating: 5, comment: "الكنب رجع جديد. أنصح بيهم.", reply: "تحت أمرك في أي وقت." },
-  { booking: 15, rating: 5, comment: "ركّب السخان وجرّبه قدامي وشرحلي الصيانة." },
+  { booking: 6, rating: 5, comment: "The apartment is spotless. The team arrived on time and were very polite.", reply: "Thank you, Laura — glad we could help." },
+  { booking: 7, rating: 4, comment: "Fixed the problem quickly, but arrived half an hour late.", byProvider: { rating: 5, comment: "Polite customer, clear about what was needed." } },
+  { booking: 11, rating: 4, comment: "Clean work and neat grout lines." },
+  { booking: 13, rating: 1, comment: "Abusive language removed from this review.", hidden: true },
+  { booking: 14, rating: 5, comment: "The sofa looks brand new. Highly recommended.", reply: "Happy to help any time." },
+  { booking: 15, rating: 5, comment: "Installed the heater, tested it in front of me and explained the maintenance." },
 ]
 
 const MESSAGES: { booking: number; from: "customer" | "provider"; body: string; minutesAfter: number; blocked?: boolean }[] = [
   // Booking 2 is not confirmed yet: contact details must be blocked (SY-04).
-  { booking: 2, from: "provider", body: "أهلًا، ممكن أعرف الشقة كام أوضة بالظبط؟", minutesAfter: 30 },
-  { booking: 2, from: "customer", body: "3 أوض وصالة وحمامين.", minutesAfter: 45 },
-  { booking: 2, from: "provider", body: "[تم إخفاء بيانات التواصل — ممنوع قبل تأكيد الحجز]", minutesAfter: 50, blocked: true },
-  { booking: 3, from: "customer", body: "السلام عليكم، النجفة تقيلة شوية، هتحتاج حد معاك؟", minutesAfter: 20 },
-  { booking: 3, from: "provider", body: "وعليكم السلام، هجيب معايا مساعد ما تقلقيش.", minutesAfter: 35 },
-  { booking: 4, from: "provider", body: "أنا تحت العمارة.", minutesAfter: 5 },
-  { booking: 4, from: "customer", body: "تمام، الدور السادس شقة 12.", minutesAfter: 6 },
-  { booking: 5, from: "provider", body: "خلصت التركيب وجربت السخان. من فضلك أكّد إتمام الشغل.", minutesAfter: 120 },
-  { booking: 10, from: "provider", body: "خلصنا المرحلة الأولى (التكسير والخراطيم). هنبدأ سحب السلك بكرة.", minutesAfter: 60 },
-  { booking: 10, from: "customer", body: "تمام، هبعتلك دفعة المرحلة التانية النهارده.", minutesAfter: 90 },
-  { booking: 12, from: "customer", body: "في سيراميكة مكسورة جنب الحوض والميول غلط والمية بتقف.", minutesAfter: 60 },
-  { booking: 12, from: "provider", body: "ده كان من الخامات اللي اتجابت، مش من التركيب.", minutesAfter: 120 },
+  { booking: 2, from: "provider", body: "Hello, how many rooms does the apartment have exactly?", minutesAfter: 30 },
+  { booking: 2, from: "customer", body: "3 bedrooms, a living room and 2 bathrooms.", minutesAfter: 45 },
+  { booking: 2, from: "provider", body: "[Contact details hidden — not allowed before the booking is confirmed]", minutesAfter: 50, blocked: true },
+  { booking: 3, from: "customer", body: "Hi, the chandelier is quite heavy — will you need someone with you?", minutesAfter: 20 },
+  { booking: 3, from: "provider", body: "Hi, I'll bring a helper, don't worry.", minutesAfter: 35 },
+  { booking: 4, from: "provider", body: "I'm outside the building.", minutesAfter: 5 },
+  { booking: 4, from: "customer", body: "Great, 6th floor, apartment 12.", minutesAfter: 6 },
+  { booking: 5, from: "provider", body: "Installation done and the heater is tested. Please confirm the job is complete.", minutesAfter: 120 },
+  { booking: 10, from: "provider", body: "Stage one is done (chasing and conduits). We start pulling the cable tomorrow.", minutesAfter: 60 },
+  { booking: 10, from: "customer", body: "Great, I'll fund the second stage today.", minutesAfter: 90 },
+  { booking: 12, from: "customer", body: "There's a cracked tile next to the basin, and the floor slope is wrong so water pools.", minutesAfter: 60 },
+  { booking: 12, from: "provider", body: "That came from the materials supplied, not from the installation.", minutesAfter: 120 },
 ]
 
 // ----------------------------------------------------------------------------
@@ -441,8 +450,8 @@ const MESSAGES: { booking: number; from: "customer" | "provider"; body: string; 
 
 async function seedMockData(tx: Tx) {
   // Lookups into reference data.
-  const cairo = await tx.city.findUniqueOrThrow({ where: { slug: "cairo" } })
-  const areas = new Map((await tx.area.findMany({ where: { cityId: cairo.id } })).map((a) => [a.slug, a]))
+  const city = await tx.city.findUniqueOrThrow({ where: { slug: "luxembourg" } })
+  const areas = new Map((await tx.area.findMany({ where: { cityId: city.id } })).map((a) => [a.slug, a]))
   const categories = new Map((await tx.category.findMany()).map((c) => [c.slug, c]))
   const commissionRows = await tx.commissionSetting.findMany({ include: { category: true } })
   const globalRate = Number(commissionRows.find((c) => c.categoryId === null)?.ratePercent ?? GLOBAL_COMMISSION)
@@ -473,7 +482,7 @@ async function seedMockData(tx: Tx) {
   // picked a role but left the wizard: the resume case (docs/onboarding-feature.md).
   const onboarded = (createdAt: Date, completed = true) => ({
     createdAt,
-    cityId: cairo.id,
+    cityId: city.id,
     roleSelectedAt: createdAt,
     onboardingCompletedAt: completed ? createdAt : null,
   })
@@ -498,8 +507,8 @@ async function seedMockData(tx: Tx) {
       data: {
         id: id("address", `${c.key}_home`),
         userId: customerId(c.key),
-        label: "البيت",
-        cityId: cairo.id,
+        label: "Home",
+        cityId: city.id,
         areaId: a.id,
         street: c.street,
         details: c.details,
@@ -512,11 +521,11 @@ async function seedMockData(tx: Tx) {
     data: {
       id: id("address", "1_office"),
       userId: customerId("1"),
-      label: "الشغل",
-      cityId: cairo.id,
-      areaId: area("downtown").id,
-      street: "شارع قصر النيل",
-      details: "عمارة 18، الدور الخامس، مكتب 502",
+      label: "Work",
+      cityId: city.id,
+      areaId: area("ville-haute").id,
+      street: "Grand-Rue 18",
+      details: "5th floor, office 502",
     },
   })
   // The optional onboarding "interests" step; the other customers skipped it.
@@ -547,7 +556,7 @@ async function seedMockData(tx: Tx) {
     await tx.providerProfile.create({
       data: {
         userId: uid,
-        cityId: cairo.id,
+        cityId: city.id,
         bio: p.bio || null,
         yearsExperience: p.years,
         verificationStatus: p.status,
@@ -598,14 +607,14 @@ async function seedMockData(tx: Tx) {
       }
     }
 
-    // Weekly hours (PR-10): Sat–Thu 09:00–18:00; Friday off.
+    // Weekly hours (PR-10): Mon–Sat 08:00–18:00; Sunday off.
     if (p.status === "APPROVED") {
       await tx.availability.createMany({
-        data: [6, 0, 1, 2, 3, 4].map((weekday) => ({
+        data: [1, 2, 3, 4, 5, 6].map((weekday) => ({
           id: id("availability", `${p.key}_${weekday}`),
           providerId: uid,
           weekday,
-          startTime: "09:00",
+          startTime: "08:00",
           endTime: "18:00",
         })),
       })
@@ -655,7 +664,7 @@ async function seedMockData(tx: Tx) {
         id: rid,
         customerId: customerId(r.customer),
         categoryId: category(r.category).id,
-        cityId: cairo.id,
+        cityId: city.id,
         areaId: area(r.area).id,
         addressId: r.area === customer.area ? id("address", `${r.customer}_home`) : null,
         title: r.title,
@@ -756,8 +765,8 @@ async function seedMockData(tx: Tx) {
         status: b.status,
         scheduledAt: scheduled,
         addressSnapshot: {
-          label: "البيت",
-          city: cairo.nameEn,
+          label: "Home",
+          city: city.nameEn,
           area: a.nameEn,
           street: customer.street,
           details: customer.details,
@@ -769,7 +778,7 @@ async function seedMockData(tx: Tx) {
         completedAt: DONE.has(b.status) ? new Date(scheduled.getTime() + 5 * HOUR) : null,
         autoReleaseAt: b.status === "AWAITING_CONFIRMATION" ? new Date(scheduled.getTime() + 3 * HOUR + 48 * HOUR) : null,
         cancelledById: b.status === "CANCELLED" ? customerId(b.customer) : b.status === "REJECTED" ? providerId(b.provider) : null,
-        cancelReason: b.status === "CANCELLED" ? "السباك اللي في العمارة صلّحها." : b.status === "REJECTED" ? "مش متاح في الميعاد ده." : null,
+        cancelReason: b.status === "CANCELLED" ? "The building's caretaker fixed it." : b.status === "REJECTED" ? "Not available at that time." : null,
         cancelledAt: b.status === "CANCELLED" || b.status === "REJECTED" ? new Date(created.getTime() + 6 * HOUR) : null,
         createdAt: created,
       },
@@ -780,9 +789,9 @@ async function seedMockData(tx: Tx) {
   // --- Milestones (CU-17) for the big wiring project (booking 10) ------------
   const b10 = bookingInfo.get(10)!
   const milestones = [
-    { key: "1", title: "التكسير والخراطيم", share: 0.3, status: "RELEASED" as const, due: -8 },
-    { key: "2", title: "سحب السلك والعلب", share: 0.4, status: "FUNDED" as const, due: -2 },
-    { key: "3", title: "اللوحة والتشطيب والتشغيل", share: 0.3, status: "PENDING" as const, due: 5 },
+    { key: "1", title: "Chasing and conduits", share: 0.3, status: "RELEASED" as const, due: -8 },
+    { key: "2", title: "Cable pulling and boxes", share: 0.4, status: "FUNDED" as const, due: -2 },
+    { key: "3", title: "Fuse board, finishing and commissioning", share: 0.3, status: "PENDING" as const, due: 5 },
   ]
   for (const [i, m] of milestones.entries()) {
     await tx.milestone.create({
@@ -905,6 +914,7 @@ async function seedMockData(tx: Tx) {
         providerReply: r.reply ?? null,
         isHidden: r.hidden ?? false,
         createdAt,
+        updatedAt: createdAt,
       },
     })
     if (r.byProvider) {
@@ -917,6 +927,7 @@ async function seedMockData(tx: Tx) {
           rating: r.byProvider.rating,
           comment: r.byProvider.comment,
           createdAt,
+          updatedAt: createdAt,
         },
       })
     }
@@ -928,7 +939,7 @@ async function seedMockData(tx: Tx) {
       id: id("dispute", 12),
       bookingId: bookingId(12),
       openedById: customerId("3"),
-      reason: "في سيراميكة مكسورة جنب الحوض، وميول الأرضية غلط والمية بتقف.",
+      reason: "A tile next to the basin is cracked, and the floor slopes the wrong way so water pools.",
       status: "UNDER_REVIEW",
       createdAt: at(-15),
     },
@@ -951,11 +962,11 @@ async function seedMockData(tx: Tx) {
       id: id("dispute", 13),
       bookingId: bookingId(13),
       openedById: customerId("5"),
-      reason: "التكييف بيسرّب مية من الوحدة الداخلية بعد التركيب.",
+      reason: "The air conditioner leaks water from the indoor unit since it was installed.",
       status: "RESOLVED",
       resolution: "PARTIAL_REFUND",
       refundAmount: money(300),
-      resolutionNote: "المزود عدّل الميول بعد الشكوى، واتفقنا على استرداد جزء من المصنعية.",
+      resolutionNote: "The provider fixed the drain slope after the complaint; we agreed to refund part of the labour.",
       resolvedById: adminId,
       resolvedAt: at(-24),
       createdAt: at(-28),
@@ -967,7 +978,7 @@ async function seedMockData(tx: Tx) {
       id: id("dispute", 7),
       bookingId: bookingId(7),
       openedById: customerId("2"),
-      reason: "المزود طلب مبلغ زيادة عن السعر المتفق عليه.",
+      reason: "The provider asked for more than the agreed price.",
       status: "OPEN",
       createdAt: at(-1),
     },
@@ -997,7 +1008,7 @@ async function seedMockData(tx: Tx) {
       amount: money(1500),
       status: "PAID",
       destinationType: "WALLET",
-      destinationRef: "Vodafone Cash ••••5678",
+      destinationRef: "Payconiq ••••5678",
       processedById: adminId,
       processedAt: at(-7),
       createdAt: at(-9),
@@ -1010,7 +1021,7 @@ async function seedMockData(tx: Tx) {
       amount: money(5000),
       status: "REQUESTED",
       destinationType: "BANK",
-      destinationRef: "CIB ••••4421",
+      destinationRef: "BCEE ••••4421",
       createdAt: at(-1),
     },
   })
@@ -1021,7 +1032,7 @@ async function seedMockData(tx: Tx) {
       amount: money(400),
       status: "APPROVED",
       destinationType: "WALLET",
-      destinationRef: "InstaPay ••••0912",
+      destinationRef: "Payconiq ••••0912",
       processedById: adminId,
       processedAt: at(0, 8),
       createdAt: at(-2),
@@ -1034,10 +1045,10 @@ async function seedMockData(tx: Tx) {
       amount: money(3000),
       status: "REJECTED",
       destinationType: "BANK",
-      destinationRef: "NBE ••••7730",
+      destinationRef: "BIL ••••7730",
       processedById: adminId,
       processedAt: at(-3),
-      rejectionReason: "المبلغ أكبر من الرصيد المتاح بعد خصم عمولة الشغل الكاش.",
+      rejectionReason: "The amount is more than the available balance after the commission owed on cash jobs.",
       createdAt: at(-4),
     },
   })
@@ -1048,17 +1059,17 @@ async function seedMockData(tx: Tx) {
     const info = bookingInfo.get(b.n)!
     if (b.n === 10) continue
     if (b.method === "ONLINE" && DONE.has(b.status)) {
-      wallet.push({ id: id("wallet", `${b.n}_earning`), providerId: providerId(b.provider), bookingId: bookingId(b.n), type: "EARNING", amount: money(info.net), note: `صافي الحجز ${bookingNumber(b.n)}`, createdAt: new Date(info.scheduled.getTime() + 6 * HOUR) })
+      wallet.push({ id: id("wallet", `${b.n}_earning`), providerId: providerId(b.provider), bookingId: bookingId(b.n), type: "EARNING", amount: money(info.net), note: `Net of booking ${bookingNumber(b.n)}`, createdAt: new Date(info.scheduled.getTime() + 6 * HOUR) })
     }
     if (b.method === "CASH" && DONE.has(b.status)) {
-      wallet.push({ id: id("wallet", `${b.n}_commission`), providerId: providerId(b.provider), bookingId: bookingId(b.n), type: "COMMISSION_DEBT", amount: money(-info.commission), note: `عمولة حجز كاش ${bookingNumber(b.n)}`, createdAt: new Date(info.scheduled.getTime() + 6 * HOUR) })
+      wallet.push({ id: id("wallet", `${b.n}_commission`), providerId: providerId(b.provider), bookingId: bookingId(b.n), type: "COMMISSION_DEBT", amount: money(-info.commission), note: `Commission on cash booking ${bookingNumber(b.n)}`, createdAt: new Date(info.scheduled.getTime() + 6 * HOUR) })
     }
   }
   const m1 = milestones[0]
-  wallet.push({ id: id("wallet", "10_m1_earning"), providerId: providerId("2"), bookingId: bookingId(10), type: "EARNING", amount: money(round2(b10.amount * m1.share * (1 - rateFor("electrical-wiring") / 100))), note: `مرحلة: ${m1.title}`, createdAt: at(-6) })
-  wallet.push({ id: id("wallet", "13_clawback"), providerId: providerId("5"), bookingId: bookingId(13), type: "REFUND_CLAWBACK", amount: money(-300), note: "استرداد جزئي بعد حل النزاع", createdAt: at(-24) })
-  wallet.push({ id: id("wallet", "3_payout"), providerId: providerId("3"), payoutId: id("payout", "1_paid"), type: "PAYOUT", amount: money(-1500), note: "سحب أرباح", createdAt: at(-7) })
-  wallet.push({ id: id("wallet", "4_adjustment"), providerId: providerId("4"), type: "ADJUSTMENT", amount: money(150), note: "تعويض فرق عمولة (تصحيح يدوي)", createdAt: at(-12) })
+  wallet.push({ id: id("wallet", "10_m1_earning"), providerId: providerId("2"), bookingId: bookingId(10), type: "EARNING", amount: money(round2(b10.amount * m1.share * (1 - rateFor("electrical-wiring") / 100))), note: `Stage: ${m1.title}`, createdAt: at(-6) })
+  wallet.push({ id: id("wallet", "13_clawback"), providerId: providerId("5"), bookingId: bookingId(13), type: "REFUND_CLAWBACK", amount: money(-300), note: "Partial refund after the dispute was settled", createdAt: at(-24) })
+  wallet.push({ id: id("wallet", "3_payout"), providerId: providerId("3"), payoutId: id("payout", "1_paid"), type: "PAYOUT", amount: money(-1500), note: "Payout", createdAt: at(-7) })
+  wallet.push({ id: id("wallet", "4_adjustment"), providerId: providerId("4"), type: "ADJUSTMENT", amount: money(150), note: "Commission difference refunded (manual correction)", createdAt: at(-12) })
   await tx.walletTransaction.createMany({ data: wallet })
 
   // --- Denormalised provider counters (same values the services keep updated) -
@@ -1074,27 +1085,28 @@ async function seedMockData(tx: Tx) {
 
   // --- Notifications (SY-02) --------------------------------------------------
   const notifications: Prisma.NotificationCreateManyInput[] = [
-    { userId: customerId("1"), type: "QUOTE_RECEIVED", title: "وصلك عرض سعر جديد", body: "عماد فؤاد بعت عرض على «دهان شقة 3 أوض وصالة».", payload: { requestId: id("request", "1") }, createdAt: at(-1, 15) },
-    { userId: customerId("1"), type: "QUOTE_RECEIVED", title: "وصلك عرض سعر جديد", body: "سامح النقاش بعت عرض على «دهان شقة 3 أوض وصالة».", payload: { requestId: id("request", "1") }, createdAt: at(-1, 16), readAt: at(-1, 18) },
-    { userId: customerId("1"), type: "PAYMENT_UPDATE", title: "الدفع ما تمّش", body: "جرّب تاني لحجز تسليك المواسير.", payload: { bookingId: bookingId(1) }, createdAt: at(0, 7) },
-    { userId: customerId("5"), type: "BOOKING_STATUS_CHANGED", title: "المزود خلّص الشغل", body: "أكّد إتمام تركيب السخان خلال 48 ساعة.", payload: { bookingId: bookingId(5) }, createdAt: at(-1, 14) },
-    { userId: customerId("3"), type: "DISPUTE_UPDATE", title: "النزاع قيد المراجعة", body: "فريق الدعم بيراجع الصور والمحادثات.", payload: { bookingId: bookingId(12) }, createdAt: at(-14) },
-    { userId: providerId("1"), type: "NEW_REQUEST_MATCH", title: "طلب جديد في منطقتك", body: "«تغيير مواسير الحمام بالكامل» في مصر الجديدة.", payload: { requestId: id("request", "3") }, createdAt: at(-1, 9) },
-    { userId: providerId("3"), type: "BOOKING_CREATED", title: "حجز جديد مستني موافقتك", body: "تنظيف شقة لحد 120 متر — التجمع الخامس.", payload: { bookingId: bookingId(2) }, createdAt: at(-1, 10) },
-    { userId: providerId("3"), type: "PAYOUT_UPDATE", title: "تم تحويل أرباحك", body: "اتحوّل 1500 ج.م على محفظتك.", payload: { payoutId: id("payout", "1_paid") }, createdAt: at(-7), readAt: at(-7, 12) },
-    { userId: providerId("6"), type: "PROVIDER_DECISION", title: "طلب التوثيق وصلنا", body: "هنراجع مستنداتك خلال يومين شغل.", createdAt: at(-3) },
-    { userId: providerId("7"), type: "PROVIDER_DECISION", title: "طلب التوثيق اترفض", body: "صورة البطاقة مش واضحة. ارفع صورة واضحة للوشين.", createdAt: at(-55) },
-    { userId: providerId("2"), type: "REVIEW_RECEIVED", title: "وصلك تقييم جديد", body: "منى عبد الله قيّمتك 4 نجوم.", payload: { bookingId: bookingId(7) }, createdAt: at(-19) },
-    { userId: adminId, type: "SYSTEM", title: "نزاع جديد مفتوح", body: `الحجز ${bookingNumber(7)}`, payload: { bookingId: bookingId(7) }, createdAt: at(-1) },
+    { userId: customerId("1"), type: "QUOTE_RECEIVED", title: "You have a new quote", body: "David Thill sent a quote for “Paint a 3-bedroom apartment and living room”.", payload: { requestId: id("request", "1") }, createdAt: at(-1, 15) },
+    { userId: customerId("1"), type: "QUOTE_RECEIVED", title: "You have a new quote", body: "Yves Hansen sent a quote for “Paint a 3-bedroom apartment and living room”.", payload: { requestId: id("request", "1") }, createdAt: at(-1, 16), readAt: at(-1, 18) },
+    { userId: customerId("1"), type: "PAYMENT_UPDATE", title: "Your payment didn't go through", body: "Try again to book the drain unblocking.", payload: { bookingId: bookingId(1) }, createdAt: at(0, 7) },
+    { userId: customerId("5"), type: "BOOKING_STATUS_CHANGED", title: "The provider finished the job", body: "Confirm the water heater installation within 48 hours.", payload: { bookingId: bookingId(5) }, createdAt: at(-1, 14) },
+    { userId: customerId("3"), type: "DISPUTE_UPDATE", title: "Your dispute is under review", body: "Our support team is reviewing the photos and messages.", payload: { bookingId: bookingId(12) }, createdAt: at(-14) },
+    { userId: customerId("3"), type: "BOOKING_STATUS_CHANGED", title: "How did it go?", body: "Rate Nico Schroeder for the air-conditioner service.", payload: { bookingId: bookingId(16) }, createdAt: at(-3, 16) },
+    { userId: providerId("1"), type: "NEW_REQUEST_MATCH", title: "New request in your area", body: "“Replace all bathroom pipes” in Belair.", payload: { requestId: id("request", "3") }, createdAt: at(-1, 9) },
+    { userId: providerId("3"), type: "BOOKING_CREATED", title: "New booking waiting for you", body: "Apartment cleaning up to 120 m² — Cloche d'Or.", payload: { bookingId: bookingId(2) }, createdAt: at(-1, 10) },
+    { userId: providerId("3"), type: "PAYOUT_UPDATE", title: "Your earnings were sent", body: "EGP 1,500 was sent to your wallet.", payload: { payoutId: id("payout", "1_paid") }, createdAt: at(-7), readAt: at(-7, 12) },
+    { userId: providerId("6"), type: "PROVIDER_DECISION", title: "We received your verification request", body: "We'll review your documents within two working days.", createdAt: at(-3) },
+    { userId: providerId("7"), type: "PROVIDER_DECISION", title: "Your verification request was declined", body: "The ID photo isn't readable. Upload a clear photo of both sides.", createdAt: at(-55) },
+    { userId: providerId("2"), type: "REVIEW_RECEIVED", title: "You have a new review", body: "Marc Weber rated you 4 stars.", payload: { bookingId: bookingId(7) }, createdAt: at(-19) },
+    { userId: adminId, type: "SYSTEM", title: "New dispute opened", body: `Booking ${bookingNumber(7)}`, payload: { bookingId: bookingId(7) }, createdAt: at(-1) },
   ]
   await tx.notification.createMany({ data: notifications.map((n, i) => ({ ...n, id: id("notification", i + 1) })) })
 
   // --- Audit log (AD-11 / NF-12) ----------------------------------------------
   const audit: Prisma.AuditLogCreateManyInput[] = [
     ...PROVIDERS.filter((p) => p.status === "APPROVED").map((p) => ({ actorId: adminId, action: "provider.approve", entityType: "ProviderProfile", entityId: providerId(p.key), createdAt: at(-60 + Number(p.key)) })),
-    { actorId: adminId, action: "provider.reject", entityType: "ProviderProfile", entityId: providerId("7"), metadata: { reason: "صورة البطاقة مش واضحة." }, createdAt: at(-53) },
-    { actorId: adminId, action: "provider.suspend", entityType: "ProviderProfile", entityId: providerId("8"), metadata: { reason: "شكاوى متكررة من التأخير." }, createdAt: at(-35) },
-    { actorId: adminId, action: "user.suspend", entityType: "User", entityId: customerId("6"), metadata: { reason: "محاولة تبادل أرقام قبل الحجز." }, createdAt: at(-8) },
+    { actorId: adminId, action: "provider.reject", entityType: "ProviderProfile", entityId: providerId("7"), metadata: { reason: "The ID photo isn't readable." }, createdAt: at(-53) },
+    { actorId: adminId, action: "provider.suspend", entityType: "ProviderProfile", entityId: providerId("8"), metadata: { reason: "Repeated complaints about lateness." }, createdAt: at(-35) },
+    { actorId: adminId, action: "user.suspend", entityType: "User", entityId: customerId("6"), metadata: { reason: "Tried to exchange phone numbers before booking." }, createdAt: at(-8) },
     { actorId: adminId, action: "dispute.resolve", entityType: "Dispute", entityId: id("dispute", 13), metadata: { resolution: "PARTIAL_REFUND", refundAmount: 300 }, createdAt: at(-24) },
     { actorId: adminId, action: "payout.paid", entityType: "Payout", entityId: id("payout", "1_paid"), metadata: { amount: 1500 }, createdAt: at(-7) },
     { actorId: adminId, action: "payout.approve", entityType: "Payout", entityId: id("payout", "3_approved"), metadata: { amount: 400 }, createdAt: at(0, 8) },

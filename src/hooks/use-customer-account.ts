@@ -5,7 +5,9 @@ import { API_ROUTES } from "@/constants/api-routes"
 import { customerKeys } from "@/constants/query-keys"
 import { api } from "@/lib/api-client"
 import type { AddressValues, CustomerBookingListQuery, CustomerBookingStatusValues, CustomerPaymentQuery, InterestsSettingsValues, PersonalSettingsValues } from "@/schemas/customer-account.schema"
+import type { CustomerReviewValues } from "@/schemas/customer-review.schema"
 import type { CustomerAddresses, CustomerBookingDetail, CustomerBookingList, CustomerBookingStatusDto, CustomerPayments, CustomerSettings } from "@/types/customer-account"
+import type { CustomerBookingReview, CustomerReviewSaveDto } from "@/types/customer-review"
 
 /**
  * `/account/settings`, `/account/addresses`, `/account/bookings`, `/account/payments` —
@@ -70,6 +72,20 @@ export function useUpdateMyBookingStatus(id: string) {
   const invalidate = useInvalidateCustomer()
   return useMutation({
     mutationFn: (values: CustomerBookingStatusValues) => api.patch<CustomerBookingStatusDto>(API_ROUTES.customer.bookingStatus(id), values),
+    onSuccess: invalidate,
+  })
+}
+
+/** `/account/bookings/[id]/review` — the server page passes the first snapshot (CU-10, docs/customer-review-feature.md). */
+export function useMyBookingReview(id: string, initialData: CustomerBookingReview) {
+  return useQuery({ queryKey: customerKeys.bookingReview(id), queryFn: () => api.get<CustomerBookingReview>(API_ROUTES.customer.bookingReview(id)), initialData })
+}
+
+/** Rate a finished booking, or edit the review inside the edit window. Refreshes the booking page and lists too. */
+export function useSaveMyBookingReview(id: string) {
+  const invalidate = useInvalidateCustomer()
+  return useMutation({
+    mutationFn: (values: CustomerReviewValues) => api.put<CustomerReviewSaveDto>(API_ROUTES.customer.bookingReview(id), values),
     onSuccess: invalidate,
   })
 }

@@ -64,7 +64,9 @@ Errors: unknown → 404; already resolved → 409; a decision the money doesn't 
 - Conditional update (already hidden / visible → 409).
 - If the reviewee is a provider, their `ratingAvg` / `ratingCount` are recomputed from **visible** reviews
   only, and the BR-04 `underReview` flag is set from `SiteSetting["review.lowRatingThreshold"]`
-  (`{ minBookings, maxAverage }`, default 5 / 3) — `src/utils/provider-rating.ts` (pure, 3 tests).
+  (`{ minBookings, maxAverage }`, default 5 / 3) — `src/utils/provider-rating.ts` (pure, 3 tests), applied by
+  `refreshProviderRating()` in `services/provider-rating.service.ts`, which the customer's own review
+  ([customer-review-feature.md](customer-review-feature.md)) runs too.
 - Audit `review.hide` / `review.show`; `SYSTEM` notification to the reviewer (with the reason on hide).
 - Calls `revalidateStorefront()` (ratings and reviews show on public pages).
 

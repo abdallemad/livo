@@ -29,8 +29,8 @@ export const DEFAULT_OPEN_GRAPH = {
 // Values left `null` / empty are simply not rendered — never ship a made-up phone number or profile.
 // ---------------------------------------------------------------------------
 
-/** TODO: confirm — the seed's only active city is Cairo (SRS A1: one city at launch). */
-export const LAUNCH_CITY = "Cairo"
+/** The seed's only active city is Luxembourg (SRS A1: one city at launch; Esch-sur-Alzette is seeded inactive). */
+export const LAUNCH_CITY = "Luxembourg"
 
 /**
  * TODO: confirm — the first services named in the hero (business analysis §6.2: 3–5 categories).

@@ -91,8 +91,11 @@ const VIEWER_NOTE: Record<AssistantViewer, string> = {
   ADMIN: "The visitor is a Livo administrator.",
 }
 
-const catalogBlock = (categories: AssistantCategory[]) =>
-  categories.length ? categories.map(categoryLine).join("\n") : "- (no categories are live yet)"
+/** The system instruction: who the assistant is, the platform rules, and the live catalog it may point to. */
+export function buildSystemInstruction(input: { siteName: string; city: string; categories: AssistantCategory[]; viewer: AssistantViewer }) {
+  const { siteName, city, categories, viewer } = input
+  const catalog = categories.length ? categories.map(categoryLine).join("\n") : "- (no categories are live yet)"
+  return `You are the ${siteName} Assistant, the friendly technical helper of ${siteName} — a marketplace for home services, maintenance, finishing and construction in ${city}.
 
 /** Platform rules every mode shares — the only facts the model may state about how Livo works. */
 const platformRules = (siteName: string) => `How ${siteName} works:

@@ -35,6 +35,8 @@ export const API_ROUTES = {
     /** One booking (GET) and the customer's confirm / cancel (PATCH …/status) — docs/customer-booking-detail-feature.md. */
     booking: (id: string) => `/api/me/bookings/${encodeURIComponent(id)}`,
     bookingStatus: (id: string) => `/api/me/bookings/${encodeURIComponent(id)}/status`,
+    /** The customer's review of a finished booking: GET, PUT create / edit (CU-10) — docs/customer-review-feature.md. */
+    bookingReview: (id: string) => `/api/me/bookings/${encodeURIComponent(id)}/review`,
     /** Stripe Checkout link for an unpaid booking (Pay now / retry). */
     bookingCheckout: (id: string) => `/api/me/bookings/${encodeURIComponent(id)}/checkout`,
     /** The booking wizard's confirmation step, polled while the payment settles. */

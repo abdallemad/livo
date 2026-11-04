@@ -37,7 +37,7 @@ src/
     booking/         BookServiceWizard, BookingConfirmation, PayNowButton (docs/booking-checkout-feature.md)
     chat/            ConversationList, ChatThread (docs/messages-feature.md)
     notifications/   NotificationBell, NotificationsList, NotificationItem (docs/notifications-feature.md)
-    ai-assistant/    AssistantLauncher (public floating button), AssistantHeaderButton (customer/provider dashboards), AssistantSheet, AssistantPanel, speech helpers (docs/ai-assistant-feature.md)
+    ai-assistant/    AssistantLauncher (public floating button), AssistantHeaderButton (customer/provider/admin dashboards), AssistantSheet, AssistantPanel, speech helpers (docs/ai-assistant-feature.md)
     service/ provider/ request/ chat/   domain components (ServiceCard, ProviderCard, QuoteCard, ChatBubble…)
     design-system/   style-guide sections
     providers/       query-provider, theme-provider

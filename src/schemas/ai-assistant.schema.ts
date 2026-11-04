@@ -16,6 +16,8 @@ export const assistantChatSchema = z.object({
     .min(1, "Write a message.")
     .max(ASSISTANT_LIMITS.historyMax)
     .refine((m) => m[m.length - 1]?.role === "user", "The last message must be yours."),
+  /** The dashboard page the panel is open on; resolved to a known section on the server, never prompted verbatim. */
+  path: z.string().trim().max(300).optional(),
 })
 export type AssistantChatValues = z.infer<typeof assistantChatSchema>
 

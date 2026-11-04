@@ -6,9 +6,10 @@ export type AssistantRole = "user" | "assistant"
 
 /**
  * Where the assistant runs: `public` on the marketing pages (anyone), `customer` in `/account` (grounded in the
- * customer's own requests and bookings), `provider` in `/provider` (grounded in the provider's work).
+ * customer's own requests and bookings), `provider` in `/provider` (the provider's work), `admin` in `/admin`
+ * (platform KPIs and queues). Dashboard modes also adapt to the current section (constants/ai-assistant-sections.ts).
  */
-export type AssistantMode = "public" | "customer" | "provider"
+export type AssistantMode = "public" | "customer" | "provider" | "admin"
 
 export interface AssistantMessage {
   role: AssistantRole

@@ -78,8 +78,8 @@ export function DashboardShell({ zone, density = "touch", banner, children }: Da
           </div>
           <div className="ms-auto flex items-center gap-1">
             {tabs ? <SidebarTrigger className="md:hidden" /> : null}
-            {/* Livo AI Assistant, grounded in this user's own work (docs/ai-assistant-feature.md). Not in admin. */}
-            {zone === "account" ? <AssistantHeaderButton mode="customer" /> : zone === "provider" ? <AssistantHeaderButton mode="provider" /> : null}
+            {/* Livo AI Assistant, grounded in this dashboard's data and the current page (docs/ai-assistant-feature.md). */}
+            <AssistantHeaderButton mode={zone === "account" ? "customer" : zone} />
             <RealtimeNotifications />
             <NotificationBell />
             <AccountControls />

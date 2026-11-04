@@ -25,10 +25,12 @@ export type AssistantChatValues = z.infer<typeof assistantChatSchema>
  */
 export const assistantModelReplySchema = z.object({
   reply: z.string().trim().min(1),
-  action: z.enum(["book_service", "request_quote", "browse", "none"]).catch("none"),
+  /** A link key from the mode's table; an unknown key is dropped when mapping (utils/ai-assistant.ts). */
+  action: z.string().trim().catch("none"),
   categorySlug: z.string().trim().nullish().catch(null),
   estimatedPrice: z.string().trim().nullish().catch(null),
   tips: z.array(z.string().trim()).catch([]).default([]),
   quickReplies: z.array(z.string().trim()).catch([]).default([]),
+  draft: z.string().trim().nullish().catch(null),
 })
 export type AssistantModelReply = z.infer<typeof assistantModelReplySchema>

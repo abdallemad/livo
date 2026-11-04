@@ -7,35 +7,56 @@ import { createRateLimiter } from "@/lib/rate-limit"
 import { catalogRepository } from "@/repositories/catalog.repository"
 import { assistantModelReplySchema, type AssistantChatValues } from "@/schemas/ai-assistant.schema"
 import { VISIBLE_SERVICE } from "@/services/admin-catalog.service"
-import type { AssistantReply } from "@/types/ai-assistant"
-import { buildSystemInstruction, isRetryableGeminiError, toAssistantReply, toGeminiContents, type AssistantCategory, type AssistantViewer } from "@/utils/ai-assistant"
+import { getCustomerDashboard } from "@/services/customer.service"
+import { getProviderDashboard } from "@/services/provider-dashboard.service"
+import type { AssistantMode, AssistantReply } from "@/types/ai-assistant"
+import {
+  assistantActions,
+  buildCustomerInstruction,
+  buildProviderInstruction,
+  buildSystemInstruction,
+  customerSnapshot,
+  isRetryableGeminiError,
+  providerSnapshot,
+  toAssistantReply,
+  toGeminiContents,
+  type AssistantCategory,
+  type AssistantViewer,
+} from "@/utils/ai-assistant"
 
 /**
- * Livo AI Assistant (docs/ai-assistant-feature.md). Answers a visitor's question with Google Gemini, grounded in the
- * LIVE catalog (active categories + real listed prices) so it points only at pages that exist. The model returns
- * JSON that is re-validated and mapped to safe links here; it never builds a URL itself. Nothing is stored.
+ * Livo AI Assistant (docs/ai-assistant-feature.md). Answers with Google Gemini in three modes:
+ * - public (marketing pages): grounded in the LIVE catalog (active categories + real listed prices);
+ * - customer (`/account`): + the customer's own dashboard (to-dos, bookings, open requests);
+ * - provider (`/provider`): + the provider's dashboard (eligibility, setup gaps, new requests, today's jobs, money).
+ * The dashboard snapshot is loaded here from the SESSION user's id — never from the request body. The model returns
+ * JSON that is re-validated and mapped to links from fixed tables; it never builds a URL itself. Nothing is stored.
  */
 
 /** Per-model timeout; with the fallback the whole turn stays under ~25 s. */
 const TIMEOUT_MS = 12_000
 const CONTEXT_TTL_MS = 10 * 60_000
 
-/** 8 messages a minute and 60 an hour per visitor (user id, else IP) keep one tab from draining the Gemini quota. */
+/** 8 messages a minute and 60 an hour per visitor (user id, else IP), shared by all modes, keep one tab from draining the Gemini quota. */
 const perMinute = createRateLimiter({ limit: 8, windowMs: 60_000 })
 const perHour = createRateLimiter({ limit: 60, windowMs: 60 * 60_000 })
 
-const RESPONSE_SCHEMA: Schema = {
-  type: Type.OBJECT,
-  properties: {
-    reply: { type: Type.STRING, description: "The answer shown to the visitor, plain text." },
-    action: { type: Type.STRING, enum: ["book_service", "request_quote", "browse", "none"] },
-    categorySlug: { type: Type.STRING, nullable: true, description: "One of the listed category slugs, or null." },
-    estimatedPrice: { type: Type.STRING, nullable: true, description: 'Rough price in EGP, e.g. "250–400 EGP", or null.' },
-    tips: { type: Type.ARRAY, items: { type: Type.STRING } },
-    quickReplies: { type: Type.ARRAY, items: { type: Type.STRING } },
-  },
-  required: ["reply", "action", "tips", "quickReplies"],
-  propertyOrdering: ["reply", "action", "categorySlug", "estimatedPrice", "tips", "quickReplies"],
+/** Gemini's JSON response schema; `action` is limited to the mode's link keys. */
+function responseSchema(mode: AssistantMode): Schema {
+  return {
+    type: Type.OBJECT,
+    properties: {
+      reply: { type: Type.STRING, description: "The answer shown to the user, plain text." },
+      action: { type: Type.STRING, enum: assistantActions(mode) },
+      categorySlug: { type: Type.STRING, nullable: true, description: "One of the listed category slugs, or null." },
+      estimatedPrice: { type: Type.STRING, nullable: true, description: 'Price or range in EGP, e.g. "250–400 EGP", or null.' },
+      tips: { type: Type.ARRAY, items: { type: Type.STRING } },
+      quickReplies: { type: Type.ARRAY, items: { type: Type.STRING } },
+      draft: { type: Type.STRING, nullable: true, description: "Ready-to-paste text you wrote for the user, or null." },
+    },
+    required: ["reply", "action", "tips", "quickReplies"],
+    propertyOrdering: ["reply", "action", "categorySlug", "estimatedPrice", "tips", "quickReplies", "draft"],
+  }
 }
 
 let cachedContext: { at: number; categories: AssistantCategory[] } | undefined
@@ -63,14 +84,15 @@ async function loadCatalogContext(): Promise<AssistantCategory[]> {
   return categories
 }
 
-export async function askAssistant(input: AssistantChatValues, visitor: { key: string; viewer: AssistantViewer }): Promise<AssistantReply> {
-  if (!perMinute.hit(visitor.key) || !perHour.hit(visitor.key)) throw new RateLimitError()
-
+/** One Gemini turn: try each configured model in order; a busy (503) or rate-limited (429) model falls through. */
+async function generate(
+  input: AssistantChatValues,
+  mode: AssistantMode,
+  systemInstruction: string,
+  categories: AssistantCategory[],
+): Promise<AssistantReply> {
   const { client, models } = getGemini()
-  const categories = await loadCatalogContext()
-  const systemInstruction = buildSystemInstruction({ siteName: SITE_NAME, city: LAUNCH_CITY, categories, viewer: visitor.viewer })
 
-  // Try each configured model in order: a busy (503) or rate-limited (429) model falls through to the next one.
   let text: string | undefined
   for (const [i, model] of models.entries()) {
     try {
@@ -80,9 +102,10 @@ export async function askAssistant(input: AssistantChatValues, visitor: { key: s
         config: {
           systemInstruction,
           responseMimeType: "application/json",
-          responseSchema: RESPONSE_SCHEMA,
+          responseSchema: responseSchema(mode),
           temperature: 0.4,
-          maxOutputTokens: 1024,
+          // Room for a draft (quote message, service description) without cutting the JSON short.
+          maxOutputTokens: 2048,
           abortSignal: AbortSignal.timeout(TIMEOUT_MS),
         },
       })
@@ -91,7 +114,7 @@ export async function askAssistant(input: AssistantChatValues, visitor: { key: s
     } catch (error) {
       const retry = isRetryableGeminiError(error) && i < models.length - 1
       console.warn(`[ai-assistant] ${model} failed${retry ? ", trying the next model" : ""}:`, error instanceof Error ? error.message : error)
-      // Bad key, blocked prompt, or every model busy: tell the visitor to retry (the cause is in the log above).
+      // Bad key, blocked prompt, or every model busy: tell the user to retry (the cause is in the log above).
       if (!retry) throw new ServiceUnavailableError("The Livo assistant is busy right now. Try again in a moment.")
     }
   }
@@ -107,5 +130,36 @@ export async function askAssistant(input: AssistantChatValues, visitor: { key: s
     console.error("[ai-assistant] Unexpected model output", text?.slice(0, 500))
     throw new ServiceUnavailableError("The Livo assistant couldn't answer that. Try rephrasing your question.")
   }
-  return toAssistantReply(parsed.data, categories)
+  return toAssistantReply(parsed.data, categories, mode)
+}
+
+function limit(key: string) {
+  if (!perMinute.hit(key) || !perHour.hit(key)) throw new RateLimitError()
+}
+
+/** Marketing pages: anyone. `key` is the user id or the client IP. */
+export async function askAssistant(input: AssistantChatValues, visitor: { key: string; viewer: AssistantViewer }): Promise<AssistantReply> {
+  limit(visitor.key)
+  getGemini() // 503 before any DB work when the assistant isn't configured
+  const categories = await loadCatalogContext()
+  const instruction = buildSystemInstruction({ siteName: SITE_NAME, city: LAUNCH_CITY, categories, viewer: visitor.viewer })
+  return generate(input, "public", instruction, categories)
+}
+
+/** Customer dashboard: grounded in the signed-in customer's own requests and bookings. */
+export async function askCustomerAssistant(input: AssistantChatValues, customerId: string): Promise<AssistantReply> {
+  limit(`user:${customerId}`)
+  getGemini()
+  const [categories, dashboard] = await Promise.all([loadCatalogContext(), getCustomerDashboard(customerId)])
+  const instruction = buildCustomerInstruction({ siteName: SITE_NAME, city: LAUNCH_CITY, categories, snapshot: customerSnapshot(dashboard) })
+  return generate(input, "customer", instruction, categories)
+}
+
+/** Provider dashboard: grounded in the signed-in provider's eligibility, setup, requests, bookings and money. */
+export async function askProviderAssistant(input: AssistantChatValues, providerId: string): Promise<AssistantReply> {
+  limit(`user:${providerId}`)
+  getGemini()
+  const [categories, dashboard] = await Promise.all([loadCatalogContext(), getProviderDashboard(providerId)])
+  const instruction = buildProviderInstruction({ siteName: SITE_NAME, city: LAUNCH_CITY, categories, snapshot: providerSnapshot(dashboard) })
+  return generate(input, "provider", instruction, categories)
 }

@@ -9,6 +9,9 @@ export const API_ROUTES = {
   services: "/api/services",
   /** Livo AI Assistant (Gemini): POST one chat turn — docs/ai-assistant-feature.md. */
   assistantChat: "/api/assistant/chat",
+  /** Dashboard assistants (grounded in the signed-in user's own work). */
+  customerAssistant: "/api/me/assistant",
+  providerAssistant: "/api/provider/assistant",
   customer: {
     dashboard: "/api/me/dashboard",
     requests: "/api/me/requests",

@@ -4,16 +4,21 @@
  */
 export type AssistantRole = "user" | "assistant"
 
+/**
+ * Where the assistant runs: `public` on the marketing pages (anyone), `customer` in `/account` (grounded in the
+ * customer's own requests and bookings), `provider` in `/provider` (grounded in the provider's work).
+ */
+export type AssistantMode = "public" | "customer" | "provider"
+
 export interface AssistantMessage {
   role: AssistantRole
   text: string
 }
 
-export type AssistantActionKind = "book_service" | "request_quote" | "browse"
-
-/** A next step the assistant suggests. `href` is built on the server from a real, active category — never by the model. */
+/** A next step the assistant suggests. `href` is built on the server from a fixed link table — never by the model. */
 export interface AssistantAction {
-  kind: AssistantActionKind
+  /** The link key from the mode's table (`book_service`, `new_request`, `quotes`, …). */
+  kind: string
   label: string
   href: string
 }
@@ -25,4 +30,6 @@ export interface AssistantReply {
   estimatedPrice: string | null
   tips: string[]
   quickReplies: string[]
+  /** Ready-to-use text the user can copy (a quote message, a service description, a reply to a customer…), or null. */
+  draft: string | null
 }

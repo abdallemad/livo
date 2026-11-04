@@ -50,7 +50,8 @@ test("model output is capped, de-duplicated and cleaned", () => {
 
 test("lenient model schema drops bad optional fields instead of failing", () => {
   const parsed = assistantModelReplySchema.parse({ reply: "Hi", action: "hack", tips: "nope", categorySlug: 5 })
-  assert.equal(parsed.action, "none")
+  // Unknown actions pass the schema but never become a link (checked per mode when mapping).
+  assert.equal(toAssistantReply(parsed, CATS).action, null)
   assert.deepEqual(parsed.tips, [])
   assert.equal(parsed.categorySlug, null)
   assert.equal(assistantModelReplySchema.safeParse({ reply: "", action: "none" }).success, false)
@@ -105,4 +106,57 @@ test("busy, rate-limited, timed-out and unknown models are retried; bad requests
   for (const s of [400, 401, 403]) assert.equal(isRetryableGeminiError(err(s)), false)
   assert.equal(isRetryableGeminiError(Object.assign(new Error("t"), { name: "TimeoutError" })), true)
   assert.equal(isRetryableGeminiError("nope"), false)
+})
+
+test("dashboard actions come from each mode's fixed link table; unknown keys give no button", async () => {
+  const { toDashboardAction, assistantActions } = await import("@/utils/ai-assistant")
+  assert.equal(toDashboardAction("provider", "new_service", null, CATS)?.href, "/provider/services/new")
+  assert.equal(toDashboardAction("provider", "verification", null, CATS)?.href, "/provider/verification")
+  assert.equal(toDashboardAction("provider", "my_bookings", null, CATS), null) // a customer key
+  assert.equal(toDashboardAction("customer", "quotes", null, CATS), null) // a provider key
+  assert.equal(toDashboardAction("customer", "toString", null, CATS), null) // prototype keys don't count
+  assert.equal(toDashboardAction("customer", "new_request", "finishing", CATS)?.href, "/account/requests/new?category=finishing")
+  assert.equal(toDashboardAction("customer", "new_request", "plumbing", CATS)?.href, "/account/requests/new") // fixed-only
+  assert.equal(toDashboardAction("customer", "browse_services", "plumbing", CATS)?.href, "/services/plumbing")
+  assert.ok(assistantActions("provider").includes("none") && !assistantActions("provider").includes("book_service"))
+})
+
+test("reply mapping is mode-aware and keeps a cleaned draft", async () => {
+  const base = { reply: "Ok", tips: [], quickReplies: [] }
+  assert.equal(toAssistantReply({ ...base, action: "quotes" }, CATS, "provider").action?.href, "/provider/quotes")
+  assert.equal(toAssistantReply({ ...base, action: "quotes" }, CATS, "public").action, null)
+  assert.equal(toAssistantReply({ ...base, action: "none", draft: "  Dear customer…  " }, CATS, "provider").draft, "Dear customer…")
+  assert.equal(toAssistantReply({ ...base, action: "none", draft: "null" }, CATS, "customer").draft, null)
+})
+
+test("dashboard snapshots summarise the user's own work for the model", async () => {
+  const { customerSnapshot, providerSnapshot, buildProviderInstruction } = await import("@/utils/ai-assistant")
+  const c = customerSnapshot({
+    name: "Mona",
+    stats: { upcomingBookings: 1, openRequests: 1, quotesWaiting: 1, toReview: 0 },
+    attention: [{ kind: "COMPARE_QUOTES", id: "r1", title: "Paint flat", href: "/account/requests/r1", detail: "3 quotes waiting.", at: null }],
+    upcoming: [],
+    openRequests: [],
+  })
+  assert.match(c, /quotes waiting: 1/)
+  assert.match(c, /\[COMPARE_QUOTES\] Paint flat: 3 quotes waiting\./)
+
+  const p = providerSnapshot({
+    eligibility: "NOT_APPROVED",
+    name: "Ali",
+    verification: { status: "REJECTED", rejectionReason: "ID photo blurry" },
+    stats: { newRequests: 0, pendingQuotes: 2, bookingsToAccept: 1, activeBookings: 0, earningsThisMonth: 1500, walletBalance: -40, completedJobs: 3, ratingAvg: 4.5, ratingCount: 2, underReview: false },
+    newRequests: [],
+    todayBookings: [],
+    setup: { hasServices: false, hasAreas: true, hasCategories: true },
+  })
+  assert.match(p, /not approved yet/)
+  assert.match(p, /REJECTED — reason given: ID photo blurry/)
+  assert.match(p, /no fixed-price services listed/)
+  assert.match(p, /commission owed/)
+  assert.match(p, /4\.5\/5 from 2 reviews/)
+
+  const instr = buildProviderInstruction({ siteName: "Livo", city: "Cairo", categories: CATS, snapshot: p })
+  assert.match(instr, /new_service: Add a fixed-price service \(\/provider\/services\/new\)/)
+  assert.match(instr, /ID photo blurry/)
 })

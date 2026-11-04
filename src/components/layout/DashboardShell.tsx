@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { AssistantHeaderButton } from "@/components/ai-assistant"
 import { NotificationBell } from "@/components/notifications/NotificationBell"
 import { RealtimeNotifications } from "./RealtimeNotifications"
 import {
@@ -77,6 +78,8 @@ export function DashboardShell({ zone, density = "touch", banner, children }: Da
           </div>
           <div className="ms-auto flex items-center gap-1">
             {tabs ? <SidebarTrigger className="md:hidden" /> : null}
+            {/* Livo AI Assistant, grounded in this user's own work (docs/ai-assistant-feature.md). Not in admin. */}
+            {zone === "account" ? <AssistantHeaderButton mode="customer" /> : zone === "provider" ? <AssistantHeaderButton mode="provider" /> : null}
             <RealtimeNotifications />
             <NotificationBell />
             <AccountControls />

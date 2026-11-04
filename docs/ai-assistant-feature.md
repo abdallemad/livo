@@ -1,5 +1,30 @@
 # Livo AI Assistant (Gemini)
 
+Three modes share one engine (`services/ai-assistant.service.ts`):
+
+| Mode | Where | Entry point | Endpoint | Grounded in |
+|---|---|---|---|---|
+| `public` | marketing pages | floating button (`AssistantLauncher`) | `POST /api/assistant/chat` (guests allowed) | live catalog |
+| `customer` | `/account/*` | "Ask AI" in the dashboard header (`AssistantHeaderButton`) | `POST /api/me/assistant` (`requireRole("CUSTOMER","ADMIN")`) | catalog + the customer's dashboard: to-dos (confirm / pay / compare quotes / review), upcoming bookings, open requests |
+| `provider` | `/provider/*` | "Ask AI" in the dashboard header | `POST /api/provider/assistant` (`requireProvider()`) | catalog (other providers' listed prices) + the provider's dashboard: approval & verification (with rejection reason), setup gaps, new matching requests, today's jobs, quotes/bookings counts, earnings and wallet |
+
+**Customer assistant** — what needs attention first, writing a clear quote request (draft + "Request quotes" link for the
+right category), comparing quotes, payments held until confirmation, polite messages to the provider, plus the public
+diagnosis/price help.
+
+**Provider assistant** — a work coach: what to do first today, a fair price range for a quote (from listed catalog prices
+and the request details) and a professional quote message, fixed-price service titles/descriptions, replies to customers,
+growing (portfolio, areas, schedule, reviews), explaining earnings/wallet/payouts, and what's missing when not approved.
+It never states a commission rate (it points to Earnings) and never suggests getting around hidden contact details.
+
+Each reply may carry a **draft** — ready-to-paste text shown in a card with a Copy button. Dashboard links come from fixed
+tables per mode (`CUSTOMER_ASSISTANT_LINKS`, `PROVIDER_ASSISTANT_LINKS` in `utils/ai-assistant.ts`); the model only picks
+a key (sent as the JSON schema enum), and an unknown key renders no button. The dashboard snapshot is loaded from the
+session user's id via the existing dashboard services — never from the request body. In dashboards the entry point is a
+header button, not a floating one, because a floating button would cover the mobile bottom tabs. Admin has no assistant.
+
+## Public mode
+
 A floating **"Ask Livo"** button on every public page opens a chat that helps a visitor describe a problem or project,
 gives a short diagnosis and 2–3 safety tips, a rough price in EGP, and the right next step as a real link
 (book a fixed-price service, request quotes, or browse). It answers in the visitor's language (English or Egyptian Arabic),
@@ -52,5 +77,7 @@ AssistantLauncher (client island, marketing layout)
 `src/config/env.ts` (`getGeminiEnv`), `src/lib/gemini.ts`, `src/lib/rate-limit.ts`, `src/lib/errors.ts` (`RateLimitError` 429),
 `src/schemas/ai-assistant.schema.ts`, `src/types/ai-assistant.ts`, `src/utils/ai-assistant.ts`,
 `src/services/ai-assistant.service.ts`, `src/repositories/catalog.repository.ts` (`priceStatsByCategory`),
-`src/app/api/assistant/chat/route.ts`, `src/hooks/use-ai-assistant.ts`, `src/components/ai-assistant/*`,
+`src/app/api/assistant/chat/route.ts`, `src/app/api/me/assistant/route.ts`, `src/app/api/provider/assistant/route.ts`,
+`src/constants/ai-assistant.ts` (per-mode UI copy + endpoint), `src/hooks/use-ai-assistant.ts`, `src/components/ai-assistant/*`
+(`AssistantLauncher`, `AssistantHeaderButton`, `AssistantSheet`, `AssistantPanel`), `src/components/layout/DashboardShell.tsx`,
 tests in `tests/ai-assistant/`.

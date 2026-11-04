@@ -2,33 +2,60 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react"
 import Link from "next/link"
-import { ArrowRight, Lightbulb, Mic, MicOff, RotateCcw, Send, Sparkles, Square, Volume2 } from "lucide-react"
+import { ArrowRight, Check, Copy, Lightbulb, Mic, MicOff, RotateCcw, Send, Sparkles, Square, Volume2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import { Textarea } from "@/components/ui/textarea"
-import { SITE_NAME } from "@/constants/site"
+import { ASSISTANT_MODES } from "@/constants/ai-assistant"
 import { useAssistantChat } from "@/hooks/use-ai-assistant"
-import type { AssistantMessage, AssistantReply } from "@/types/ai-assistant"
+import type { AssistantMessage, AssistantMode, AssistantReply } from "@/types/ai-assistant"
 import { ASSISTANT_LIMITS } from "@/utils/ai-assistant"
 import { canListen, canSpeak, createRecognition, speak, speechLang, stopSpeaking, type Recognition } from "./speech"
 
 /** A message in the panel: the visitor's text, or the assistant's full reply (action, tips, quick replies). */
 type Turn = { id: number; role: "user"; text: string } | { id: number; role: "assistant"; text: string; reply: AssistantReply }
 
-const STARTERS = ["My kitchen sink is leaking", "How much does AC maintenance cost?", "I want to finish a 120 m² apartment", "عندي ماس كهربا في الشقة"]
-
 const noop = () => () => {}
 /** Browser-only capability, read without a hydration mismatch (false on the server). */
 const useBrowserSupport = (check: () => boolean) => useSyncExternalStore(noop, check, () => false)
 
+/** Ready-to-paste text the assistant wrote (quote message, service description, reply…) with a Copy button. */
+function DraftCard({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false)
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      setCopied(false)
+    }
+  }
+  return (
+    <div className="rounded-xl border border-dashed bg-muted/40 p-3 text-sm">
+      <div className="mb-1.5 flex items-center justify-between gap-2">
+        <span className="text-xs font-medium text-muted-foreground">Draft — edit before sending</span>
+        <Button variant="ghost" size="xs" onClick={copy} aria-live="polite">
+          {copied ? <Check data-icon="inline-start" aria-hidden /> : <Copy data-icon="inline-start" aria-hidden />}
+          {copied ? "Copied" : "Copy"}
+        </Button>
+      </div>
+      <p dir="auto" className="whitespace-pre-wrap">
+        {text}
+      </p>
+    </div>
+  )
+}
+
 /**
  * The Livo AI Assistant conversation (docs/ai-assistant-feature.md): messages, a typing indicator, the suggested next
- * step as a real link (book / request quotes / browse), safety tips, tappable quick replies, read-aloud per reply and
- * voice input. The conversation lives in this component only — closing the tab forgets it.
+ * step as a real link, tips, a copyable draft, tappable quick replies, read-aloud per reply and voice input. `mode`
+ * picks the endpoint and the opening copy (public / customer / provider). The conversation lives in this component only.
  */
-export function AssistantPanel({ onNavigate }: { onNavigate: () => void }) {
-  const chat = useAssistantChat()
+export function AssistantPanel({ mode, onNavigate }: { mode: AssistantMode; onNavigate: () => void }) {
+  const config = ASSISTANT_MODES[mode]
+  const chat = useAssistantChat(mode)
   const [turns, setTurns] = useState<Turn[]>([])
   const [draft, setDraft] = useState("")
   const [speakingId, setSpeakingId] = useState<number | null>(null)
@@ -125,14 +152,11 @@ export function AssistantPanel({ onNavigate }: { onNavigate: () => void }) {
         {turns.length === 0 ? (
           <div className="space-y-4 pt-2">
             <div className="rounded-xl border bg-muted/40 p-4 text-sm">
-              <p className="font-medium">Hi! I&apos;m the {SITE_NAME} Assistant.</p>
-              <p className="mt-1 text-muted-foreground">
-                Describe a problem or a project — I&apos;ll suggest what&apos;s wrong, a rough price in EGP, and the right next step. You can
-                write in English or Arabic.
-              </p>
+              <p className="font-medium">{config.welcomeTitle}</p>
+              <p className="mt-1 text-muted-foreground">{config.welcome}</p>
             </div>
             <div className="flex flex-wrap gap-2">
-              {STARTERS.map((s) => (
+              {config.starters.map((s) => (
                 <Button key={s} variant="outline" size="sm" className="h-auto whitespace-normal py-1.5 text-start" onClick={() => send(s)}>
                   <bdi>{s}</bdi>
                 </Button>
@@ -170,6 +194,7 @@ export function AssistantPanel({ onNavigate }: { onNavigate: () => void }) {
                   </ul>
                 ) : null}
               </div>
+              {t.reply.draft ? <DraftCard text={t.reply.draft} /> : null}
               <div className="flex flex-wrap items-center gap-2">
                 {t.reply.action ? (
                   <Button size="sm" render={<Link href={t.reply.action.href} onClick={onNavigate} />}>
@@ -238,7 +263,7 @@ export function AssistantPanel({ onNavigate }: { onNavigate: () => void }) {
             }}
             maxLength={ASSISTANT_LIMITS.messageMax}
             rows={1}
-            placeholder={listening ? "Listening…" : "Describe your problem or project…"}
+            placeholder={listening ? "Listening…" : config.placeholder}
             aria-label="Your message"
             className="max-h-32 min-h-11 resize-none"
           />
@@ -260,7 +285,7 @@ export function AssistantPanel({ onNavigate }: { onNavigate: () => void }) {
         </div>
         <div className="mt-2 flex items-center justify-between gap-2 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
-            <Sparkles className="size-3" aria-hidden /> AI answers can be wrong — final prices come from providers.
+            <Sparkles className="size-3" aria-hidden /> {config.disclaimer}
           </span>
           {turns.length ? (
             <Button type="button" variant="ghost" size="xs" onClick={reset}>

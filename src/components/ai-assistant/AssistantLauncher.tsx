@@ -1,22 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import dynamic from "next/dynamic"
 import { Bot, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { SITE_NAME } from "@/constants/site"
-import { Spinner } from "@/components/ui/spinner"
-
-// Loaded on first open only, so public pages don't ship the chat code up front.
-const AssistantPanel = dynamic(() => import("./AssistantPanel").then((m) => m.AssistantPanel), {
-  ssr: false,
-  loading: () => (
-    <div className="flex flex-1 items-center justify-center">
-      <Spinner />
-    </div>
-  ),
-})
+import { AssistantSheet } from "./AssistantSheet"
 
 const HINT_SEEN_KEY = "livo:assistant-hint-seen"
 const HINT_DELAY_MS = 4000
@@ -89,17 +77,7 @@ export function AssistantLauncher() {
         </Button>
       </div>
 
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="right" className="w-full gap-0 sm:max-w-md data-[side=right]:sm:max-w-md">
-          <SheetHeader className="border-b pe-12">
-            <SheetTitle className="flex items-center gap-2">
-              <Bot className="size-5 text-primary" aria-hidden /> {SITE_NAME} Assistant
-            </SheetTitle>
-            <SheetDescription>Diagnose a problem, estimate the cost, find the right service.</SheetDescription>
-          </SheetHeader>
-          {open ? <AssistantPanel onNavigate={() => setOpen(false)} /> : null}
-        </SheetContent>
-      </Sheet>
+      <AssistantSheet mode="public" open={open} onOpenChange={setOpen} />
     </>
   )
 }

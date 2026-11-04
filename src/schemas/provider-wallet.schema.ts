@@ -27,8 +27,8 @@ export const payoutRequestSchema = z
   .object({
     amount: z.coerce
       .number({ error: "Enter the amount in numbers." })
-      .min(PAYOUT_MIN, `The minimum payout is ${PAYOUT_MIN} EGP.`)
-      .max(PAYOUT_MAX, `The maximum payout is ${PAYOUT_MAX.toLocaleString("en")} EGP.`)
+      .min(PAYOUT_MIN, `The minimum payout is $${PAYOUT_MIN}.`)
+      .max(PAYOUT_MAX, `The maximum payout is $${PAYOUT_MAX.toLocaleString("en")}.`)
       .multipleOf(0.01, "Use at most two decimal places."),
     destinationType: z.enum(PAYOUT_DESTINATION_TYPES, { error: "Choose where to send the money." }),
     destinationRef: z.string().trim().min(1, "Enter where to send the money.").max(64),

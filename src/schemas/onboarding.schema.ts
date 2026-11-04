@@ -103,7 +103,7 @@ export const providerProfileStepSchema = z.object({
 export const documentTypeSchema = z.enum(["NATIONAL_ID", "SELFIE", "CERTIFICATE"], { error: "Unknown document type." })
 export { MAX_CERTIFICATES }
 
-/** Provider step 5. Price is a number in EGP; the service stores it as Decimal. */
+/** Provider step 5. Price is a number in USD; the service stores it as Decimal. */
 export const firstServiceStepSchema = z.object({
   title: z
     .string()
@@ -119,8 +119,8 @@ export const firstServiceStepSchema = z.object({
   price: z.coerce
     .number({ error: "Enter the price in numbers." })
     .positive("The price must be greater than zero.")
-    .min(SERVICE_PRICE_MIN, `The minimum price is ${SERVICE_PRICE_MIN} EGP.`)
-    .max(SERVICE_PRICE_MAX, `The maximum price is ${SERVICE_PRICE_MAX.toLocaleString("en")} EGP. For bigger jobs, use a quote instead.`)
+    .min(SERVICE_PRICE_MIN, `The minimum price is $${SERVICE_PRICE_MIN}.`)
+    .max(SERVICE_PRICE_MAX, `The maximum price is $${SERVICE_PRICE_MAX.toLocaleString("en")}. For bigger jobs, use a quote instead.`)
     .multipleOf(0.01, "The price can have at most two decimal places."),
   durationMinutes: z.coerce
     .number({ error: "Choose the estimated duration." })

@@ -24,7 +24,7 @@ export const ASSISTANT_MODES: Record<AssistantMode, AssistantModeConfig> = {
     description: "Diagnose a problem, estimate the cost, find the right service.",
     welcomeTitle: `Hi! I'm the ${SITE_NAME} Assistant.`,
     welcome:
-      "Describe a problem or a project — I'll suggest what's wrong, a rough price in EGP, and the right next step. You can write in English or Arabic.",
+      "Describe a problem or a project — I'll suggest what's wrong, a rough price in USD, and the right next step. You can write in English or Arabic.",
     starters: ["My kitchen sink is leaking", "How much does AC maintenance cost?", "I want to finish a 120 m² apartment", "عندي ماس كهربا في الشقة"],
     placeholder: "Describe your problem or project…",
     disclaimer: "AI answers can be wrong — final prices come from providers.",

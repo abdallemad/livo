@@ -97,7 +97,7 @@ const optionalInt = (max: number, message: string) =>
 export const providerQuoteSchema = z.object({
   price: z.coerce
     .number({ error: "Enter your price." })
-    .min(QUOTE_PRICE_MIN, `At least ${QUOTE_PRICE_MIN} EGP.`)
+    .min(QUOTE_PRICE_MIN, `At least $${QUOTE_PRICE_MIN}.`)
     .max(QUOTE_PRICE_MAX, "That price is too high."),
   durationDays: optionalInt(QUOTE_DURATION_MAX_DAYS, `Between 1 and ${QUOTE_DURATION_MAX_DAYS} days.`),
   message: z

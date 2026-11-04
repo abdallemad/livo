@@ -1,8 +1,8 @@
 /**
  * Pure formatters — the ONLY way prices, numbers, dates and phones reach the UI
  * (docs/DESIGN-SYSTEM.md §3). English-Egypt locale with **Western digits**
- * (`numberingSystem: "latn"`, open decision #2). Currency renders as
- * `350 EGP` — number first, then symbol. Never concatenate by hand.
+ * (`numberingSystem: "latn"`, open decision #2). Currency is US dollars and
+ * renders as `$350` — symbol first, then number. Never concatenate by hand.
  */
 const LOCALE = "en-EG"
 const number = new Intl.NumberFormat(LOCALE, { numberingSystem: "latn", maximumFractionDigits: 2 })
@@ -10,12 +10,17 @@ const date = new Intl.DateTimeFormat(LOCALE, { numberingSystem: "latn", dateStyl
 const dateTime = new Intl.DateTimeFormat(LOCALE, { numberingSystem: "latn", dateStyle: "medium", timeStyle: "short" })
 const time = new Intl.DateTimeFormat(LOCALE, { numberingSystem: "latn", timeStyle: "short" })
 
-export const CURRENCY_SYMBOL = "EGP"
+/** ISO 4217 code: Stripe Checkout, JSON-LD offers. */
+export const CURRENCY_CODE = "USD"
+export const CURRENCY_SYMBOL = "$"
 
 export const formatNumber = (value: number | string) => number.format(Number(value))
 
-/** `formatPrice(350)` → `"350 EGP"`. Rendered inside an LTR-safe span by `PriceTag`. */
-export const formatPrice = (amount: number | string) => `${formatNumber(amount)} ${CURRENCY_SYMBOL}`
+/** `formatPrice(350)` → `"$350"`, `formatPrice(-40)` → `"-$40"`. Rendered inside an LTR-safe span by `PriceTag`. */
+export function formatPrice(amount: number | string) {
+  const value = Number(amount)
+  return `${value < 0 ? "-" : ""}${CURRENCY_SYMBOL}${formatNumber(Math.abs(value))}`
+}
 
 export const formatDate = (value: Date | string) => date.format(new Date(value))
 export const formatDateTime = (value: Date | string) => dateTime.format(new Date(value))

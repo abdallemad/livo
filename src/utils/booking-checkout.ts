@@ -108,7 +108,7 @@ export function bookableDays(ctx: SlotContext): BookableDay[] {
   return days
 }
 
-/** EGP → piastres, the integer Stripe expects for a two-decimal currency. */
+/** USD → cents, the integer Stripe expects for a two-decimal currency. */
 export const toMinorUnits = (amount: number) => Math.round(amount * 100)
 
 /** "LV-2026-000124": the next human booking number after the year's highest (same format as the seed). */

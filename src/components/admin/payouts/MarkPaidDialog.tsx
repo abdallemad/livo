@@ -22,7 +22,7 @@ import { markPaidFormSchema, PAYOUT_REFERENCE_MAX, type MarkPaidFormInput, type 
 
 interface MarkPaidDialogProps {
   trigger: React.ReactElement
-  /** "Mark 5,000 EGP to CIB ••••4421 as sent?" */
+  /** "Mark $5,000 to CIB ••••4421 as sent?" */
   title: string
   description: string
   pending: boolean

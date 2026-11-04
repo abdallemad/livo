@@ -8,7 +8,7 @@ queues that need a person: provider applications and disputes.
 | Block | Source | Action |
 |---|---|---|
 | **Key metrics**: users (+ new in 30 days), active providers, booking value, commission earned | counts and sums in one `$transaction` | — |
-| **Needs attention**: pending applications, open disputes, payout requests (count + EGP), bookings awaiting provider | counts | each card links to its admin list |
+| **Needs attention**: pending applications, open disputes, payout requests (count + USD), bookings awaiting provider | counts | each card links to its admin list |
 | **Pending provider applications** (oldest 5) | `ProviderProfile.verificationStatus = PENDING` | **Approve** (confirm dialog) / **Reject** (dialog with a reason, 10–500 chars, shown to the provider) |
 | **Open disputes** (oldest 5) | `Dispute.status IN (OPEN, UNDER_REVIEW)` | **Start review** (OPEN → UNDER_REVIEW); resolving refunds/releases belongs on `/admin/disputes/[id]` |
 | **Latest bookings** (5) | `Booking` by `createdAt desc` | links to `/admin/bookings/[id]` |

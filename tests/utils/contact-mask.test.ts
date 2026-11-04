@@ -17,6 +17,6 @@ test("emails and WhatsApp / Telegram links are hidden", () => {
 })
 
 test("ordinary numbers stay (prices, sizes, floors, dates)", () => {
-  const text = "Flat 140 m², 3rd floor, budget 15000 EGP, on 12/11/2026, 2 AC units"
+  const text = "Flat 140 m², 3rd floor, budget $15000, on 12/11/2026, 2 AC units"
   assert.deepEqual(maskContactDetails(text), { text, masked: false })
 })

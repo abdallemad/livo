@@ -227,7 +227,7 @@ export function NewRequestForm({ data }: { data: NewRequestFormData }) {
           </fieldset>
 
           <div className="grid gap-5 sm:grid-cols-2">
-            <FormField id="req-budget" label="Budget (EGP)" optional error={errors.budget?.message} helper={`A rough figure helps providers; from ${REQUEST_BUDGET_MIN} EGP.`}>
+            <FormField id="req-budget" label="Budget (USD)" optional error={errors.budget?.message} helper={`A rough figure helps providers; from $${REQUEST_BUDGET_MIN}.`}>
               <Input id="req-budget" type="number" inputMode="decimal" min={REQUEST_BUDGET_MIN} dir="ltr" className="text-start tabular-nums" aria-invalid={!!errors.budget} aria-describedby="req-budget-msg" {...register("budget")} />
             </FormField>
             <FormField id="req-date" label="Preferred date" optional error={errors.preferredDate?.message} helper="When you'd like the work to start.">

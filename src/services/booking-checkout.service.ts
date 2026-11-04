@@ -34,7 +34,7 @@ import { zonedIsoDay } from "@/utils/zoned-time"
 
 const label = (r: { nameEn: string | null; nameAr: string }) => r.nameEn ?? r.nameAr
 const num = (v: { toString(): string }) => Number(v.toString())
-const CURRENCY = "egp"
+const CURRENCY = "usd"
 /** Stripe's minimum lifetime for a Checkout session is 30 minutes; one hour leaves room to type card details. */
 const CHECKOUT_TTL_SECONDS = 60 * 60
 const NUMBER_RETRIES = 3

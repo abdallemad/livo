@@ -19,7 +19,7 @@ provider id **from the session**; another provider's service or portfolio item i
 ### Same rules as onboarding
 
 The form and API use `serviceFormSchema` = onboarding's `firstServiceStepSchema`, so a service has one set of
-rules wherever it's created: title 5–80, description 20–1,000, price 50–100,000 EGP (2 decimals, stored as
+rules wherever it's created: title 5–80, description 20–1,000, price $50 – $100,000 (2 decimals, stored as
 `Decimal`), duration 15 min–1 day, up to 5 photos. The category must be one of the provider's **own**
 specialties whose type isn't `QUOTE` and that is switched on (parent too); keeping a service's current
 category is allowed even if it was switched off later.

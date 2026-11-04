@@ -86,7 +86,7 @@ Sidebar shell, dynamic, `noindex`. Signed-in `PROVIDER` with onboarding finished
 | `/provider/portfolio` | Portfolio | Gallery of past work: add / edit (1–6 photos), delete, reorder | built | PR-04 |
 | `/provider/schedule` | Schedule | Weekly hours (Sat→Fri, up to 3 ranges a day) + next 14 days of bookings, flags bookings outside hours ([provider-schedule-reviews-feature.md](provider-schedule-reviews-feature.md)) | built | PR-10 |
 | `/provider/earnings` | Earnings | Available, on hold, received, commission; this vs last month; wallet movements with balance after ([provider-earnings-payouts-feature.md](provider-earnings-payouts-feature.md)) | built | PR-11 |
-| `/provider/payouts` | Payouts | Request (wallet / InstaPay / bank, min 100 EGP, one at a time) + history with status | built | PR-12 |
+| `/provider/payouts` | Payouts | Request (wallet / InstaPay / bank, min $100, one at a time) + history with status | built | PR-12 |
 | `/provider/reviews` | Reviews | Rating summary + distribution, Needs a reply / Replied, rating filter, public reply (no contact details) | built | PR-13, SY-05 |
 | `/provider/notifications` | Notifications | Same list for providers ([notifications-feature.md](notifications-feature.md)) | built | SY-02 |
 | `/provider/settings` | Settings | Personal details (Clerk-synced), work profile (bio, specialties, areas), sign-in & security | built | AU-06 |

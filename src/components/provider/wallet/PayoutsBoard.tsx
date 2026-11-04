@@ -63,7 +63,7 @@ function RequestForm({ data }: { data: ProviderPayouts }) {
       </CardHeader>
       <CardContent>
         <form onSubmit={submit} noValidate className="grid gap-5">
-          <FormField id="payout-amount" label="Amount (EGP)" error={formState.errors.amount?.message}>
+          <FormField id="payout-amount" label="Amount (USD)" error={formState.errors.amount?.message}>
             <div className="flex gap-2">
               <Input
                 id="payout-amount"

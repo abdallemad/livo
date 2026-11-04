@@ -12,7 +12,7 @@
 | Database | PostgreSQL + Prisma 6 (pooled `DATABASE_URL`, `DIRECT_URL` for CLI) |
 | Storage | Cloudflare R2 (private bucket) via AWS S3 SDK |
 | Real-time | **Pusher Channels** (`pusher` server, `pusher-js` browser), private channels signed by `POST /api/realtime/auth` — [realtime-feature.md](realtime-feature.md) |
-| Payments | **Stripe Checkout** (`stripe`, API version pinned in `src/lib/stripe.ts`), EGP, webhook `POST /api/webhook/stripe` — [booking-checkout-feature.md](booking-checkout-feature.md). Other gateways' webhooks go in `/api/webhooks/<provider>` |
+| Payments | **Stripe Checkout** (`stripe`, API version pinned in `src/lib/stripe.ts`), USD, webhook `POST /api/webhook/stripe` — [booking-checkout-feature.md](booking-checkout-feature.md). Other gateways' webhooks go in `/api/webhooks/<provider>` |
 | AI assistant | **Google Gemini** (`@google/genai`, `gemini-3-flash-preview` → `gemini-3.5-flash-lite` / `gemini-3.1-flash-lite` fallback, override with `GEMINI_MODEL`), JSON-schema output, `POST /api/assistant/chat` — [ai-assistant-feature.md](ai-assistant-feature.md) |
 | Analytics | GA4 via `@next/third-parties`, production only |
 | Tests | Node built-in test runner |

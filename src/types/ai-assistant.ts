@@ -26,7 +26,7 @@ export interface AssistantAction {
 export interface AssistantReply {
   reply: string
   action: AssistantAction | null
-  /** Rough price guidance in EGP, as text ("250–400 EGP"), or null when the model can't tell. */
+  /** Rough price guidance in USD, as text ("$250–$400"), or null when the model can't tell. */
   estimatedPrice: string | null
   tips: string[]
   quickReplies: string[]

@@ -35,7 +35,7 @@ quoting your own request and to notify the customer.
 
 | Field | Rule |
 |---|---|
-| `price` | 50 – 5,000,000 EGP |
+| `price` | $50 – $5,000,000 |
 | `durationDays` | optional, whole days 1–365 |
 | `message` | optional, ≤ 1000, **no phone numbers / emails / chat links** (SY-04, same check as requests) |
 | `validDays` | 3, 7 (default), 14 or 30 → `validUntil = now + days`; the customer can't accept it after that |

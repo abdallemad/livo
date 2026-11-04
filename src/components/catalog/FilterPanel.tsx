@@ -42,7 +42,7 @@ function PriceRange({ min, max, bounds, onApply }: { min?: number; max?: number;
   const apply = () => onApply(lo === "" ? undefined : Math.max(0, Number(lo)), hi === "" ? undefined : Math.max(0, Number(hi)))
   return (
     <fieldset className="space-y-2">
-      <legend className="text-sm font-medium">Price (EGP)</legend>
+      <legend className="text-sm font-medium">Price (USD)</legend>
       <div className="flex items-center gap-2">
         <Label htmlFor="price-min" className="sr-only">Minimum price</Label>
         <Input id="price-min" type="number" inputMode="numeric" min={0} dir="ltr" placeholder={bounds ? formatNumber(bounds.min) : "Min"} value={lo} onChange={(e) => setLo(e.target.value)} onBlur={apply} onKeyDown={(e) => e.key === "Enter" && apply()} className="h-11 tabular-nums" />

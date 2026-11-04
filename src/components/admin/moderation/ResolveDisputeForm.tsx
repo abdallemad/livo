@@ -120,7 +120,7 @@ export function ResolveDisputeForm({ dispute }: { dispute: AdminDisputeDetail })
           </FormField>
 
           {resolution === "PARTIAL_REFUND" ? (
-            <FormField id="refund-amount" label="Refund to the customer (EGP)" error={errors.refundAmount?.message}>
+            <FormField id="refund-amount" label="Refund to the customer (USD)" error={errors.refundAmount?.message}>
               <Input
                 id="refund-amount"
                 type="number"

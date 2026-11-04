@@ -2,7 +2,7 @@ import type { BookingStatus, QuoteStatus, RequestStatus } from "@prisma/client"
 import type { WorkStatus } from "@/constants/status"
 import type { Paginated } from "./api"
 
-/** Customer dashboard & requests (CU-08, CU-11, CU-13) — docs/customer-dashboard-requests-feature.md. Money in EGP. */
+/** Customer dashboard & requests (CU-08, CU-11, CU-13) — docs/customer-dashboard-requests-feature.md. Money in USD. */
 
 export interface CustomerRequestCard {
   id: string

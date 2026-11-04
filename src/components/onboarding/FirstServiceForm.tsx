@@ -126,9 +126,9 @@ export function FirstServiceForm({ state, onBack, onSaved, onDirtyChange }: Firs
           <div className="grid gap-5 sm:grid-cols-2">
             <FormField
               id="ob-svc-price"
-              label="Price (EGP)"
+              label="Price (USD)"
               error={formState.errors.price?.message}
-              helper={`From ${SERVICE_PRICE_MIN} to ${SERVICE_PRICE_MAX.toLocaleString("en")} EGP`}
+              helper={`From $${SERVICE_PRICE_MIN} to $${SERVICE_PRICE_MAX.toLocaleString("en")}`}
             >
               <Input
                 id="ob-svc-price"

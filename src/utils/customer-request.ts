@@ -30,7 +30,7 @@ export function requestCancelBlockedReason(status: RequestStatus): string | null
   return "This request is already closed."
 }
 
-/** "3 quotes from 1,200 EGP": the lowest waiting price, to help compare (CU-04). */
+/** "3 quotes from $1,200": the lowest waiting price, to help compare (CU-04). */
 export function lowestPrice(prices: number[]): number | null {
   return prices.length ? Math.min(...prices) : null
 }

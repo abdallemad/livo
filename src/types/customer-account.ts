@@ -131,6 +131,6 @@ export interface CustomerBookingDetail extends CustomerBookingListItem {
 export interface CustomerBookingStatusDto {
   id: string
   status: BookingStatus
-  /** Refunded by a cancellation (EGP). */
+  /** Refunded by a cancellation (USD). */
   refunded: number
 }

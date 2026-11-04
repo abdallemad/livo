@@ -429,7 +429,7 @@ model Service {
   categoryId          String
   title               String
   description         String
-  price               Decimal   @db.Decimal(12, 2) // EGP
+  price               Decimal   @db.Decimal(12, 2) // USD
   durationMinutes     Int?
   isActive            Boolean   @default(true) // the provider's own on/off switch
   // AD-02 moderation: an admin hid this listing. Independent of `isActive`, so the

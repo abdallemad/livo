@@ -62,7 +62,7 @@ function QuoteForm({ r, onDone }: { r: Detail; onDone: () => void }) {
   return (
     <form className="grid gap-5" onSubmit={submit} noValidate>
       <div className="grid gap-5 sm:grid-cols-2">
-        <FormField id="quote-price" label="Your price (EGP)" error={errors.price?.message} helper="The full price for the job as described.">
+        <FormField id="quote-price" label="Your price (USD)" error={errors.price?.message} helper="The full price for the job as described.">
           <Input id="quote-price" type="number" inputMode="decimal" min={QUOTE_PRICE_MIN} dir="ltr" className="h-12 text-start text-lg tabular-nums" aria-invalid={!!errors.price} aria-describedby="quote-price-msg" {...register("price")} />
         </FormField>
         <FormField id="quote-days" label="How many days?" optional error={errors.durationDays?.message} helper="How long the work takes.">

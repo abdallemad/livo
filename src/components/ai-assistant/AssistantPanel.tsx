@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { ArrowRight, Check, Copy, Lightbulb, Mic, MicOff, RotateCcw, Send, Sparkles, Square, Volume2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -10,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { ASSISTANT_MODES } from "@/constants/ai-assistant"
 import { useAssistantChat } from "@/hooks/use-ai-assistant"
 import type { AssistantMessage, AssistantMode, AssistantReply } from "@/types/ai-assistant"
-import { ASSISTANT_LIMITS } from "@/utils/ai-assistant"
+import { ASSISTANT_LIMITS, resolveAssistantSection } from "@/utils/ai-assistant"
 import { canListen, canSpeak, createRecognition, speak, speechLang, stopSpeaking, type Recognition } from "./speech"
 
 /** A message in the panel: the visitor's text, or the assistant's full reply (action, tips, quick replies). */
@@ -56,6 +57,10 @@ function DraftCard({ text }: { text: string }) {
 export function AssistantPanel({ mode, onNavigate }: { mode: AssistantMode; onNavigate: () => void }) {
   const config = ASSISTANT_MODES[mode]
   const chat = useAssistantChat(mode)
+  // Dashboard modes adapt to the page they're opened on (starters here, focus on the server via `path`).
+  const pathname = usePathname()
+  const section = mode === "public" ? null : resolveAssistantSection(mode, pathname)
+  const starters = section && !section.exact ? section.starters : config.starters
   const [turns, setTurns] = useState<Turn[]>([])
   const [draft, setDraft] = useState("")
   const [speakingId, setSpeakingId] = useState<number | null>(null)
@@ -90,7 +95,7 @@ export function AssistantPanel({ mode, onNavigate }: { mode: AssistantMode; onNa
     setTurns((prev) => [...prev, userTurn])
     setDraft("")
     chat.mutate(
-      { messages: history },
+      { messages: history, ...(section ? { path: pathname } : {}) },
       {
         onSuccess: (reply) => setTurns((prev) => [...prev, { id: nextId.current++, role: "assistant", text: reply.reply, reply }]),
         // Give the text back so a retry is one tap.
@@ -154,9 +159,14 @@ export function AssistantPanel({ mode, onNavigate }: { mode: AssistantMode; onNa
             <div className="rounded-xl border bg-muted/40 p-4 text-sm">
               <p className="font-medium">{config.welcomeTitle}</p>
               <p className="mt-1 text-muted-foreground">{config.welcome}</p>
+              {section && !section.exact ? (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  You&apos;re on <span className="font-medium text-foreground">{section.label}</span> — I&apos;ll focus on this page.
+                </p>
+              ) : null}
             </div>
             <div className="flex flex-wrap gap-2">
-              {config.starters.map((s) => (
+              {starters.map((s) => (
                 <Button key={s} variant="outline" size="sm" className="h-auto whitespace-normal py-1.5 text-start" onClick={() => send(s)}>
                   <bdi>{s}</bdi>
                 </Button>

@@ -61,4 +61,15 @@ export const ASSISTANT_MODES: Record<AssistantMode, AssistantModeConfig> = {
     placeholder: "Ask about your work, a quote or a customer…",
     disclaimer: "AI suggestions can be wrong — you decide your prices and what you send.",
   },
+  admin: {
+    endpoint: API_ROUTES.adminAssistant,
+    title: `${SITE_NAME} Admin Assistant`,
+    description: "Prioritise queues, review providers, resolve disputes, write copy.",
+    welcomeTitle: "Hi! Let's keep the platform running smoothly.",
+    welcome:
+      "I can see the platform's KPIs and queues. Ask what to handle first, get a checklist for reviewing a provider, a fair way to decide a dispute, or help writing decisions and page copy. You make every decision.",
+    starters: ["What needs my attention today?", "Summarise the platform's KPIs", "Help me decide a dispute fairly"],
+    placeholder: "Ask about the queues, a decision or page copy…",
+    disclaimer: "AI suggestions can be wrong — you make and check every decision.",
+  }
 }

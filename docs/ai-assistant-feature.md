@@ -1,12 +1,13 @@
 # Livo AI Assistant (Gemini)
 
-Three modes share one engine (`services/ai-assistant.service.ts`):
+Four modes share one engine (`services/ai-assistant.service.ts`):
 
 | Mode | Where | Entry point | Endpoint | Grounded in |
 |---|---|---|---|---|
 | `public` | marketing pages | floating button (`AssistantLauncher`) | `POST /api/assistant/chat` (guests allowed) | live catalog |
 | `customer` | `/account/*` | "Ask AI" in the dashboard header (`AssistantHeaderButton`) | `POST /api/me/assistant` (`requireRole("CUSTOMER","ADMIN")`) | catalog + the customer's dashboard: to-dos (confirm / pay / compare quotes / review), upcoming bookings, open requests |
 | `provider` | `/provider/*` | "Ask AI" in the dashboard header | `POST /api/provider/assistant` (`requireProvider()`) | catalog (other providers' listed prices) + the provider's dashboard: approval & verification (with rejection reason), setup gaps, new matching requests, today's jobs, quotes/bookings counts, earnings and wallet |
+| `admin` | `/admin/*` | "Ask AI" in the dashboard header | `POST /api/admin/assistant` (`requireAdmin()`, proxy 404-gate) | catalog + platform KPIs and queues: pending applications, open disputes (reason only), payout requests, recent bookings — **no customer/provider names** |
 
 **Customer assistant** — what needs attention first, writing a clear quote request (draft + "Request quotes" link for the
 right category), comparing quotes, payments held until confirmation, polite messages to the provider, plus the public
@@ -17,11 +18,27 @@ and the request details) and a professional quote message, fixed-price service t
 growing (portfolio, areas, schedule, reviews), explaining earnings/wallet/payouts, and what's missing when not approved.
 It never states a commission rate (it points to Earnings) and never suggests getting around hidden contact details.
 
+**Admin assistant** — an operations helper: what to handle first, a review checklist and rejection reasons for provider
+applications (AD-01), user suspensions (AD-03), category structure and copy (AD-02), stuck requests/bookings (AD-04), a fair
+framework and decision message for disputes (AD-05), commission trade-offs (AD-06), payment and payout checks (AD-07),
+review moderation (AD-08), static page copy (AD-10) and the audit log (AD-11). It advises; every decision stays with the admin.
+
+### Per-page sections
+
+In dashboards the assistant adapts to the page it's opened on. `constants/ai-assistant-sections.ts` lists every dashboard
+page per zone with its SRS requirement ids, a `focus` for the model and the opening `starters`. The panel sends the current
+pathname as `path`; the server resolves it with `resolveAssistantSection()` (longest matching prefix, else the zone home) and
+adds "the user is on <page> (requirements …), focus: …" to the instruction — the raw path is never put in the prompt. The
+sheet title shows the page ("Livo Work Assistant · Quotes") and the starters change with it. The business rules BR-01…BR-08
+(docs/srs.md) are part of every dashboard instruction. Prices are quoted in the app currency (`CURRENCY_SYMBOL`).
+
+Add a dashboard page → add its section in the same change (a test checks every section has starters and requirement ids).
+
 Each reply may carry a **draft** — ready-to-paste text shown in a card with a Copy button. Dashboard links come from fixed
 tables per mode (`CUSTOMER_ASSISTANT_LINKS`, `PROVIDER_ASSISTANT_LINKS` in `utils/ai-assistant.ts`); the model only picks
 a key (sent as the JSON schema enum), and an unknown key renders no button. The dashboard snapshot is loaded from the
 session user's id via the existing dashboard services — never from the request body. In dashboards the entry point is a
-header button, not a floating one, because a floating button would cover the mobile bottom tabs. Admin has no assistant.
+header button, not a floating one, because a floating button would cover the mobile bottom tabs. 
 
 ## Public mode
 
@@ -78,6 +95,7 @@ AssistantLauncher (client island, marketing layout)
 `src/schemas/ai-assistant.schema.ts`, `src/types/ai-assistant.ts`, `src/utils/ai-assistant.ts`,
 `src/services/ai-assistant.service.ts`, `src/repositories/catalog.repository.ts` (`priceStatsByCategory`),
 `src/app/api/assistant/chat/route.ts`, `src/app/api/me/assistant/route.ts`, `src/app/api/provider/assistant/route.ts`,
-`src/constants/ai-assistant.ts` (per-mode UI copy + endpoint), `src/hooks/use-ai-assistant.ts`, `src/components/ai-assistant/*`
+`src/app/api/admin/assistant/route.ts`, `src/constants/ai-assistant.ts` (per-mode UI copy + endpoint),
+`src/constants/ai-assistant-sections.ts` (per-page sections), `src/hooks/use-ai-assistant.ts`, `src/components/ai-assistant/*`
 (`AssistantLauncher`, `AssistantHeaderButton`, `AssistantSheet`, `AssistantPanel`), `src/components/layout/DashboardShell.tsx`,
 tests in `tests/ai-assistant/`.

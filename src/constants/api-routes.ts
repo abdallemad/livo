@@ -12,6 +12,7 @@ export const API_ROUTES = {
   /** Dashboard assistants (grounded in the signed-in user's own work). */
   customerAssistant: "/api/me/assistant",
   providerAssistant: "/api/provider/assistant",
+  adminAssistant: "/api/admin/assistant",
   customer: {
     dashboard: "/api/me/dashboard",
     requests: "/api/me/requests",

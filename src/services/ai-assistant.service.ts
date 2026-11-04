@@ -7,17 +7,21 @@ import { createRateLimiter } from "@/lib/rate-limit"
 import { catalogRepository } from "@/repositories/catalog.repository"
 import { assistantModelReplySchema, type AssistantChatValues } from "@/schemas/ai-assistant.schema"
 import { VISIBLE_SERVICE } from "@/services/admin-catalog.service"
+import { getAdminDashboard } from "@/services/admin-dashboard.service"
 import { getCustomerDashboard } from "@/services/customer.service"
 import { getProviderDashboard } from "@/services/provider-dashboard.service"
 import type { AssistantMode, AssistantReply } from "@/types/ai-assistant"
 import {
+  adminSnapshot,
   assistantActions,
+  buildAdminInstruction,
   buildCustomerInstruction,
   buildProviderInstruction,
   buildSystemInstruction,
   customerSnapshot,
   isRetryableGeminiError,
   providerSnapshot,
+  resolveAssistantSection,
   toAssistantReply,
   toGeminiContents,
   type AssistantCategory,
@@ -28,7 +32,9 @@ import {
  * Livo AI Assistant (docs/ai-assistant-feature.md). Answers with Google Gemini in three modes:
  * - public (marketing pages): grounded in the LIVE catalog (active categories + real listed prices);
  * - customer (`/account`): + the customer's own dashboard (to-dos, bookings, open requests);
- * - provider (`/provider`): + the provider's dashboard (eligibility, setup gaps, new requests, today's jobs, money).
+ * - provider (`/provider`): + the provider's dashboard (eligibility, setup gaps, new requests, today's jobs, money);
+ * - admin (`/admin`): + platform KPIs and queues (no customer/provider names).
+ * Dashboard modes also focus on the page the panel is open on (`input.path` → a known section, never prompted verbatim).
  * The dashboard snapshot is loaded here from the SESSION user's id — never from the request body. The model returns
  * JSON that is re-validated and mapped to links from fixed tables; it never builds a URL itself. Nothing is stored.
  */
@@ -151,7 +157,13 @@ export async function askCustomerAssistant(input: AssistantChatValues, customerI
   limit(`user:${customerId}`)
   getGemini()
   const [categories, dashboard] = await Promise.all([loadCatalogContext(), getCustomerDashboard(customerId)])
-  const instruction = buildCustomerInstruction({ siteName: SITE_NAME, city: LAUNCH_CITY, categories, snapshot: customerSnapshot(dashboard) })
+  const instruction = buildCustomerInstruction({
+    siteName: SITE_NAME,
+    city: LAUNCH_CITY,
+    categories,
+    snapshot: customerSnapshot(dashboard),
+    section: resolveAssistantSection("customer", input.path),
+  })
   return generate(input, "customer", instruction, categories)
 }
 
@@ -160,6 +172,27 @@ export async function askProviderAssistant(input: AssistantChatValues, providerI
   limit(`user:${providerId}`)
   getGemini()
   const [categories, dashboard] = await Promise.all([loadCatalogContext(), getProviderDashboard(providerId)])
-  const instruction = buildProviderInstruction({ siteName: SITE_NAME, city: LAUNCH_CITY, categories, snapshot: providerSnapshot(dashboard) })
+  const instruction = buildProviderInstruction({
+    siteName: SITE_NAME,
+    city: LAUNCH_CITY,
+    categories,
+    snapshot: providerSnapshot(dashboard),
+    section: resolveAssistantSection("provider", input.path),
+  })
   return generate(input, "provider", instruction, categories)
+}
+
+/** Admin dashboard: platform KPIs and queues; advice only — every decision stays with the admin. */
+export async function askAdminAssistant(input: AssistantChatValues, adminId: string): Promise<AssistantReply> {
+  limit(`user:${adminId}`)
+  getGemini()
+  const [categories, dashboard] = await Promise.all([loadCatalogContext(), getAdminDashboard()])
+  const instruction = buildAdminInstruction({
+    siteName: SITE_NAME,
+    city: LAUNCH_CITY,
+    categories,
+    snapshot: adminSnapshot(dashboard),
+    section: resolveAssistantSection("admin", input.path),
+  })
+  return generate(input, "admin", instruction, categories)
 }

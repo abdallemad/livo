@@ -5,8 +5,8 @@ The authoritative rules are in `CLAUDE.md` §2–§3; this is the map of what ex
 ```
 prisma/              schema.prisma, seed.ts, sql/ (dated idempotent migrations: 2026-11-01-schema-baseline, 2026-11-01-onboarding,
                      2026-11-02-service-moderation, 2026-11-03-chat-read-markers)
-scripts/             prebuild-db.cjs, build-with-deployment-id.mjs, prepare-standalone.mjs,
-                     deployment-id.mjs, warm-cache.mjs, archive/ (one-offs)
+scripts/             prebuild-db.cjs, db-reset.mjs (wipe + migrate + seed — docs/database-reset-seed.md),
+                     build-with-deployment-id.mjs, prepare-standalone.mjs, deployment-id.mjs, warm-cache.mjs, archive/ (one-offs)
 tests/               node:test suites — api/, utils/, ui/ (logical-class direction guard), onboarding/, prelaunch/ + alias loader
 docs/                SITEMAP.md, DESIGN-SYSTEM.md, srs.md, business-analysis, api-conventions.md, tech-stack.md, onboarding-feature.md, releases/
 src/
@@ -79,6 +79,7 @@ Feature docs: `docs/api-conventions.md`, `docs/onboarding-feature.md`, `docs/adm
 `docs/navigation.md`,
 `docs/booking-checkout-feature.md`,
 `docs/customer-booking-detail-feature.md`,
+`docs/customer-review-feature.md`, `docs/database-reset-seed.md`,
 `docs/customer-request-detail-feature.md`,
 `docs/provider-request-detail-feature.md`,
 `docs/realtime-feature.md`, `docs/messages-feature.md`, `docs/notifications-feature.md`,

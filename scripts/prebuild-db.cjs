@@ -11,6 +11,8 @@ const { execFileSync } = require("node:child_process")
 const path = require("node:path")
 const fs = require("node:fs")
 
+const prismaCli = path.join(__dirname, "..", "node_modules", "prisma", "build", "index.js")
+
 // Order matters. Append new files; never edit or remove applied ones.
 // (2026-10-31-init.sql was replaced by the baseline pre-launch; it never reached a real database.)
 const migrationFiles = [
@@ -46,17 +48,10 @@ function schemaUrl() {
   return url.toString()
 }
 
-function main() {
-  const url = schemaUrl()
-  if (!url) {
-    if (process.env.CI) throw new Error("[prebuild-db] DATABASE_URL is required in CI.")
-    console.warn("[prebuild-db] DATABASE_URL not set — skipping migrations (local build only).")
-    return
-  }
-
+/** Applies every registered migration, in order, to `url` (a session/direct URL from `schemaUrl()`). */
+function applyMigrations(url) {
   // Run the CLI's JS entry with node, never through a shell: on Windows `prisma.cmd` needs
   // `shell: true`, and cmd.exe splits the URL at `&` (e.g. `?sslmode=require&channel_binding=…`).
-  const prismaCli = path.join(__dirname, "..", "node_modules", "prisma", "build", "index.js")
   for (const file of migrationFiles) {
     const fullPath = path.join(__dirname, "..", "prisma", "sql", file)
     if (!fs.existsSync(fullPath)) throw new Error(`[prebuild-db] missing migration ${file}`)
@@ -70,6 +65,17 @@ function main() {
   }
 }
 
-module.exports = { migrationFiles }
+function main() {
+  const url = schemaUrl()
+  if (!url) {
+    if (process.env.CI) throw new Error("[prebuild-db] DATABASE_URL is required in CI.")
+    console.warn("[prebuild-db] DATABASE_URL not set — skipping migrations (local build only).")
+    return
+  }
+  applyMigrations(url)
+}
+
+// `scripts/db-reset.mjs` reuses the URL checks and the runner.
+module.exports = { migrationFiles, schemaUrl, applyMigrations, prismaCli }
 
 if (require.main === module) main()

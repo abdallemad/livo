@@ -48,7 +48,7 @@ export function MyBookingDetail({ initialData, checkout = null }: { initialData:
   const settling = waiting && b.status === "PENDING_PAYMENT" && confirmation.stillSettling
   const stages = bookingStages(b.status, b.paymentMethod)
   const closed = b.status === "CANCELLED" || b.status === "REJECTED"
-  const hasActions = b.canPay || b.actions.length > 0 || b.canReview || b.canReportProblem
+  const hasActions = b.canPay || b.actions.length > 0 || b.canReview || b.reviewed || b.canReportProblem
 
   return (
     <div className="space-y-6">
@@ -124,6 +124,12 @@ export function MyBookingDetail({ initialData, checkout = null }: { initialData:
                 <Button size="lg" variant="outline" render={<Link href={`/account/bookings/${b.id}/review`} />}>
                   <Star data-icon="inline-start" aria-hidden />
                   Leave a review
+                </Button>
+              ) : null}
+              {b.reviewed ? (
+                <Button variant="ghost" render={<Link href={`/account/bookings/${b.id}/review`} />}>
+                  <Star data-icon="inline-start" aria-hidden />
+                  See your review
                 </Button>
               ) : null}
               {b.canReportProblem ? (

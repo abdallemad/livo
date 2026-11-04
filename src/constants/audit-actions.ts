@@ -29,6 +29,8 @@ export const AUDIT_ACTION_LABEL: Record<string, string> = {
   "dispute.resolve": "Resolved the dispute",
   "review.hide": "Hid the review",
   "review.show": "Showed the review again",
+  "review.create": "The customer rated the booking",
+  "review.update": "The customer edited their review",
   "commission.update_global": "Changed the platform commission rate",
   "commission.set_category": "Set a category commission rate",
   "commission.clear_category": "Removed a category commission rate",

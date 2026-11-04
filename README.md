@@ -25,7 +25,8 @@ npm run dev
 | `npm test` | Node test runner over `tests/` |
 | `npm run warm [url]` | request every sitemap URL once after a deploy |
 | `npm run check-env` | verify required env keys |
-| `npm run db:seed` | seed reference data |
+| `npm run db:seed` | seed reference data + mock data (English, Luxembourg) — `-- --reset` removes only the mock rows |
+| `npm run db:reset -- --yes` | **wipe the whole database**, re-apply `prisma/sql`, seed ([docs/database-reset-seed.md](docs/database-reset-seed.md)) |
 
 ## Architecture in one line
 

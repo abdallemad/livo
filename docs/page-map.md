@@ -55,7 +55,7 @@ Sidebar shell, dynamic, `noindex`. Signed-in `CUSTOMER` with onboarding finished
 | `/account/requests/[id]` | Request details | Progress, the request, quotes to compare (price, duration, rating, jobs done; sort) and accept — online or cash — which creates the booking ([customer-request-detail-feature.md](customer-request-detail-feature.md)) | built | CU-04, CU-05, CU-08 |
 | `/account/bookings` | My bookings | Current / Finished / Cancelled, next step, provider phone once confirmed, review link ([customer-account-feature.md](customer-account-feature.md)) | built | CU-13 |
 | `/account/bookings/[id]` | Booking details | Progress, next step + actions (pay, confirm the job, cancel before acceptance, review, report a problem), provider (phone after acceptance), payment & refunds, history ([customer-booking-detail-feature.md](customer-booking-detail-feature.md)) | built | CU-09…CU-12 |
-| `/account/bookings/[id]/review` | Rate the service | Stars and a comment, after completion | placeholder | CU-10 |
+| `/account/bookings/[id]/review` | Rate the service | Stars + optional public comment once finished, editable 7 days until the provider replies, shows the reply ([customer-review-feature.md](customer-review-feature.md)) | built | CU-10, SY-05 |
 | `/account/bookings/[id]/dispute` | Open a dispute | Reason plus photos or documents | placeholder | CU-12 |
 | `/account/messages` | Messages | Conversations for bookings the provider accepted, last message, live ([messages-feature.md](messages-feature.md)) | built | CU-06 |
 | `/account/messages/[bookingId]` | Chat | Live thread (Pusher); opens only after acceptance, read-only once the job ends | built | CU-06, SY-04 |

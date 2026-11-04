@@ -12,7 +12,7 @@ import { AnimatedTitle } from "@/components/motion/AnimatedTitle"
 import { StaggerItem, StaggerList } from "@/components/motion/Reveal"
 
 /**
- * Popular fixed-price services (docs/landing-page.md §3): title, "From X EGP", duration and the category icon, each a
+ * Popular fixed-price services (docs/landing-page.md §3): title, "From $X", duration and the category icon, each a
  * real link to the service page. Data: `getPopularServices` (LIVE services only). With no services yet, the real
  * category tiles show instead — without prices, never invented ones.
  */

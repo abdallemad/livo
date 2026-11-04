@@ -1,5 +1,6 @@
 import { absoluteUrl } from "@/lib/site-url"
 import { SITE_LOGO, SITE_NAME } from "@/constants/site"
+import { CURRENCY_CODE } from "@/utils/format"
 
 /** Pure JSON-LD builders rendered through `<JsonLd>`. */
 export function organizationJsonLd() {
@@ -39,7 +40,7 @@ export function serviceListJsonLd(name: string, items: { title: string; href: st
         "@type": "Service",
         name: s.title,
         url: absoluteUrl(s.href),
-        offers: { "@type": "Offer", price: s.price.toFixed(2), priceCurrency: "EGP" },
+        offers: { "@type": "Offer", price: s.price.toFixed(2), priceCurrency: CURRENCY_CODE },
       },
     })),
   }
@@ -56,7 +57,7 @@ export function categoryListJsonLd(items: { name: string; path: string }[]) {
 }
 
 /**
- * `/services/[category]/[service]`: a fixed-price `Service` with its `Offer` (EGP) and the provider by name.
+ * `/services/[category]/[service]`: a fixed-price `Service` with its `Offer` (USD) and the provider by name.
  * No `aggregateRating`: the rating belongs to the provider, not this service, and marking it up as the
  * service's would misrepresent it.
  */
@@ -71,7 +72,7 @@ export function serviceJsonLd(s: { title: string; description: string; href: str
     areaServed: { "@type": "City", name: s.city },
     provider: { "@type": "Person", name: s.provider },
     ...(s.images.length ? { image: s.images.map((i) => absoluteUrl(i)) } : {}),
-    offers: { "@type": "Offer", price: s.price.toFixed(2), priceCurrency: "EGP", url: absoluteUrl(s.href), availability: "https://schema.org/InStock" },
+    offers: { "@type": "Offer", price: s.price.toFixed(2), priceCurrency: CURRENCY_CODE, url: absoluteUrl(s.href), availability: "https://schema.org/InStock" },
   }
 }
 

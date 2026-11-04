@@ -30,7 +30,7 @@ test("inactive overrides are ignored, and a 0% override is still an override", (
   assert.deepEqual(resolveCommissionRate(leaks, [{ categoryId: "leaks", ratePercent: 0, isActive: true }], 10), { rate: 0, source: "CATEGORY" })
 })
 
-test("splitAmount rounds commission and net to piastres", () => {
+test("splitAmount rounds commission and net to cents", () => {
   assert.deepEqual(splitAmount(350, 10), { commission: 35, providerNet: 315 })
   assert.deepEqual(splitAmount(333.33, 12.5), { commission: 41.67, providerNet: 291.66 })
 })

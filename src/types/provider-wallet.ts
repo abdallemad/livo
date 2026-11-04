@@ -1,7 +1,7 @@
 import type { PayoutStatus, WalletTxType } from "@prisma/client"
 import type { Paginated } from "./api"
 
-/** Provider earnings (PR-11) and payouts (PR-12) — docs/provider-earnings-payouts-feature.md. Money in EGP. */
+/** Provider earnings (PR-11) and payouts (PR-12) — docs/provider-earnings-payouts-feature.md. Money in USD. */
 
 export interface WalletSummaryDto {
   /** `SUM` of the ledger; negative = commission owed from cash jobs. */

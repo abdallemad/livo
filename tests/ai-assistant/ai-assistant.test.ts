@@ -78,7 +78,7 @@ test("Gemini contents keep recent turns, start with the user and map assistant �
 test("system instruction lists live categories with real prices and the viewer note", () => {
   const s = buildSystemInstruction({ siteName: "Livo", city: "Cairo", categories: CATS, viewer: "PROVIDER" })
   assert.match(s, /plumbing: Plumbing — fixed-price/)
-  assert.match(s, /200 EGP – 450 EGP/)
+  assert.match(s, /\$200 – \$450/)
   assert.match(s, /service provider/)
 })
 

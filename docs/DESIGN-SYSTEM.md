@@ -164,7 +164,7 @@ Load both with `next/font/google`, `subsets: ["latin"]`, `display: "swap"`, in `
 2. Minimum body size **16px** (providers use cheap phones).
 3. Line length ≤ ~65 characters in reading areas (`max-w-prose`).
 4. **Digits: Western (0-9)** everywhere (prices, phones, dates, OTP). Use `tabular-nums` in tables, prices and OTP. Format with `Intl.NumberFormat("en-EG", { numberingSystem: "latn" })`. (Decision #2 in §16.)
-5. Currency display: `350 EGP`, number then symbol, via one `formatPrice()` util in `src/utils/format.ts`. Never concatenate by hand.
+5. Currency display: `$350` (US dollars), symbol then number, via one `formatPrice()` util in `src/utils/format.ts`. Never concatenate by hand.
 6. Phone numbers, order ids and similar runs stay wrapped in `<Ltr>` (`<bdi dir="ltr">`), so they stay correct if the UI goes back to RTL.
 
 ---

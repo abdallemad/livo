@@ -65,6 +65,6 @@ Still Egypt-specific (not changed with the move to Luxembourg — decide before 
 
 - Time zone `Africa/Cairo` (`APP_TIME_ZONE` in `src/utils/zoned-time.ts`) and the "Cairo time" labels on schedule,
   booking and dashboard screens.
-- Currency **EGP** (`utils/format.ts`, the AI assistant's prompt).
+- Currency **USD** (`utils/format.ts`, the AI assistant's prompt).
 - Phone validation and formatting (Egyptian mobiles), payout destinations (Egyptian wallets / IBAN), the Saturday-first
   week on the schedule editor.

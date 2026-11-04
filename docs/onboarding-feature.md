@@ -64,7 +64,7 @@ Providers can "save and exit" on every step; the wizard resumes where the DB say
 - Quote-only providers (all categories `QUOTE`, e.g. finishing) can't hold a fixed-price service, so step 5 counts
   as done for them instead of trapping them.
 - Names reject digits of any numbering system (Arabic-Indic too), so a phone number can't hide in a name (SY-04).
-- Prices: `SERVICE_PRICE_MIN`..`SERVICE_PRICE_MAX` EGP, max 2 decimals, stored as `Decimal`.
+- Prices: `SERVICE_PRICE_MIN`..`SERVICE_PRICE_MAX` USD, max 2 decimals, stored as `Decimal`.
 - The name is mirrored to Clerk (UI reads identity from Clerk); the profile photo is uploaded straight to Clerk
   and its URL copied into `User.avatarUrl`. Both best effort: a Clerk hiccup doesn't lose the step.
 

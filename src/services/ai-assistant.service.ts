@@ -56,7 +56,7 @@ function responseSchema(mode: AssistantMode): Schema {
       reply: { type: Type.STRING, description: "The answer shown to the user, plain text." },
       action: { type: Type.STRING, enum: assistantActions(mode) },
       categorySlug: { type: Type.STRING, nullable: true, description: "One of the listed category slugs, or null." },
-      estimatedPrice: { type: Type.STRING, nullable: true, description: `Price or range in ${CURRENCY_SYMBOL}, e.g. "250–400 ${CURRENCY_SYMBOL}", or null.` },
+      estimatedPrice: { type: Type.STRING, nullable: true, description: 'Price or range in USD, e.g. "$250–$400", or null.' },
       tips: { type: Type.ARRAY, items: { type: Type.STRING } },
       quickReplies: { type: Type.ARRAY, items: { type: Type.STRING } },
       draft: { type: Type.STRING, nullable: true, description: "Ready-to-paste text you wrote for the user, or null." },

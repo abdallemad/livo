@@ -39,7 +39,7 @@ export function resolveCommissionRate(
   return { rate: globalRate, source: "GLOBAL" }
 }
 
-/** Commission and provider net for an amount at a rate, rounded to piastres (the booking snapshot, BR-01). */
+/** Commission and provider net for an amount at a rate, rounded to cents (the booking snapshot, BR-01). */
 export function splitAmount(amount: number, ratePercent: number) {
   const commission = Math.round(amount * ratePercent) / 100
   return { commission, providerNet: Math.round((amount - commission) * 100) / 100 }

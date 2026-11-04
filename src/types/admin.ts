@@ -24,7 +24,7 @@ import type { Paginated } from "./api"
 
 /**
  * Admin dashboard contracts (`GET /api/admin/dashboard`). Money is a plain
- * number in EGP and dates are ISO strings, so the DTO survives JSON as-is.
+ * number in USD and dates are ISO strings, so the DTO survives JSON as-is.
  */
 export interface AdminDashboardStats {
   users: { total: number; customers: number; providers: number; newLast30Days: number }

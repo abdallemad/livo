@@ -12,7 +12,7 @@ The customer describes a job once; verified providers who cover the area and cat
 | Approximate size (m²) | Optional. There is no column for it, so it becomes the description's first line (`Approximate size: N m²`) where every provider reads it (`composeDescription()`). |
 | Photos | Optional, up to 6. Uploaded one by one (compressed in the browser, magic-byte checked, ≤ the image limit) to private R2 under `uploads/requests/<userId>/`, attached on submit. Unsent uploads survive a refresh (listed as pending). Only the owner previews them, through `GET /api/me/files/[id]` (5-minute signed link). They are **not** public — the public image routes only serve `uploads/services/` and `uploads/portfolio/`. |
 | Where | A saved address (default preselected) **or** just an area of the customer's city. Providers see only the area before booking (BR-02). No address and no areas → a prompt to add an address. |
-| Budget | Optional, 50 – 5,000,000 EGP. |
+| Budget | Optional, $50 – $5,000,000. |
 | Preferred date | Optional; today (Cairo) up to 120 days ahead, stored as Cairo midnight. |
 | Send | Opens the request straight away (`OPEN`; there is no draft step), `expiresAt` = now + `SiteSetting["request.expiryDays"]` (1–60, default 7 — BR-05). Redirects to `/account/requests` with a toast naming how many providers were told. Unsaved changes warn before leaving. |
 

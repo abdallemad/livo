@@ -37,9 +37,9 @@ export interface PayoutRequestCheck {
 export function payoutRequestBlockedReason(c: PayoutRequestCheck): string | null {
   if (!c.providerApproved) return "Your account isn't active, so you can't request payouts right now."
   if (c.hasOpenRequest) return "You already have a payout request waiting. You can request again once it's handled."
-  if (c.available < PAYOUT_MIN) return `You can request a payout once you have at least ${PAYOUT_MIN} EGP available.`
-  if (!(c.amount >= PAYOUT_MIN)) return `The minimum payout is ${PAYOUT_MIN} EGP.`
-  if (c.amount > c.available) return `You can request up to ${c.available} EGP.`
+  if (c.available < PAYOUT_MIN) return `You can request a payout once you have at least $${PAYOUT_MIN} available.`
+  if (!(c.amount >= PAYOUT_MIN)) return `The minimum payout is $${PAYOUT_MIN}.`
+  if (c.amount > c.available) return `You can request up to $${c.available}.`
   return null
 }
 

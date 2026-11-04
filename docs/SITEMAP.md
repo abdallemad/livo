@@ -6,7 +6,7 @@
 > When you add/remove a page, update this file in the same change.
 
 - Language: **English, LTR** (`<html lang="en" dir="ltr">`). All UI copy in English. The full page map with titles is in §2–§5 and `docs/page-map.md`.
-- Currency: EGP. Launch scope: one city, 3–5 service categories.
+- Currency: USD. Launch scope: one city, 3–5 service categories.
 - Requirement IDs (e.g. `CU-02`) refer to `srs.md`.
 
 ---

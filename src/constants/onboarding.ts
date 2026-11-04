@@ -10,7 +10,7 @@ export const PROVIDER_MAX_YEARS = 60
 export const PROVIDER_MAX_CATEGORIES = 6
 export const PROVIDER_MAX_AREAS = 15
 
-/** Fixed-price service bounds in EGP (PR-05). Upper bound stops typos like an extra zero. */
+/** Fixed-price service bounds in USD (PR-05). Upper bound stops typos like an extra zero. */
 export const SERVICE_PRICE_MIN = 50
 export const SERVICE_PRICE_MAX = 100_000
 export const SERVICE_TITLE_MIN = 5

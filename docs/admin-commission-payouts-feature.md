@@ -8,7 +8,7 @@ The payments half of AD-07 is in [admin-payments-feature.md](admin-payments-feat
 
 | Route | What it does |
 |---|---|
-| `/admin/settings/commission` | **Platform rate** form (with a live "on a 1,000 EGP booking: Livo X, provider Y" preview); **Category rates** table — every category (sub-categories indented) with its effective rate and where it comes from (own rate / from parent / platform rate), **Set rate / Change** (dialog) and **Remove**; **Recent changes** (last 15, from the audit log: who, when, from → to). First snapshot rendered on the server. |
+| `/admin/settings/commission` | **Platform rate** form (with a live "on a $1,000 booking: Livo X, provider Y" preview); **Category rates** table — every category (sub-categories indented) with its effective rate and where it comes from (own rate / from parent / platform rate), **Set rate / Change** (dialog) and **Remove**; **Recent changes** (last 15, from the audit log: who, when, from → to). First snapshot rendered on the server. |
 | `/admin/payouts` | Totals: waiting for a decision, approved-to-send (both click through to the filtered list), paid out, rejected. Table: provider (+ phone, request date), amount, destination (bank / wallet + masked ref), **wallet** (available, balance, reserved by other approved payouts — red when short), status (+ who / when, rejection reason), actions. Filters in the URL: status (with counts), search (provider name, phone, account ref, exact id). Open queues (Requested / Approved) list oldest first. |
 
 ## Commission (AD-06)
@@ -79,7 +79,7 @@ with **409** and the same sentence.
 5. Audit `payout.approve` / `payout.reject` / `payout.mark_paid` (`from`, `amount`, `balanceBefore`,
    `reason` / `reference`); a `PAYOUT_UPDATE` notification to the provider.
 
-Providers create the `REQUESTED` rows themselves at `/provider/payouts` (one waiting request at a time, minimum 100 EGP,
+Providers create the `REQUESTED` rows themselves at `/provider/payouts` (one waiting request at a time, minimum $100,
 under the same lock) — [provider-earnings-payouts-feature.md](provider-earnings-payouts-feature.md).
 
 > **No transfer is made by Livo.** The admin sends the money (bank / Vodafone Cash / InstaPay) and records it

@@ -103,7 +103,7 @@ export function planDisputeSettlement(input: SettlementInput): SettlementPlan {
       const amount = cents(input.refundAmount ?? 0)
       if (!(amount > 0)) throw new SettlementError("Enter the amount to refund.", "refundAmount")
       if (amount >= refundable) {
-        throw new SettlementError(`A partial refund must be less than the ${refundable} EGP that can be refunded. Use a full refund instead.`, "refundAmount")
+        throw new SettlementError(`A partial refund must be less than the $${refundable} that can be refunded. Use a full refund instead.`, "refundAmount")
       }
       refundNow = amount
       break

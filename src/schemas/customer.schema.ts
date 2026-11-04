@@ -55,7 +55,7 @@ export const newRequestSchema = z
     addressId: optionalId,
     /** … just an area in the customer's city. One of the two is required (checked in the service). */
     areaId: optionalId,
-    budget: optionalNumber(z.number().min(REQUEST_BUDGET_MIN, `The budget must be at least ${REQUEST_BUDGET_MIN} EGP.`).max(REQUEST_BUDGET_MAX)),
+    budget: optionalNumber(z.number().min(REQUEST_BUDGET_MIN, `The budget must be at least $${REQUEST_BUDGET_MIN}.`).max(REQUEST_BUDGET_MAX)),
     preferredDate: z
       .string()
       .trim()

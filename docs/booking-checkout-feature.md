@@ -42,9 +42,9 @@ From `PENDING_PROVIDER` the existing provider flow takes over (accept → confir
 
 - `src/lib/stripe.ts`: one lazy client, **API version pinned** (`2026-10-28.endive`, matching the installed `stripe`
   package) — bump both together on purpose. Without `STRIPE_SECRET` the wizard offers **cash only** and checkout calls answer 503.
-- Session: `mode: payment`, currency **EGP**, one inline `price_data` line (every booking has its own frozen amount, so
+- Session: `mode: payment`, currency **USD**, one inline `price_data` line (every booking has its own frozen amount, so
   there's no reusable Stripe Price to cache — CLAUDE.md §8's price caching applies to catalog products, not to this),
-  amount in piastres, `metadata` + `payment_intent_data.metadata` = `{ kind: "booking", bookingId, paymentId, bookingNumber }`,
+  amount in cents, `metadata` + `payment_intent_data.metadata` = `{ kind: "booking", bookingId, paymentId, bookingNumber }`,
   `customer_email` from the account, expires after **1 hour**, idempotency key per payment row (a double submit returns the
   same session). `Payment.gatewayRef` = the session id.
 - If Stripe can't open a session while booking, the new booking is cancelled and its payment failed (so a retry doesn't
@@ -102,13 +102,13 @@ nothing here revalidates the storefront.
 2. Stripe dashboard → Developers → Webhooks → endpoint `https://<your-domain>/api/webhook/stripe` with the four events above.
 3. Local: `stripe listen --forward-to localhost:3000/api/webhook/stripe` and use the `whsec_…` it prints.
 4. `npm run check-env` now fails if `STRIPE_SECRET` is set without `STRIPE_WEBHOOK_SECRET`, or a production build uses `sk_test_`.
-5. EGP must be enabled for card payments on the Stripe account.
+$5. must be enabled for card payments on the Stripe account.
 
 ## Files
 
 | Layer | File |
 |---|---|
-| Util + tests | `src/utils/booking-checkout.ts`, `tests/utils/booking-checkout.test.ts` (slots, hours, overlap, window, numbering, piastres, schema) |
+| Util + tests | `src/utils/booking-checkout.ts`, `tests/utils/booking-checkout.test.ts` (slots, hours, overlap, window, numbering, cents, schema) |
 | Schema | `src/schemas/booking.schema.ts` (`createServiceBookingSchema`, shared by the wizard and the route) |
 | DTOs | `src/types/booking.ts` |
 | Infra | `src/lib/stripe.ts`, `src/config/env.ts` (`STRIPE_SECRET`, `STRIPE_WEBHOOK_SECRET`, `getStripeEnv`), `src/lib/api-guard.ts` (exemption) |

@@ -1093,7 +1093,7 @@ async function seedMockData(tx: Tx) {
     { userId: customerId("3"), type: "BOOKING_STATUS_CHANGED", title: "How did it go?", body: "Rate Nico Schroeder for the air-conditioner service.", payload: { bookingId: bookingId(16) }, createdAt: at(-3, 16) },
     { userId: providerId("1"), type: "NEW_REQUEST_MATCH", title: "New request in your area", body: "“Replace all bathroom pipes” in Belair.", payload: { requestId: id("request", "3") }, createdAt: at(-1, 9) },
     { userId: providerId("3"), type: "BOOKING_CREATED", title: "New booking waiting for you", body: "Apartment cleaning up to 120 m² — Cloche d'Or.", payload: { bookingId: bookingId(2) }, createdAt: at(-1, 10) },
-    { userId: providerId("3"), type: "PAYOUT_UPDATE", title: "Your earnings were sent", body: "EGP 1,500 was sent to your wallet.", payload: { payoutId: id("payout", "1_paid") }, createdAt: at(-7), readAt: at(-7, 12) },
+    { userId: providerId("3"), type: "PAYOUT_UPDATE", title: "Your earnings were sent", body: "$1,500 was sent to your wallet.", payload: { payoutId: id("payout", "1_paid") }, createdAt: at(-7), readAt: at(-7, 12) },
     { userId: providerId("6"), type: "PROVIDER_DECISION", title: "We received your verification request", body: "We'll review your documents within two working days.", createdAt: at(-3) },
     { userId: providerId("7"), type: "PROVIDER_DECISION", title: "Your verification request was declined", body: "The ID photo isn't readable. Upload a clear photo of both sides.", createdAt: at(-55) },
     { userId: providerId("2"), type: "REVIEW_RECEIVED", title: "You have a new review", body: "Marc Weber rated you 4 stars.", payload: { bookingId: bookingId(7) }, createdAt: at(-19) },

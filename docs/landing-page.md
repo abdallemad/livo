@@ -1,6 +1,6 @@
 # Landing page `/` — trust-focused (MK-01)
 
-The home page's one job: make a skeptical customer trust a platform they've never heard of. English, LTR, mobile-first, EGP.
+The home page's one job: make a skeptical customer trust a platform they've never heard of. English, LTR, mobile-first, USD.
 Static / ISR (`revalidate = 3600`), built and verified with `npm run build` against the seed (`/` = ○ static, 1h).
 
 ## Sections (in order)
@@ -10,7 +10,7 @@ Static / ISR (`revalidate = 3600`), built and verified with `npm run build` agai
 | 1 | Header — logo, grouped hover dropdowns (Services + live categories / For providers / Help — `docs/navigation.md`), `AccountControls` island | `layout/AppHeader.tsx`, `layout/NavMenu.tsx` | top-level categories (`getNavCategories`) | static links only |
 | 2 | Hero — the one H1, launch city + services, **Book a service** (amber) / Join as a provider, service + area search | `Hero.tsx` | areas (`getSearchAreas`) | "All of {city}" only |
 | 2b | Trust strip — 4 promises | `TrustStrip.tsx` | constants | — |
-| 3 | Popular services — title, "From X EGP", duration, category icon → service page | `PopularServices.tsx` | `getPopularServices` (LIVE only) | real **category tiles without prices**; hidden if no categories |
+| 3 | Popular services — title, "From $X", duration, category icon → service page | `PopularServices.tsx` | `getPopularServices` (LIVE only) | real **category tiles without prices**; hidden if no categories |
 | 4 | How it works — 2 tabs (client island), both panels `keepMounted` in the HTML | `HowItWorks.tsx` | constants | — |
 | 5 | **Why trust Livo** — 4 cards (strongest visual weight), sample verified badge, privacy note, "Our policies" link | `WhyTrust.tsx` | constants; link only if the `policies` StaticPage is published | link hidden |
 | 6 | Meet our providers — 3–4 real approved providers: photo, specialty, years, portfolio thumbnail, verified badge; stars only with ≥ 5 reviews | `MeetProviders.tsx` | `landing.service` | **hidden** below 3 providers |

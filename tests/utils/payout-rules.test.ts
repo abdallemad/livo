@@ -10,7 +10,7 @@ test("available = balance minus other approved payouts", () => {
 
 test("approve needs a REQUESTED payout covered by the available balance", () => {
   assert.equal(payoutBlockedReason("APPROVE", { status: "REQUESTED", amount: 5000 }, 5000), null)
-  assert.match(payoutBlockedReason("APPROVE", { status: "REQUESTED", amount: 5000 }, 4999.99)!, /available balance is 4999.99 EGP/)
+  assert.match(payoutBlockedReason("APPROVE", { status: "REQUESTED", amount: 5000 }, 4999.99)!, /available balance is \$4999.99/)
   assert.match(payoutBlockedReason("APPROVE", { status: "APPROVED", amount: 10 }, 100)!, /already approved/)
 })
 

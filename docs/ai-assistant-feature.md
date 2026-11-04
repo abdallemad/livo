@@ -43,7 +43,7 @@ header button, not a floating one, because a floating button would cover the mob
 ## Public mode
 
 A floating **"Ask Livo"** button on every public page opens a chat that helps a visitor describe a problem or project,
-gives a short diagnosis and 2–3 safety tips, a rough price in EGP, and the right next step as a real link
+gives a short diagnosis and 2–3 safety tips, a rough price in USD, and the right next step as a real link
 (book a fixed-price service, request quotes, or browse). It answers in the visitor's language (English or Egyptian Arabic),
 can read replies aloud and take voice input.
 

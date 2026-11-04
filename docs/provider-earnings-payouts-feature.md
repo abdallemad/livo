@@ -34,7 +34,7 @@ and marks paid at `/admin/payouts`; the provider asks and follows along here. Th
 |---|---|
 | The provider is **APPROVED** | a suspended / unverified account can't move money |
 | **One open request** (`REQUESTED`) at a time | keeps the admin queue simple; ask again once it's handled |
-| **Minimum 100 EGP**, at most what's available (and ≤ 100,000) | small transfers cost more than they're worth |
+| **Minimum $100**, at most what's available (and ≤ 100,000) | small transfers cost more than they're worth |
 | `available` subtracts **every open payout** (requested + approved) | stricter than the admin approve check (approved only), so the same money can't be requested twice |
 | Destination: **wallet** = an Egyptian mobile (010/011/012/015, any format, Arabic digits ok) or `name@instapay`; **bank** = IBAN (`EG` + 27 digits) or account number (10–20 digits) | normalized on save (`normalizeDestination`) so the admin copies a clean value |
 

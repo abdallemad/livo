@@ -19,9 +19,9 @@ test("request rules: active account, one open request, minimum, within available
   assert.equal(payoutRequestBlockedReason(ok), null)
   assert.match(payoutRequestBlockedReason({ ...ok, providerApproved: false })!, /isn't active/)
   assert.match(payoutRequestBlockedReason({ ...ok, hasOpenRequest: true })!, /already have/)
-  assert.match(payoutRequestBlockedReason({ ...ok, available: 50 })!, /at least 100/)
+  assert.match(payoutRequestBlockedReason({ ...ok, available: 50 })!, /at least \$100/)
   assert.match(payoutRequestBlockedReason({ ...ok, amount: 99 })!, /minimum/)
-  assert.match(payoutRequestBlockedReason({ ...ok, amount: 1000.01 })!, /up to 1000/)
+  assert.match(payoutRequestBlockedReason({ ...ok, amount: 1000.01 })!, /up to \$1000/)
   assert.equal(payoutRequestBlockedReason({ ...ok, amount: 1000 }), null)
 })
 

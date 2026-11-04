@@ -45,7 +45,7 @@ export function payoutBlockedReason(
   if (action === "REJECT") return null
   if (!(payout.amount > 0)) return "The payout amount must be above zero."
   if (payout.amount > available) {
-    return `The provider's available balance is ${cents(available)} EGP, less than the ${cents(payout.amount)} EGP requested. Reject the request instead.`
+    return `The provider's available balance is $${cents(available)}, less than the $${cents(payout.amount)} requested. Reject the request instead.`
   }
   return null
 }

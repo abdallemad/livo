@@ -4,7 +4,7 @@ import type { Paginated } from "./api"
 
 /**
  * Provider workspace contracts (`/provider`, `/provider/requests`) —
- * docs/provider-dashboard-requests-feature.md. Money is a plain number in EGP, dates are ISO
+ * docs/provider-dashboard-requests-feature.md. Money is a plain number in USD, dates are ISO
  * strings. **No customer identity, phone or street address** appears in any request DTO
  * (BR-02, SY-04): only the area and city.
  */

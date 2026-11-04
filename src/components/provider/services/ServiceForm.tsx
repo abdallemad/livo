@@ -132,7 +132,7 @@ export function ServiceForm({ data }: { data: ProviderServiceFormData }) {
           </FormField>
 
           <div className="grid gap-5 sm:grid-cols-2">
-            <FormField id="svc-price" label="Price (EGP)" error={formState.errors.price?.message} helper={`From ${SERVICE_PRICE_MIN} to ${SERVICE_PRICE_MAX.toLocaleString("en")} EGP`}>
+            <FormField id="svc-price" label="Price (USD)" error={formState.errors.price?.message} helper={`From $${SERVICE_PRICE_MIN} to $${SERVICE_PRICE_MAX.toLocaleString("en")}`}>
               <Input
                 id="svc-price"
                 type="number"

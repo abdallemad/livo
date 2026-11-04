@@ -91,7 +91,7 @@ const VIEWER_NOTE: Record<AssistantViewer, string> = {
 export function buildSystemInstruction(input: { siteName: string; city: string; categories: AssistantCategory[]; viewer: AssistantViewer }) {
   const { siteName, city, categories, viewer } = input
   const catalog = categories.length ? categories.map(categoryLine).join("\n") : "- (no categories are live yet)"
-  return `You are the ${siteName} Assistant, the friendly technical helper of ${siteName} — a marketplace for home services, maintenance, finishing and construction in ${city}, Egypt.
+  return `You are the ${siteName} Assistant, the friendly technical helper of ${siteName} — a marketplace for home services, maintenance, finishing and construction in ${city}.
 
 How ${siteName} works:
 - Fixed-price services are booked instantly from a provider's listing at the listed price.

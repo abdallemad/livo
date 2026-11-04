@@ -29,6 +29,7 @@ export const customerKeys = {
   bookingList: (query: object) => [...customerKeys.all, "bookings", query] as const,
   payments: (query: object) => [...customerKeys.all, "payments", query] as const,
   booking: (id: string) => [...customerKeys.all, "bookings", "detail", id] as const,
+  bookingReview: (id: string) => [...customerKeys.all, "bookings", "review", id] as const,
   conversations: () => [...customerKeys.all, "messages"] as const,
   thread: (bookingId: string) => [...customerKeys.all, "messages", bookingId] as const,
   unreadMessages: () => [...customerKeys.all, "messages", "unread"] as const,

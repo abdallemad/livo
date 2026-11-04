@@ -81,8 +81,9 @@ No schema change and no migration.
 - **Auto-release job (BR-08):** nothing yet moves an `AWAITING_CONFIRMATION` booking to `COMPLETED` when `autoReleaseAt`
   passes. When built, it should call the same `completionPlan`.
 - Cancellation after acceptance (BR-06 policy).
-- The pages the actions link to are still placeholders: review (`/review`, CU-10) and dispute (`/dispute`, CU-12). Chat
-  (`/account/messages/[id]`, CU-06) is built — [messages-feature.md](messages-feature.md).
+- The dispute page the actions link to (`/dispute`, CU-12) is still a placeholder. The review page (`/review`, CU-10) is
+  built — [customer-review-feature.md](customer-review-feature.md); once rated, the next step shows **See your review**.
+  Chat (`/account/messages/[id]`, CU-06) is built — [messages-feature.md](messages-feature.md).
 - Refunds on provider decline and dispute decisions still aren't sent to Stripe (only recorded on the payment row;
   `refundOnStripe` is ready for them).
 - PDF invoice for the booking (SY-07).

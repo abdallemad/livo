@@ -84,7 +84,7 @@ All `noindex`. Per-visitor UI is a client island (`AccountControls`), layouts st
 | `/account/requests/[id]` | Request details | Timeline, received quotes, compare, accept one ([customer-request-detail-feature.md](customer-request-detail-feature.md)) | CU-04, CU-05, CU-08 |
 | `/account/bookings` | My bookings | List with next step ([customer-account-feature.md](customer-account-feature.md)) | CU-13 |
 | `/account/bookings/[id]` | Booking details | Status timeline, pay, confirm completion, review, cancel, open dispute ([customer-booking-detail-feature.md](customer-booking-detail-feature.md)) | CU-09…CU-12 |
-| `/account/bookings/[id]/review` | Leave review (stars + comment) | Only when `Completed` (BR-03) | CU-10 |
+| `/account/bookings/[id]/review` | Leave review (stars + comment) | Only when `Completed` / `Closed` (BR-03); editable 7 days until the provider replies ([customer-review-feature.md](customer-review-feature.md)) | CU-10 |
 | `/account/bookings/[id]/dispute` | Open dispute with reason + evidence | | CU-12 |
 | `/account/messages` | Conversations list | Only for confirmed bookings ([messages-feature.md](messages-feature.md)) | CU-06 |
 | `/account/messages/[bookingId]` | Chat thread | Block phone/email patterns (SY-04) | CU-06, SY-04 |

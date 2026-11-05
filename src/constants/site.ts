@@ -49,6 +49,8 @@ export const LAUNCH_CATEGORIES = [
 export const SUPPORT_PHONE: string | null = null
 /** TODO: confirm — WhatsApp number in international digits only, e.g. "201000000000". `null` = hidden. */
 export const SUPPORT_WHATSAPP: string | null = null
+/** TODO: confirm — support inbox shown on /contact, e.g. "help@example.com". `null` = hidden. */
+export const SUPPORT_EMAIL: string | null = null
 /** TODO: confirm — official profiles. Empty = no social links rendered. */
 export const SOCIAL_LINKS: readonly { label: string; href: string }[] = []
 

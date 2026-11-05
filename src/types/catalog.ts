@@ -10,6 +10,8 @@ export interface CatalogServiceCard {
   id: string
   slug: string
   title: string
+  /** Short card blurb from the description (contact details masked, ~110 chars). */
+  summary: string
   /** Detail page: `/services/<category slug>/<service slug>`. */
   href: string
   categoryName: string
@@ -21,7 +23,7 @@ export interface CatalogServiceCard {
   durationMinutes: number | null
   rating: number
   reviewsCount: number
-  /** Public image route (`/api/images/services/[id]`), or null. */
+  /** First upload (`/api/images/services/[id]`), else the external stock cover (`Service.imageUrl`), or null. */
   imageUrl: string | null
 }
 

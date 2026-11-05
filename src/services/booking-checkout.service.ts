@@ -16,6 +16,7 @@ import { serviceHref } from "@/utils/catalog"
 import { resolveCommissionRate, splitAmount } from "@/utils/commission"
 import { bookingPlace } from "@/utils/provider-booking"
 import { zonedIsoDay } from "@/utils/zoned-time"
+import { serviceCoverUrl } from "@/utils/service-image"
 
 /**
  * Booking a fixed-price service + Stripe Checkout (CU-02, CU-07, BR-01, BR-08; docs/booking-checkout-feature.md).
@@ -80,7 +81,7 @@ export async function getBookServiceFormData(userId: string, serviceId: string, 
       price: num(service.price),
       durationMinutes: service.durationMinutes,
       category: label(service.category),
-      imageUrl: service.images[0] ? `/api/images/services/${service.images[0].id}` : null,
+      imageUrl: serviceCoverUrl(service.images.map((i) => i.id), service.imageUrl),
       href: serviceHref(service.category.slug, service.slug),
       provider: { id: p.userId, name: p.user.name || "Provider", avatarUrl: p.user.avatarUrl, rating: num(p.ratingAvg), reviewsCount: p.ratingCount },
     },

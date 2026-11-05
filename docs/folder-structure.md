@@ -73,7 +73,7 @@ Feature docs: `docs/api-conventions.md`, `docs/onboarding-feature.md`, `docs/adm
 `docs/customer-account-feature.md`,
 `docs/catalog-feature.md`,
 `docs/ai-assistant-feature.md`,
-`docs/landing-page.md`,
+`docs/landing-page.md`, `docs/help-pages-feature.md`, `docs/service-images-feature.md`,
 `docs/customer-new-request-feature.md`,
 `docs/provider-profile-feature.md`,
 `docs/navigation.md`,

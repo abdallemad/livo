@@ -14,10 +14,13 @@ import { categoryPageHref } from "@/utils/catalog"
 export const revalidate = 3600
 
 /** Always-200 public pages (docs/SITEMAP.md §2). `/search` is noindex and stays out. */
-const STATIC_PATHS = ["/", "/services", "/category", "/how-it-works", "/become-provider", "/contact"]
+const STATIC_PATHS = ["/", "/services", "/category", "/how-it-works", "/become-provider", "/contact", "/about", "/faq"]
 
-/** Routes rendered from a `StaticPage` row of the same slug. */
-const STATIC_PAGE_SLUGS = new Set(["about", "terms", "privacy", "faq", "policies"])
+/**
+ * Routes that 404 unless their `StaticPage` row is published. `/about` and `/faq` are not here: they always render
+ * their built-in copy and only add the admin text when published (docs/help-pages-feature.md).
+ */
+const STATIC_PAGE_SLUGS = new Set(["terms", "privacy", "policies"])
 
 async function staticPageEntries(): Promise<MetadataRoute.Sitemap> {
   try {

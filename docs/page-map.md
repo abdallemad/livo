@@ -23,11 +23,11 @@ Header-only shell, no request reads, `noindex` only on `/search?…` (via the pr
 | `/services/[category]/[service]` | Service details | Gallery, price, duration, Book now, provider summary, reviews, more / similar services, JSON-LD; 308 if moved ([catalog-feature.md](catalog-feature.md)) | built | ● | MK-02 |
 | `/providers/[id]` | Provider profile | Verified badge, specialties, areas, hours, bio, track record, live services, portfolio, visible reviews; no contact details; 404 unless approved + active ([provider-profile-feature.md](provider-profile-feature.md)) | built | ● | PR-04, PR-10, SY-04 |
 | `/search` | Search | Find a service in your area | placeholder | ◐ | MK-06 |
-| `/how-it-works` | How it works | Steps for customers and providers | placeholder | ◐ | MK-03 |
-| `/become-provider` | Join as a provider | Provider landing + sign-up CTA | placeholder | ◐ | MK-04 |
-| `/about` | About us | Who we are | built (published `StaticPage` `about`, else 404) | ◐ | MK-05 |
-| `/contact` | Contact us | Contact form | placeholder | ◐ | MK-05 |
-| `/faq` | FAQ | Booking, payment, held funds, disputes | built (published `StaticPage` `faq`, else 404) | ◐ | MK-05 |
+| `/how-it-works` | How it works | Steps for customers and providers | built (docs/help-pages-feature.md) | ✓ | MK-03 |
+| `/become-provider` | Join as a provider | Provider landing + sign-up CTA | built (docs/help-pages-feature.md) | ✓ | MK-04 |
+| `/about` | About us | Who we are | built — built-in copy + the `about` StaticPage when published (docs/help-pages-feature.md) | ◐ | MK-05 |
+| `/contact` | Contact us | Help channels (no form yet) | built (docs/help-pages-feature.md) | ◐ | MK-05 |
+| `/faq` | FAQ | Booking, payment, held funds, disputes | built — grouped answers + the `faq` StaticPage when published (docs/help-pages-feature.md) | ◐ | MK-05 |
 | `/terms` | Terms of use | Terms of service | built (published `StaticPage` `terms`, else 404) | ◐ | MK-05 |
 | `/policies` | Our policies | Published `StaticPage` `policies`, else 404 (linked from the landing trust section) | built | ◐ | MK-05 |
 | `/privacy` | Privacy policy | How data is collected and protected | built (published `StaticPage` `privacy`, else 404) | ◐ | MK-05 |

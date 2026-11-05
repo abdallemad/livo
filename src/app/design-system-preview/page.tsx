@@ -412,9 +412,12 @@ export default async function DesignSystemPreviewPage() {
             />
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <ServiceCard
+                badge="Most requested"
                 service={{
                   href: "#",
                   title: "Gas water heater installation",
+                  description: "Supply-side check, fitting and a first test run of a gas water heater.",
+                  iconKey: "plumbing",
                   providerName: "Mahmoud Plumbing",
                   price: 450,
                   rating: 4.7,

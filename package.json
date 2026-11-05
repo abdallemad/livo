@@ -14,6 +14,7 @@
     "check-env": "node tests/prelaunch/check-env.mjs",
     "db:generate": "prisma generate",
     "db:seed": "node --env-file-if-exists=.env --env-file-if-exists=.env.local prisma/seed.ts",
+    "db:seed:images": "node --env-file-if-exists=.env --env-file-if-exists=.env.local prisma/seed-service-images.ts",
     "db:reset": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/db-reset.mjs"
   },
   "dependencies": {

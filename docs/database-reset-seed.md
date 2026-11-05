@@ -8,6 +8,7 @@ Two scripts, both reading `DATABASE_URL` / `DIRECT_URL` from `.env` / `.env.loca
 | `npm run db:seed -- --reset` | Deletes every `seed_` row; reference data stays | No |
 | `npm run db:reset -- --yes` | **Drops every table and enum**, re-applies `prisma/sql` in order, then seeds | **Yes — everything** |
 | `npm run db:reset -- --yes --no-seed` | Same, but leaves the database empty | **Yes** |
+| `npm run db:seed:images` | Gives services a random stock cover (`Service.imageUrl`; Picsum, or Unsplash with `UNSPLASH_ACCESS_KEY`) — docs/service-images-feature.md | Only `Service.imageUrl` |
 
 ## `npm run db:reset` — `scripts/db-reset.mjs`
 

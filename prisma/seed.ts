@@ -635,6 +635,9 @@ async function seedMockData(tx: Tx) {
         description: s.description,
         price: money(s.price),
         durationMinutes: s.minutes,
+        // Random stock cover (Lorem Picsum, stable per slug) — the `seed/…` File below has no real object, so this is
+        // what cards show. Re-roll with `npm run db:seed:images -- --all --shuffle` (docs/service-images-feature.md).
+        imageUrl: `https://picsum.photos/seed/livo-${s.key}/800/600`,
         isActive: s.isActive ?? true,
         createdAt: at(-45 + i),
       },

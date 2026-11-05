@@ -20,6 +20,7 @@ const migrationFiles = [
   "2026-11-01-onboarding.sql",
   "2026-11-02-service-moderation.sql",
   "2026-11-03-chat-read-markers.sql",
+  "2026-11-05-service-image-url.sql",
 ]
 
 // Neon names the pooled endpoint `ep-xxx-pooler.<region>…` and the direct one `ep-xxx.<region>…`.

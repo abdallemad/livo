@@ -56,7 +56,8 @@ be hidden later). Allowed in robots.txt (`/api/images/`). Reads use the new `get
 configured, cards fall back to the placeholder icon only if the service has no photo — otherwise the image 404s.
 
 Cards and the service page only reference photos whose key starts with `uploads/services/` — the same rule the image route
-applies — so seeded or legacy files never render as broken images.
+applies — so seeded or legacy files never render as broken images. A service with no upload falls back to its external
+stock cover, `Service.imageUrl` (docs/service-images-feature.md).
 
 ## Cache & sitemap
 

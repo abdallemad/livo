@@ -47,6 +47,7 @@ class BookingCheckoutRepository {
         price: true,
         durationMinutes: true,
         providerId: true,
+        imageUrl: true,
         images: { where: { key: { startsWith: SERVICE_IMAGE_KEY } }, orderBy: { createdAt: "asc" }, take: 1, select: { id: true } },
         category: { select: { id: true, slug: true, parentId: true, ...name.select } },
         provider: {

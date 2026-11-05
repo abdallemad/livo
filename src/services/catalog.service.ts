@@ -7,6 +7,7 @@ import type { CatalogCategory, CatalogFilterOptions, CatalogIndex, CatalogServic
 import { CATALOG_PAGE_SIZE, type CatalogSort, normalizePriceRange, serviceHref } from "@/utils/catalog"
 import { maskContactDetails } from "@/utils/contact-mask"
 import { firstName } from "@/utils/provider-booking"
+import { cardSummary, serviceCoverUrl, serviceGalleryUrls } from "@/utils/service-image"
 
 /**
  * The public catalog (MK-02, MK-06; docs/catalog-feature.md): categories with live-service counts, the
@@ -30,6 +31,7 @@ const toCard = (s: CatalogServiceRow) => ({
   id: s.id,
   slug: s.slug,
   title: s.title,
+  summary: cardSummary(maskContactDetails(s.description).text),
   href: serviceHref(s.category.slug, s.slug),
   categoryName: label(s.category),
   categoryIconKey: s.category.iconKey ?? s.category.parent?.iconKey ?? null,
@@ -39,7 +41,7 @@ const toCard = (s: CatalogServiceRow) => ({
   durationMinutes: s.durationMinutes,
   rating: num(s.provider.ratingAvg),
   reviewsCount: s.provider.ratingCount,
-  imageUrl: s.images[0] ? `/api/images/services/${s.images[0].id}` : null,
+  imageUrl: serviceCoverUrl(s.images.map((i) => i.id), s.imageUrl),
 })
 
 /** Category tree with counts; a parent counts its sub-categories' services too. */
@@ -178,7 +180,7 @@ export async function getServiceDetail(categorySlug: string, serviceSlug: string
       description: maskContactDetails(s.description).text,
       price: num(s.price),
       durationMinutes: s.durationMinutes,
-      images: s.images.map((i) => `/api/images/services/${i.id}`),
+      images: serviceGalleryUrls(s.images.map((i) => i.id), s.imageUrl),
       href,
       category: { slug: s.category.slug, name: label(s.category), type: s.category.type },
       parent: s.category.parent ? { slug: s.category.parent.slug, name: label(s.category.parent) } : null,

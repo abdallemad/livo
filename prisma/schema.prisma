@@ -436,6 +436,9 @@ model Service {
   // provider can't re-publish it by toggling their switch (docs/admin-catalog-feature.md).
   hiddenByAdminAt     DateTime?
   hiddenByAdminReason String?
+  // External cover photo (stock/demo image, e.g. Unsplash / Lorem Picsum) shown when the provider has
+  // uploaded no photo yet. Written by `npm run db:seed:images`; docs/service-images-feature.md.
+  imageUrl            String?
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
